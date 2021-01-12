@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsGroupMemberRecord.mapper.SmsGroupMemberRecordMapper">
+    
+    <resultMap type="SmsGroupMemberRecord" id="SmsGroupMemberRecordResult">
+        <result property="id"    column="id"    />
+        <result property="returnApplySn"    column="return_apply_sn"    />
+        <result property="orderSn"    column="order_sn"    />
+        <result property="groupJoinRecordId"    column="group_join_record_id"    />
+        <result property="groupGameSkuId"    column="group_game_sku_id"    />
+        <result property="returnFlag"    column="return_flag"    />
+        <result property="memberId"    column="member_id"    />
+        <result property="memberNick"    column="member_nick"    />
+        <result property="memberIcon"    column="member_icon"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="productName"    column="product_name"    />
+        <result property="skuSpData"    column="sku_sp_data"    />
+        <result property="skuPic"    column="sku_pic"    />
+        <result property="groupPrice"    column="group_price"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="skuCode"    column="sku_code"    />
+    </resultMap>
+
+    <sql id="selectSmsGroupMemberRecordVo">
+        select id, return_apply_sn, order_sn, group_join_record_id, group_game_sku_id, return_flag, member_id, member_nick, member_icon, quantity, product_name, sku_sp_data, sku_pic, group_price, status, create_by, create_time, update_by, update_time, remark, del_flag, sku_code from sms_group_member_record
+    </sql>
+
+    <select id="selectSmsGroupMemberRecordList" parameterType="SmsGroupMemberRecord" resultMap="SmsGroupMemberRecordResult">
+        <include refid="selectSmsGroupMemberRecordVo"/>
+        <where>
+           del_flag = '0'
+            <if test="returnApplySn != null  and returnApplySn != ''"> and return_apply_sn = #{returnApplySn}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="groupJoinRecordId != null "> and group_join_record_id = #{groupJoinRecordId}</if>
+            <if test="groupGameSkuId != null "> and group_game_sku_id = #{groupGameSkuId}</if>
+            <if test="returnFlag != null  and returnFlag != ''"> and return_flag = #{returnFlag}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="memberNick != null  and memberNick != ''"> and member_nick = #{memberNick}</if>
+            <if test="memberIcon != null  and memberIcon != ''"> and member_icon = #{memberIcon}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="skuSpData != null  and skuSpData != ''"> and sku_sp_data = #{skuSpData}</if>
+            <if test="skuPic != null  and skuPic != ''"> and sku_pic = #{skuPic}</if>
+            <if test="groupPrice != null "> and group_price = #{groupPrice}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="skuCode != null  and skuCode != ''"> and sku_code = #{skuCode}</if>
+        </where>
+    </select>
+
+    <select id="countSmsGroupMemberRecord" parameterType="SmsGroupMemberRecord" resultType="int">
+        select count(*) from sms_group_member_record
+        <where>
+            del_flag = '0'
+            <if test="returnApplySn != null  and returnApplySn != ''"> and return_apply_sn = #{returnApplySn}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="groupJoinRecordId != null "> and group_join_record_id = #{groupJoinRecordId}</if>
+            <if test="groupGameSkuId != null "> and group_game_sku_id = #{groupGameSkuId}</if>
+            <if test="returnFlag != null  and returnFlag != ''"> and return_flag = #{returnFlag}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="memberNick != null  and memberNick != ''"> and member_nick = #{memberNick}</if>
+            <if test="memberIcon != null  and memberIcon != ''"> and member_icon = #{memberIcon}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="skuSpData != null  and skuSpData != ''"> and sku_sp_data = #{skuSpData}</if>
+            <if test="skuPic != null  and skuPic != ''"> and sku_pic = #{skuPic}</if>
+            <if test="groupPrice != null "> and group_price = #{groupPrice}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="skuCode != null  and skuCode != ''"> and sku_code = #{skuCode}</if>
+        </where>
+    </select>
+
+    <select id="checkSmsGroupMemberRecordUnique" parameterType="SmsGroupMemberRecord" resultType="int">
+        select count(*) from sms_group_member_record
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="returnApplySn != null  and returnApplySn != ''"> and return_apply_sn = #{returnApplySn}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="groupJoinRecordId != null "> and group_join_record_id = #{groupJoinRecordId}</if>
+            <if test="groupGameSkuId != null "> and group_game_sku_id = #{groupGameSkuId}</if>
+            <if test="returnFlag != null  and returnFlag != ''"> and return_flag = #{returnFlag}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="memberNick != null  and memberNick != ''"> and member_nick = #{memberNick}</if>
+            <if test="memberIcon != null  and memberIcon != ''"> and member_icon = #{memberIcon}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="productName != null  and productName != ''"> and product_name = #{productName}</if>
+            <if test="skuSpData != null  and skuSpData != ''"> and sku_sp_data = #{skuSpData}</if>
+            <if test="skuPic != null  and skuPic != ''"> and sku_pic = #{skuPic}</if>
+            <if test="groupPrice != null "> and group_price = #{groupPrice}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="skuCode != null  and skuCode != ''"> and sku_code = #{skuCode}</if>
+        </where>
+    </select>
+
+
+    <select id="selectSmsGroupMemberRecordById" parameterType="Long" resultMap="SmsGroupMemberRecordResult">
+        <include refid="selectSmsGroupMemberRecordVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertSmsGroupMemberRecord" parameterType="SmsGroupMemberRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_group_member_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="returnApplySn != null  and returnApplySn != ''">return_apply_sn,</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn,</if>
+            <if test="groupJoinRecordId != null ">group_join_record_id,</if>
+            <if test="groupGameSkuId != null ">group_game_sku_id,</if>
+            <if test="returnFlag != null  and returnFlag != ''">return_flag,</if>
+            <if test="memberId != null ">member_id,</if>
+            <if test="memberNick != null  and memberNick != ''">member_nick,</if>
+            <if test="memberIcon != null  and memberIcon != ''">member_icon,</if>
+            <if test="quantity != null ">quantity,</if>
+            <if test="productName != null  and productName != ''">product_name,</if>
+            <if test="skuSpData != null  and skuSpData != ''">sku_sp_data,</if>
+            <if test="skuPic != null  and skuPic != ''">sku_pic,</if>
+            <if test="groupPrice != null ">group_price,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="skuCode != null  and skuCode != ''">sku_code,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="returnApplySn != null  and returnApplySn != ''">#{returnApplySn},</if>
+            <if test="orderSn != null  and orderSn != ''">#{orderSn},</if>
+            <if test="groupJoinRecordId != null ">#{groupJoinRecordId},</if>
+            <if test="groupGameSkuId != null ">#{groupGameSkuId},</if>
+            <if test="returnFlag != null  and returnFlag != ''">#{returnFlag},</if>
+            <if test="memberId != null ">#{memberId},</if>
+            <if test="memberNick != null  and memberNick != ''">#{memberNick},</if>
+            <if test="memberIcon != null  and memberIcon != ''">#{memberIcon},</if>
+            <if test="quantity != null ">#{quantity},</if>
+            <if test="productName != null  and productName != ''">#{productName},</if>
+            <if test="skuSpData != null  and skuSpData != ''">#{skuSpData},</if>
+            <if test="skuPic != null  and skuPic != ''">#{skuPic},</if>
+            <if test="groupPrice != null ">#{groupPrice},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="skuCode != null  and skuCode != ''">#{skuCode},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSmsGroupMemberRecord" parameterType="SmsGroupMemberRecord">
+        update sms_group_member_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="returnApplySn != null  and returnApplySn != ''">return_apply_sn = #{returnApplySn},</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn = #{orderSn},</if>
+            <if test="groupJoinRecordId != null ">group_join_record_id = #{groupJoinRecordId},</if>
+            <if test="groupGameSkuId != null ">group_game_sku_id = #{groupGameSkuId},</if>
+            <if test="returnFlag != null  and returnFlag != ''">return_flag = #{returnFlag},</if>
+            <if test="memberId != null ">member_id = #{memberId},</if>
+            <if test="memberNick != null  and memberNick != ''">member_nick = #{memberNick},</if>
+            <if test="memberIcon != null  and memberIcon != ''">member_icon = #{memberIcon},</if>
+            <if test="quantity != null ">quantity = #{quantity},</if>
+            <if test="productName != null  and productName != ''">product_name = #{productName},</if>
+            <if test="skuSpData != null  and skuSpData != ''">sku_sp_data = #{skuSpData},</if>
+            <if test="skuPic != null  and skuPic != ''">sku_pic = #{skuPic},</if>
+            <if test="groupPrice != null ">group_price = #{groupPrice},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="skuCode != null  and skuCode != ''">sku_code = #{skuCode},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsGroupMemberRecordById" parameterType="Long">
+        <!-- update sms_group_member_record set del_flag = '1' where id = #{id} -->
+        delete from sms_group_member_record where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsGroupMemberRecordByIds" parameterType="String">
+        update sms_group_member_record set del_flag = '1' where id in
+        <!-- delete from sms_group_member_record where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

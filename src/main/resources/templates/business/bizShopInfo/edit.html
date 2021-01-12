@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改店铺信息')" />
+    <style type="text/css">
+        .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+            background-color: #FFF;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-bizShopInfo-edit" th:object="${bizShopInfo}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <h4 class="form-header h4">基本信息<span class="help-block m-b-none"><i class="fa fa-thumb-tack"></i> 店铺编号：<span th:text="*{code}"></span></span></h4>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">店铺名称：</label>
+                        <div class="col-sm-8">
+                            <input name="companyName" class="form-control" type="text" th:field="*{companyName}" autocomplete="off" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">主营类目：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group" onclick="selectMainCategory()">
+                                <input id="categoryId" name="categoryId" th:field="*{categoryId}" class="form-control" type="hidden" required >
+                                <input id="categoryName" class="form-control" th:value="${mainCategory?.category}" type="text" placeholder="请选择店铺主营类目" required readonly>
+                                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">店铺法人：</label>
+                        <div class="col-sm-8">
+                            <input name="legalPerson" class="form-control" th:field="*{legalPerson}" type="text" autocomplete="off" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">法人电话：</label>
+                        <div class="col-sm-8">
+                            <input name="tel" class="form-control" th:field="*{tel}" type="text" autocomplete="off" required >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">店铺状态：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-box" th:each="dict : ${@dict.getType('biz_status')}">
+                                <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:field="*{status}" required >
+                                <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">店铺地区：</label>
+                        <div class="col-sm-8" id="distpicker" th:attr="data-province=*{province}, data-city=*{city}, data-district=*{district}">
+                            <select name="province" class="form-control-inline col-sm-4" required></select>
+                            <select name="city" class="form-control-inline col-sm-4" required></select>
+                            <select name="district" class="form-control-inline col-sm-4" required></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">详细地址：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="longitude" name="longitude" th:field="*{longitude}" type="hidden" >
+                                <input id="latitude" name="latitude" th:field="*{latitude}" type="hidden" >
+                                <input name="addressStart" class="form-control addressSel" th:value="${#strings.substringBefore(bizShopInfo.address,'[')}" type="text" placeholder="请点击选择详细地址" required readonly>
+                                <span class="input-group-addon addressSel"><i class="fa fa-map-marker"></i></span>
+                                <input name="addressEnd" maxlength="20"
+                                       th:value="${#strings.substringAfter(bizShopInfo.address,'[')}"
+                                       class="form-control" type="text" placeholder="位置信息" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">店铺标签：</label>
+                        <div class="col-sm-8">
+                            <input name="tag" class="form-control" th:field="*{tag}" type="text" autocomplete="off" required >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">客服电话：</label>
+                        <div class="col-sm-8">
+                            <input name="serviceTel" class="form-control" th:field="*{serviceTel}" type="text" autocomplete="off" required >
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">结算账户类型：</label>
+                        <div class="col-sm-8">
+                            <select name="accountType" class="form-control" th:with="type=${@dict.getType('biz_account_type')}" required >
+                                <option value="">请选择</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{accountType}" ></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">账户绑定实名：</label>
+                        <div class="col-sm-8">
+                            <input name="bindName" class="form-control" th:field="*{bindName}" type="text" autocomplete="off" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">结算账户账号：</label>
+                        <div class="col-sm-8">
+                            <input name="account" class="form-control" th:field="*{account}" type="text" autocomplete="off" placeholder="根据选择的结算账户类型填写" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">机构ID：</label>
+                        <div class="col-sm-8">
+                            <input name="orgId" class="form-control" th:field="*{orgId}" type="text"  placeholder="填写机构ID，金燕商户填写。" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4 class="form-header h4">相关资料 <span class="m-l-sm" style="font-size: 13px;color: #a94442"><i class="fa fa-thumb-tack"></i> 注意：单个图片上传大小请控制在2M以内</span></h4>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label is-required">店铺图片：</label>
+                        <div class="col-sm-6">
+                            <input name="pic" th:field="*{pic}" class="form-control" type="hidden">
+                            <ul class="ft-uploader__files" id="picImg" style="margin-top: 10px;" >
+                                <!-- 图片展示 -->
+                            </ul>
+                            <div class="ft-uploader__input-box" id="picBox" style="display: none;">
+                                <button id="picBtn" type="button" class="ft-uploader__input" ></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label is-required">营业执照：</label>
+                        <div class="col-sm-6">
+                            <input name="license" th:field="*{license}" class="form-control" type="hidden">
+                            <ul class="ft-uploader__files" id="licenseImg" style="margin-top: 10px;" >
+                                <!-- 图片展示 -->
+                            </ul>
+                            <div class="ft-uploader__input-box" id="licenseBox" style="display: none;">
+                                <button id="licenseBtn" type="button" class="ft-uploader__input" ></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label is-required">法人身份证正面：</label>
+                        <div class="col-sm-6">
+                            <input name="sfzFront" th:field="*{sfzFront}" class="form-control" type="hidden">
+                            <ul class="ft-uploader__files" id="sfzFrontImg" style="margin-top: 10px;" >
+                                <!-- 图片展示 -->
+                            </ul>
+                            <div class="ft-uploader__input-box" id="sfzFrontBox" style="display: none;">
+                                <button id="sfzFrontBtn" type="button" class="ft-uploader__input" ></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label is-required">法人身份证反面：</label>
+                        <div class="col-sm-6">
+                            <input name="sfzBack" th:field="*{sfzBack}" class="form-control" type="hidden">
+                            <ul class="ft-uploader__files" id="sfzBackImg" style="margin-top: 10px;" >
+                                <!-- 图片展示 -->
+                            </ul>
+                            <div class="ft-uploader__input-box" id="sfzBackBox" style="display: none;">
+                                <button id="sfzBackBtn" type="button" class="ft-uploader__input" ></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4 class="form-header h4">其他资料 <span class="m-l-sm" style="font-size: 13px;color: #a94442"><i class="fa fa-thumb-tack"></i> 注意：单个图片上传大小请控制在2M以内</span></h4>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label">上传图片：</label>
+                        <div class="col-sm-11">
+                            <input name="submitInfo" th:field="*{submitInfo}" class="form-control" type="hidden">
+                            <ul class="ft-uploader__files" id="submitInfoImg" style="margin-top: 10px;" >
+                                <!-- 图片展示 -->
+                            </ul>
+                            <div class="ft-uploader__input-box" id="submitInfoBox" style="display: none;" >
+                                <button id="submitInfoBtn" type="button" class="ft-uploader__input" ></button>
+                            </div>
+                            <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> <span id="submitInfoHelp"> </span> </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: distpicker-js"/>
+    <th:block th:include="include :: layui-all-js"/>
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/bizShopInfo";
+        var prefixCategory = ctx + "business/bizMainCategory";
+        var prefixTxMap = ctx + "business/txMap";
+        var picLimit = 1,licenseLimit = 1, sfzFrontLimit = 1, sfzBackLimit = 1, submitInfoLimit = 0;
+        var mainCategory = [[${mainCategory}]];
+        var imgSize = 2048;
+
+        $(function () {
+            // 初始化主营类目信息
+            if (mainCategory && mainCategory.id) {
+                $("#submitInfoHelp").text(mainCategory.submitInfo ? "已提供：" + mainCategory.submitInfo : "无需其他资料");
+                submitInfoLimit = mainCategory.submitNum ? parseInt(mainCategory.submitNum) : 0;
+            }
+            // 展示图片信息
+            var picVal = $("input[name='pic']").val(),
+                licenseVal = $("input[name='license']").val(),
+                sfzFrontVal = $("input[name='sfzFront']").val(),
+                sfzBackVal = $("input[name='sfzBack']").val(),
+                submitInfoVal = $("input[name='submitInfo']").val();
+
+            initPic(picVal);
+            initLicensePic(licenseVal);
+            initSfzFrontPic(sfzFrontVal);
+            initSfzBackPic(sfzBackVal);
+            initSubmitInfoPic(submitInfoVal);
+        });
+
+        function initPic(picVal) {
+            if (picVal) {
+                var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + picVal + ")\" data-src=\"" + picVal + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+                $("#picImg").append(tpl);
+            }
+            picCtrl();
+        }
+
+        function initLicensePic(licenseVal) {
+            if (licenseVal) {
+                var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + licenseVal + ")\" data-src=\"" + licenseVal + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+                $("#licenseImg").append(tpl);
+            }
+            licenseCtrl();
+        }
+
+        function initSfzFrontPic(sfzFrontVal) {
+            if (sfzFrontVal) {
+                var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + sfzFrontVal + ")\" data-src=\"" + sfzFrontVal + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+                $("#sfzFrontImg").append(tpl);
+            }
+            sfzFrontCtrl();
+        }
+
+        function initSfzBackPic(sfzBackVal) {
+            if (sfzBackVal) {
+                var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + sfzBackVal + ")\" data-src=\"" + sfzBackVal + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+                $("#sfzBackImg").append(tpl);
+            }
+            sfzBackCtrl();
+        }
+
+        function initSubmitInfoPic(submitInfoVal) {
+            if (submitInfoVal && submitInfoVal.split(",").length > 0) {
+                var pics = submitInfoVal.split(","), tpl = "";
+                for (var i in pics) {
+                    tpl += "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + pics[i] + ")\" data-src=\"" + pics[i] + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+                }
+                $("#submitInfoImg").html(tpl);
+            }
+            submitInfoCtrl();
+        }
+
+        // 地区选择
+        $("#distpicker").distpicker();
+
+        // 数据提交
+        function submitHandler() {
+            if ($.validate.form()) {
+                var picVal = $("input[name='pic']").val(),
+                    licenseVal = $("input[name='license']").val(),
+                    sfzFrontVal = $("input[name='sfzFront']").val(),
+                    sfzBackVal = $("input[name='sfzBack']").val(),
+                    submitInfoVal = $("input[name='submitInfo']").val();
+
+                if (!licenseVal) {
+                    $.modal.msgWarning("请上传营业执照");
+                    return false;
+                }
+                if (!picVal) {
+                    $.modal.msgWarning("请上传店铺主图");
+                    return false;
+                }
+                if (!sfzFrontVal) {
+                    $.modal.msgWarning("请上传法人身份证正面");
+                    return false;
+                }
+                if (!sfzBackVal) {
+                    $.modal.msgWarning("请上传法人身份证反面");
+                    return false;
+                }
+                if (submitInfoLimit > 0) {
+                    if (!submitInfoVal) {
+                        $.modal.msgWarning("请上传其他资料");
+                        return false;
+                    }
+                    if (submitInfoVal.split(",").length < submitInfoLimit) {
+                        $.modal.msgWarning("其他资料上传不完整");
+                        return false;
+                    }
+                }
+                var data = $('#form-bizShopInfo-edit').serializeArray();
+                data.push({name:"address",value:$('input[name="addressStart"]').val()+"["+$('input[name="addressEnd"]').val()});
+                $.operate.save(prefix + "/edit",data);
+            }
+        }
+
+        // 表单验证
+        $("#form-bizShopInfo-edit").validate({
+            focusCleanup: true,
+            ignore: [],
+            rules: {
+                companyName: {
+                    rangelength: [2, 30],
+                    remote: {
+                        url: prefix + "/checkShopUnique",
+                        type: "post",
+                        dataType: "json",
+                        data: {
+                            "id" : function() {
+                                return $.common.trim($("input[name='id']").val());
+                            },
+                            "companyName": function () {
+                                return $.common.trim($("input[name='companyName']").val());
+                            }
+                        },
+                        dataFilter: function (data, type) {
+                            return $.validate.unique(data);
+                        }
+                    }
+                },
+                legalPerson: {
+                    rangelength: [2, 20],
+                },
+                tel: {
+                    isPhone: true,
+                },
+                serviceTel: {
+                    isPhone: true,
+                },
+                tag: {
+                    rangelength: [2, 15],
+                },
+                bindName: {
+                    rangelength: [2, 20],
+                },
+                account: {
+                    rangelength: [2, 30],
+                    remote: {
+                        url: prefix + "/checkShopUnique",
+                        type: "post",
+                        dataType: "json",
+                        data: {
+                            "id" : function() {
+                                return $.common.trim($("input[name='id']").val());
+                            },
+                            "account": function () {
+                                return $.common.trim($("input[name='account']").val());
+                            }
+                        },
+                        dataFilter: function (data, type) {
+                            return $.validate.unique(data);
+                        }
+                    }
+                }
+            },
+            messages: {
+                companyName: {
+                    rangelength: $.validator.format("店铺名称长度在 {0} 到 {1} 之间"),
+                    remote: "店铺名称已经存在"
+                },
+                legalPerson: {
+                    rangelength: $.validator.format("店铺法人长度在 {0} 到 {1} 之间"),
+                },
+                tag: {
+                    rangelength: $.validator.format("店铺标签长度在 {0} 到 {1} 之间"),
+                },
+                bindName: {
+                    rangelength: $.validator.format("绑定实名长度在 {0} 到 {1} 之间"),
+                },
+                account: {
+                    rangelength: $.validator.format("结算账户长度在 {0} 到 {1} 之间"),
+                    remote: "结算账户已经存在"
+                }
+            }
+        });
+
+        /**
+         * 选择主营类目
+         */
+        function selectMainCategory(){
+            $.modal.confirm("修改主营类目，需要重新上传对应的其他资料", function() {
+                var width = $(window).width() > 800 ? 800 : "",
+                    height = $(window).height() > 500 ? 500 : "";
+                $.modal.open("选择主营类目", prefixCategory + "/select", width, height);
+            });
+        }
+
+        /**
+         * 选择主营类目回调
+         * @param mainCategory 主营类目数据
+         */
+        function mainCategorySelectCallback(mainCategory) {
+            if (mainCategory && mainCategory.id) {
+                if ($("#categoryId").val() == mainCategory.id) {
+                    $.modal.msgWarning("未改变主营类目");
+                    return false;
+                }
+                $("#submitInfoImg").html("");
+                $("#categoryId").val(mainCategory.id);
+                $("#categoryName").val(mainCategory.category);
+                $("#submitInfoHelp").text(mainCategory.submitInfo ? "请提供：" + mainCategory.submitInfo : "无需其他资料");
+                submitInfoLimit = mainCategory.submitNum ? parseInt(mainCategory.submitNum) : 0;
+                submitInfoLimit > 0 ? $("#submitInfoBox").show() : $("#submitInfoBox").hide();
+            } else {
+                $.modal.msgWarning("未选择主营类目");
+            }
+        }
+
+        /**
+         * 图片预览--通用
+         */
+        $(".ft-uploader__files").on("click", ".ft-uploader__file", function(e) {
+            if ($(this).attr("data-src")) {
+                $.modal.preview(respath + $(this).attr("data-src"));
+            }
+        });
+
+        /**
+         * 收集图片--通用
+         * @param ulSelector 显示图片的ul
+         * @param inputSelector input隐藏域
+         */
+        function collectPic(ulSelector) {
+            var arr = [];
+            $(ulSelector + " li").each(function(index, elem){
+                arr.push($(elem).attr("data-src"));
+            });
+            return arr.join();
+        }
+
+        /******************上传店铺主图开始************************/
+        // 上传营业执照
+        $.operate.layuiUpload("#picBtn", ftConsts.upload.url.org, imgSize, ftConsts.upload.accept.images, function(r) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+            $("#picImg").append(tpl);
+            $("input[name='pic']").val(collectPic("#picImg"));
+            picCtrl();
+        });
+
+        // 营业执照上传控制
+        function picCtrl() {
+            $("#picImg li").length >= picLimit ? $("#picBox").hide() : $("#picBox").show();
+        }
+
+        // 营业执照上传图片删除
+        $("#picImg").on("click", ".del-img", function(e) {
+            var self = this;
+            $.modal.confirm("确认删除店铺主图图片？", function() {
+                $(self).parent().remove();
+                $("input[name='pic']").val(collectPic("#picImg"));
+                picCtrl();
+            });
+            stopPropagation(e);
+        });
+        /******************上传店铺主图 结束************************/
+        /******************上传营业执照 开始************************/
+        // 上传营业执照
+        $.operate.layuiUpload("#licenseBtn", ftConsts.upload.url.org, imgSize, ftConsts.upload.accept.images, function(r) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+            $("#licenseImg").append(tpl);
+            $("input[name='license']").val(collectPic("#licenseImg"));
+            licenseCtrl();
+        });
+
+        // 营业执照上传控制
+        function licenseCtrl() {
+            $("#licenseImg li").length >= licenseLimit ? $("#licenseBox").hide() : $("#licenseBox").show();
+        }
+
+        // 营业执照上传图片删除
+        $("#licenseImg").on("click", ".del-img", function(e) {
+            var self = this;
+            $.modal.confirm("确认删除营业执照图片？", function() {
+                $(self).parent().remove();
+                $("input[name='license']").val(collectPic("#licenseImg"));
+                licenseCtrl();
+            });
+            stopPropagation(e);
+        });
+        /******************上传营业执照 结束************************/
+
+        /******************上传法人身份证正面 开始************************/
+        // 上传法人身份证正面
+        $.operate.layuiUpload("#sfzFrontBtn", ftConsts.upload.url.org, imgSize, ftConsts.upload.accept.images, function(r) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+            $("#sfzFrontImg").append(tpl);
+            $("input[name='sfzFront']").val(collectPic("#sfzFrontImg"));
+            sfzFrontCtrl();
+        });
+
+        // 法人身份证正面上传控制
+        function sfzFrontCtrl() {
+            $("#sfzFrontImg li").length >= sfzFrontLimit ? $("#sfzFrontBox").hide() : $("#sfzFrontBox").show();
+        }
+
+        // 法人身份证正面上传图片删除
+        $("#sfzFrontImg").on("click", ".del-img", function(e) {
+            var self = this;
+            $.modal.confirm("确认删除法人身份证正面图片？", function() {
+                $(self).parent().remove();
+                $("input[name='sfzFront']").val(collectPic("#sfzFrontImg"));
+                sfzFrontCtrl();
+            });
+            stopPropagation(e);
+        });
+        /******************上传法人身份证正面 结束************************/
+
+        /******************上传法人身份证反面 开始************************/
+        // 上传法人身份证反面
+        $.operate.layuiUpload("#sfzBackBtn", ftConsts.upload.url.org, imgSize, ftConsts.upload.accept.images, function(r) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+            $("#sfzBackImg").append(tpl);
+            $("input[name='sfzBack']").val(collectPic("#sfzBackImg"));
+            sfzBackCtrl();
+        });
+
+        // 法人身份证反面上传控制
+        function sfzBackCtrl() {
+            $("#sfzBackImg li").length >= sfzBackLimit ? $("#sfzBackBox").hide() : $("#sfzBackBox").show();
+        }
+
+        // 法人身份证反面上传图片删除
+        $("#sfzBackImg").on("click", ".del-img", function(e) {
+            var self = this;
+            $.modal.confirm("确认删除法人身份证反面图片？", function() {
+                $(self).parent().remove();
+                $("input[name='sfzBack']").val(collectPic("#sfzBackImg"));
+                sfzBackCtrl();
+            });
+            stopPropagation(e);
+        });
+        /******************上传法人身份证反面 结束************************/
+
+        /******************上传其他资料 开始************************/
+        // 上传其他资料
+        $.operate.layuiUpload("#submitInfoBtn", ftConsts.upload.url.org, imgSize, ftConsts.upload.accept.images, function(r) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+            $("#submitInfoImg").append(tpl);
+            $("input[name='submitInfo']").val(collectPic("#submitInfoImg"));
+            submitInfoCtrl();
+        });
+
+        // 其他资料上传控制
+        function submitInfoCtrl() {
+            $("#submitInfoImg li").length >= submitInfoLimit ? $("#submitInfoBox").hide() : $("#submitInfoBox").show();
+        }
+
+        // 其他资料上传图片删除
+        $("#submitInfoImg").on("click", ".del-img", function(e) {
+            var self = this;
+            $.modal.confirm("确认删除该资料图片？", function() {
+                $(self).parent().remove();
+                $("input[name='submitInfo']").val(collectPic("#submitInfoImg"));
+                submitInfoCtrl();
+            });
+            stopPropagation(e);
+        });
+        /******************上传其他资料 结束************************/
+
+        /******************地图选点 开始************************/
+        // 打开地图选点
+        $(".addressSel").on("click", function(){
+            var province = $("select[name='province']").val(),
+                city = $("select[name='city']").val(),
+                district = $("select[name='district']").val();
+
+            if (!(province && city && district)) {
+                $.modal.msgWarning("请先选择地区");
+                return false;
+            }
+
+            $.modal.confirm("打开地图选择地址", function() {
+                // 解析地址坐标
+                var addr = province + city + district,
+                    curl = prefixTxMap + "/addrToCoord?address=" + addr;
+                $.operate.get(curl, function(res) {
+                    var coord = "";
+                    if (res.code === web_status.SUCCESS && res.coord) {
+                        coord = res.coord.lat + "," + res.coord.lng;
+                    }
+                    var url = prefixTxMap + "/pointSelect?coord=" + coord;
+                    var options = {
+                        title: '选择详细地址',
+                        url: url,
+                        btn: false
+                    };
+                    $.modal.openOptions(options);
+                });
+            });
+        });
+
+        // 地图选点回调
+        function pointSelectCallback(loc) {
+            $("input[name='longitude']").val(loc.latlng.lng);
+            $("input[name='latitude']").val(loc.latlng.lat);
+            $("input[name='addressStart']").val(loc.poiname);
+        }
+        /******************地图选点 结束************************/
+    </script>
+</body>
+</html>

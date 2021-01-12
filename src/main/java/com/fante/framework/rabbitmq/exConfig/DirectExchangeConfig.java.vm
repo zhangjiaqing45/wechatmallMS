@@ -1,0 +1,89 @@
+//package com.fante.framework.rabbitmq.exConfig;
+//
+//import com.fante.framework.rabbitmq.enums.ExchangeEnum;
+//import com.fante.framework.rabbitmq.enums.QueueEnum;
+//import org.springframework.amqp.core.Binding;
+//import org.springframework.amqp.core.BindingBuilder;
+//import org.springframework.amqp.core.DirectExchange;
+//import org.springframework.amqp.core.Queue;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//
+///**
+// * @program: Fante
+// * @Date:
+// * @Author: Mr.Z
+// * @Description: 直连交换机模式配置
+// */
+//@Configuration
+//public class DirectExchangeConfig {
+//
+//    /**
+//     * 定义测试直连交换机
+//     * @return
+//     */
+//    @Bean
+//    DirectExchange testDirectExchange() {
+//        return new DirectExchange(ExchangeEnum.EX_DIRECT_TEST.getName());
+//    }
+//
+//    /**
+//     * 定义测试队列A
+//     * @return
+//     */
+//    @Bean
+//    Queue testDirectA() {
+//        return new Queue(QueueEnum.Q_TEST_DIRECT_A.getName());
+//    }
+//
+//    /**
+//     * 定义测试队列B
+//     * @return
+//     */
+//    @Bean
+//    Queue testDirectB() {
+//        return new Queue(QueueEnum.Q_TEST_DIRECT_B.getName());
+//    }
+//
+//    /**
+//     * 定义测试队列B，采用多人消费模式
+//     * @return
+//     */
+//    @Bean
+//    Queue testMulDirectC() {
+//        return new Queue(QueueEnum.Q_TEST_DIRECT_C.getName());
+//    }
+//
+//    /**
+//     * 将测试队列A绑定到测试直连交换机
+//     * @param testDirectA
+//     * @param testDirectExchange
+//     * @return
+//     */
+//    @Bean
+//    Binding bindingWithQueueA(Queue testDirectA, DirectExchange testDirectExchange) {
+//        return BindingBuilder.bind(testDirectA).to(testDirectExchange).with(QueueEnum.Q_TEST_DIRECT_A.getRouteKey());
+//    }
+//
+//    /**
+//     * 将测试队列B绑定到测试直连交换机
+//     * @param testDirectB
+//     * @param testDirectExchange
+//     * @return
+//     */
+//    @Bean
+//    Binding bindingWithQueueB(Queue testDirectB, DirectExchange testDirectExchange) {
+//        return BindingBuilder.bind(testDirectB).to(testDirectExchange).with(QueueEnum.Q_TEST_DIRECT_B.getRouteKey());
+//    }
+//
+//    /**
+//     * 将测试队列C绑定到测试直连交换机
+//     * @param testMulDirectC
+//     * @param testDirectExchange
+//     * @return
+//     */
+//    @Bean
+//    Binding bindingWithQueueC(Queue testMulDirectC, DirectExchange testDirectExchange) {
+//        return BindingBuilder.bind(testMulDirectC).to(testDirectExchange).with(QueueEnum.Q_TEST_DIRECT_C.getRouteKey());
+//    }
+//}

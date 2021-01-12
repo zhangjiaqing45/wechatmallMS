@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('订单退货申请列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li th:if="${isAdmin}">
+                            <p>店铺：</p>
+                            <input type="hidden" name="shopId"/>
+                            <input type="text" name="shop" readonly placeholder="请选择店铺" onclick="selectShop();" />
+                        </li>
+                        <li>
+                            <p>服务单号：</p>
+                            <input type="text" name="id"/>
+                        </li>
+                        <li>
+                            <p>申请状态</p>
+                            <select name="status" th:with="type=${@custom.returnStatus()}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.value}"
+                                        th:value="${dict.key}"></option>
+                            </select>
+                        </li>
+                        <li class="select-time">
+                            <p>申请时间：</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCreateTime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCreateTime]"/>
+                        </li>
+                        <li>
+                            <p>处理人员：</p>
+                            <input type="text" name="handleMan"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <!--<a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="business:omsOrderReturnApply:remove">-->
+                <!--<i class="fa fa-remove"></i> 批量删除-->
+            <!--</a>-->
+            <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:omsOrderReturnApply:export">
+                <i class="fa fa-download"></i> 导出
+            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:omsOrderReturnApply:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:omsOrderReturnApply:remove')}]];
+    var returnStatusData = [[${@custom.returnStatusPlus()}]];
+
+    var prefix = ctx + "business/omsOrderReturnApply";
+    var prefixShop = ctx + "business/bizShopInfo";
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='shopId']").val(shop.id);
+            $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            sortName: 'id',
+            sortOrder:'desc',
+            modalName: "订单退货申请",
+            columns: [
+            //     {
+            //     checkbox: true
+            // },
+            {
+                field : 'id',
+                title : '服务单号',
+                align: 'center',
+            },
+            {
+                field : 'createTime',
+                title : '申请时间',
+                align: 'center',
+            },
+            {
+                field : 'createBy',
+                title : '昵称',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    var text = $.common.sprintf("%s",row.memberNickName);
+                    return $.table.tooltip(text,15,'open')
+                }
+            },
+            {
+                field : 'productName',
+                title : '商品信息',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    var obj = jQuery.parseJSON(row.spData);
+                    var text = $.common.sprintf("%s[%s]",value,Object.values(obj));
+                    return $.table.tooltip(text,15,'open')
+                }
+            },
+            {
+                field : 'productRealPrice',
+                title : '支付金额',
+                align: 'center',
+            },
+            {
+                field : 'status',
+                title : '申请状态',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    if (returnStatusData[value]) {
+                        return $.common.sprintf("<span class='badge badge-%s'>%s</span>", returnStatusData[value].style, returnStatusData[value].desc);
+                    }
+                }
+            },
+            {
+                field : 'orderSn',
+                title : '订单编号',
+                align: 'center',
+            },
+
+            {
+                field : 'reason',
+                title : '原因',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    return $.table.tooltip(value,10,'open')
+                }
+            },
+            {
+                title: '操作',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    var actions = [];
+                    actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="showReturnDetail(\'' + row.id + '\')"><i class="fa fa-file-text"></i> 查看详情</a> ');
+                    return actions.join('');
+                }
+            }]
+    };
+        $.table.init(options);
+    });
+    function showReturnDetail(id){
+        var options = {
+            title: '查看详情',
+            width: $(window).width(),
+            height: $(window).height(),
+            url: prefix + "/edit/"+id,
+            btn: false
+        };
+        $.modal.openOptions(options);
+    }
+</script>
+</body>
+</html>

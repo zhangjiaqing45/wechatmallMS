@@ -1,0 +1,8 @@
+
+[
+java:S1124M"EReorder the modifiers to comply with the Java Language Specification.(ΐόχ’
+U
+java:S1118":Add a private constructor to hide the implicit public one.(“³±ϋÿÿÿÿ
+W	java:S125„"<This block of commented-out lines of code should be removed.(Θ…κύύÿÿÿÿ
+`
+java:S1124R"EReorder the modifiers to comply with the Java Language Specification.(”χώΐώÿÿÿÿ

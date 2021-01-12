@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsProductCategory.mapper.PmsProductCategoryMapper">
+    <!--查询当前店铺未选商品分类-->
+    <select id="selectableCategory" resultMap="PmsProductCategoryResult">
+        <include refid="selectPmsProductCategoryVo"/>
+        where del_flag = '0'
+        and id not in (
+            select product_category_id from pms_shop_category_relation where  shop_id = #{shopId}
+        )
+        <if test="name != null  and name != ''"> and `name` like concat('%', #{name}, '%')</if>
+    </select>
+
+    <select id="validatePmsProductCategoryById" resultMap="PmsProductCategoryResult">
+        SELECT
+            ppc.id,
+            ppc.shop_id,
+            ppc.NAME,
+            ppc.LEVEL,
+            ppc.icon,
+            ppc.album_pics,
+            ppc.product_count,
+            ppc.nav_status,
+            ppc.show_status,
+            ppc.del_flag,
+            ppc.description,
+            ppc.sort,
+            ppc.create_by,
+            ppc.create_time,
+            ppc.update_by,
+            ppc.update_time,
+            ppc.remark
+        FROM
+            pms_product_category ppc
+            JOIN pms_shop_category_relation pscr ON ppc.id = pscr.product_category_id
+        WHERE
+            ppc.id = #{id}
+            AND pscr.shop_id = #{shopId}
+            AND pscr.del_flag = '0'
+    </select>
+
+    <delete id="deleteCategoryByIds" parameterType="String">
+        update pms_product_category set del_flag = '1',show_status = '1' where id in
+        <!-- delete from pms_product_category where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!--获取分类app平台展示-->
+    <select id="getCategoryForNavInPlatform" resultMap="PmsProductCategoryResult">
+        <include refid="selectPmsProductCategoryVo"/>
+        where del_flag = '0' and show_status = #{showStatus}
+            and `level` = #{level}
+        order by sort asc
+    </select>
+
+    <!--获取分类app店铺展示-->
+    <select id="getCategoryForNavInShop" resultType="com.fante.project.business.pmsProductCategory.domain.PmsShopProductCategory">
+       select
+            ppc.id,
+            ppc.name,
+            ppc.icon,
+            ppc.album_pics,
+            ppc.description,
+            pscr.id as relation_id,
+            pscr.shop_id,
+            pscr.sort,
+            pscr.remark
+        from
+            pms_product_category ppc
+        join
+            pms_shop_category_relation pscr
+        on
+            ppc.id = pscr.product_category_id
+        where
+            pscr.shop_id = #{shopId}
+            and pscr.del_flag = '0'
+            and pscr.shop_status = #{shopStatus}
+            and ppc.show_status = #{status}
+            <if test="level != null and level != ''">
+                and ppc.level = #{level}
+            </if>
+        order by pscr.sort asc
+    </select>
+
+    <select id="getPmsProductCategoryList" resultType="com.fante.project.business.pmsProductCategory.domain.PmsProductCategoryDetail">
+        SELECT
+            a.id,
+            a.shop_id shopId,
+            a.`name`,
+            a.`level`,
+            a.icon,
+            a.album_pics albumPics,
+            a.product_count productCount,
+            a.nav_status navStatus,
+            a.show_status showStatus,
+            a.del_flag delFlag,
+            a.description,
+            a.sort,
+            a.create_by createBy,
+            a.create_time createTime,
+            a.update_by updateBy,
+            a.update_time updateTime,
+            a.remark,
+            (SELECT b.`name` FROM pms_product_category b WHERE b.id = a.`level`) parentName
+        FROM pms_product_category a
+        WHERE a.del_flag = '0'
+            <if test="shopId != null "> and a.shop_id = #{shopId}</if>
+            <if test="name != null and name != ''"> and a.name like concat('%', #{name}, '%')</if>
+            <if test="level != null and name != ''"> and a.level = #{level}</if>
+            <if test="icon != null  and icon != ''"> and a.icon = #{icon}</if>
+            <if test="productCount != null "> and a.product_count = #{productCount}</if>
+            <if test="navStatus != null "> and a.nav_status = #{navStatus}</if>
+            <if test="showStatus != null and showStatus != ''"> and a.show_status = #{showStatus}</if>
+            <if test="description != null  and description != ''"> and a.description = #{description}</if>
+            <if test="sort != null "> and a.sort = #{sort}</if>
+    </select>
+
+</mapper>

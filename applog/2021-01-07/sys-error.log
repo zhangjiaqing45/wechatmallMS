@@ -1,0 +1,290 @@
+09:39:37.969 [http-nio-8099-exec-28] ERROR c.f.f.w.e.GlobalExceptionHandler - [handleException,66] - 40164:操作异常
+org.weixin4j.WeixinException: 40164:操作异常
+	at org.weixin4j.component.BaseComponent.token(BaseComponent.java:75)
+	at org.weixin4j.Weixin.getToken(Weixin.java:189)
+	at org.weixin4j.component.JsSdkComponent.getJsApiTicket(JsSdkComponent.java:56)
+	at org.weixin4j.Weixin.getJsApiTicket(Weixin.java:209)
+	at org.weixin4j.component.JsSdkComponent.getWxConfig(JsSdkComponent.java:85)
+	at com.fante.project.weixin.core.controller.WechatJsSdkController.wxConfig(WechatJsSdkController.java:32)
+	at sun.reflect.GeneratedMethodAccessor744.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:189)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:102)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:800)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1038)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:942)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1005)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:897)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:634)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:882)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.AdviceFilter.executeChain(AdviceFilter.java:108)
+	at org.apache.shiro.web.servlet.AdviceFilter.doFilterInternal(AdviceFilter.java:137)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.AdviceFilter.executeChain(AdviceFilter.java:108)
+	at org.apache.shiro.web.servlet.AdviceFilter.doFilterInternal(AdviceFilter.java:137)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.AdviceFilter.executeChain(AdviceFilter.java:108)
+	at org.apache.shiro.web.servlet.AdviceFilter.doFilterInternal(AdviceFilter.java:137)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.ProxiedFilterChain.doFilter(ProxiedFilterChain.java:61)
+	at com.fante.framework.jwt.filter.JwtFilter.doFilter(JwtFilter.java:56)
+	at org.apache.shiro.web.servlet.ProxiedFilterChain.doFilter(ProxiedFilterChain.java:66)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter.executeChain(AbstractShiroFilter.java:449)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter$1.call(AbstractShiroFilter.java:365)
+	at org.apache.shiro.subject.support.SubjectCallable.doCall(SubjectCallable.java:90)
+	at org.apache.shiro.subject.support.SubjectCallable.call(SubjectCallable.java:83)
+	at org.apache.shiro.subject.support.DelegatingSubject.execute(DelegatingSubject.java:387)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter.doFilterInternal(AbstractShiroFilter.java:362)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at com.fante.framework.shiro.web.filter.cross.CrossFilter.doFilter(CrossFilter.java:41)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:124)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:92)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:200)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:490)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:791)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1417)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+10:05:28.115 [http-nio-8099-exec-11] ERROR c.f.f.w.e.GlobalExceptionHandler - [handleException,66] - 40164:操作异常
+org.weixin4j.WeixinException: 40164:操作异常
+	at org.weixin4j.component.BaseComponent.token(BaseComponent.java:75)
+	at org.weixin4j.Weixin.getToken(Weixin.java:189)
+	at org.weixin4j.component.JsSdkComponent.getJsApiTicket(JsSdkComponent.java:56)
+	at org.weixin4j.Weixin.getJsApiTicket(Weixin.java:209)
+	at org.weixin4j.component.JsSdkComponent.getWxConfig(JsSdkComponent.java:85)
+	at com.fante.project.weixin.core.controller.WechatJsSdkController.wxConfig(WechatJsSdkController.java:32)
+	at sun.reflect.GeneratedMethodAccessor744.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:189)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:102)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:800)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1038)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:942)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1005)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:897)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:634)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:882)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.AdviceFilter.executeChain(AdviceFilter.java:108)
+	at org.apache.shiro.web.servlet.AdviceFilter.doFilterInternal(AdviceFilter.java:137)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.AdviceFilter.executeChain(AdviceFilter.java:108)
+	at org.apache.shiro.web.servlet.AdviceFilter.doFilterInternal(AdviceFilter.java:137)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.AdviceFilter.executeChain(AdviceFilter.java:108)
+	at org.apache.shiro.web.servlet.AdviceFilter.doFilterInternal(AdviceFilter.java:137)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.ProxiedFilterChain.doFilter(ProxiedFilterChain.java:61)
+	at com.fante.framework.jwt.filter.JwtFilter.doFilter(JwtFilter.java:56)
+	at org.apache.shiro.web.servlet.ProxiedFilterChain.doFilter(ProxiedFilterChain.java:66)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter.executeChain(AbstractShiroFilter.java:449)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter$1.call(AbstractShiroFilter.java:365)
+	at org.apache.shiro.subject.support.SubjectCallable.doCall(SubjectCallable.java:90)
+	at org.apache.shiro.subject.support.SubjectCallable.call(SubjectCallable.java:83)
+	at org.apache.shiro.subject.support.DelegatingSubject.execute(DelegatingSubject.java:387)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter.doFilterInternal(AbstractShiroFilter.java:362)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at com.fante.framework.shiro.web.filter.cross.CrossFilter.doFilter(CrossFilter.java:41)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:124)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:92)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:200)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:490)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:791)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1417)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+11:41:19.690 [http-nio-8099-exec-20] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:45:07.162 [http-nio-8099-exec-22] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:46:20.162 [http-nio-8099-exec-27] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:50:22.987 [http-nio-8099-exec-30] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:51:28.502 [http-nio-8099-exec-12] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:52:26.914 [http-nio-8099-exec-20] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:53:47.307 [http-nio-8099-exec-11] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:54:57.452 [http-nio-8099-exec-26] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:56:33.696 [http-nio-8099-exec-10] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:57:27.391 [http-nio-8099-exec-1] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:57:30.512 [http-nio-8099-exec-5] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:57:46.962 [http-nio-8099-exec-11] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:57:53.586 [http-nio-8099-exec-12] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:57:55.636 [http-nio-8099-exec-19] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:58:04.495 [http-nio-8099-exec-16] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:58:07.794 [http-nio-8099-exec-17] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:58:10.912 [http-nio-8099-exec-26] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:58:14.220 [http-nio-8099-exec-20] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:58:16.672 [http-nio-8099-exec-18] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:58:19.370 [http-nio-8099-exec-29] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:58:26.894 [http-nio-8099-exec-27] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+11:59:07.649 [http-nio-8099-exec-26] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+14:21:59.238 [http-nio-8099-exec-5] ERROR c.f.f.w.e.GlobalExceptionHandler - [businessException,75] - 选择的地址不存在！
+com.fante.common.exception.BusinessException: 选择的地址不存在！
+15:00:05.090 [QuartzScheduler_RuoyiScheduler-abc-PC1610002045815_MisfireHandler] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 3413 millis. SELECT COUNT(TRIGGER_NAME) FROM QRTZ_TRIGGERS WHERE SCHED_NAME = 'RuoyiScheduler' AND NOT (MISFIRE_INSTR = -1) AND NEXT_FIRE_TIME < ? AND TRIGGER_STATE = ?[1610002789675,"WAITING"]
+15:00:06.802 [http-nio-8099-exec-20] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 2808 millis. SELECT
+            date_format(use_time,'%Y-%m-%d') as date,
+            count(*) as num
+        FROM
+            sms_coupon_history sch
+            left join sms_coupon sc on sc.id = sch.coupon_id
+        WHERE 1=1
+         
+        
+        AND sch.use_time BETWEEN ? AND ?
+        
+        AND sch.use_status = '1'
+        GROUP BY date["2021-01-01 00:00:00","2021-01-07 23:59:59"]
+15:00:08.229 [http-nio-8099-exec-20] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 1409 millis. SELECT
+            round(IFNULL( SUM( money ), 0 ),2)
+        FROM
+            acc_account_record
+        WHERE 1=1
+             
+            AND create_time BETWEEN ? AND  ?
+            AND `operation` = '5'["2021-01-01 00:00:00","2021-01-07 23:59:59"]
+15:00:10.446 [http-nio-8099-exec-8] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 9619 millis. {call getHomeData()}[]
+16:40:57.267 [QuartzScheduler_RuoyiScheduler-abc-PC1610003037137_ClusterManager] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 2413 millis. UPDATE QRTZ_SCHEDULER_STATE SET LAST_CHECKIN_TIME = ? WHERE SCHED_NAME = 'RuoyiScheduler' AND INSTANCE_NAME = ?[1610008854779,"abc-PC1610003037137"]
+16:44:09.510 [http-nio-8099-exec-6] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 1379 millis. select
+               b.position ,a.id, a.title, a.pic, a.url_type, a.url_target, a.url_desp, a.url, a.sort
+        from sms_home_advertise a,
+             (
+             select position, group_concat(id) as ids
+             from sms_home_advertise
+             where `status` = ?
+               and del_flag = '0'
+             group by position
+             ) b
+        where find_in_set(a.id, b.ids)
+               
+                  between 1 and ?
+               
+        order by a.position, a.sort["0",3]
+16:44:09.536 [http-nio-8099-exec-1] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 3805 millis. SELECT
+            shop.id AS shop_id,
+            shop.company_name AS shop_name,
+            cart.id AS cart_id,
+            cart.cart_type AS cart_cart_type,
+            cart.shop_id AS cart_shop_id,
+            cart.product_id AS cart_product_id,
+            cart.product_sku_id AS cart_product_sku_id,
+            cart.member_id AS cart_member_id,
+            cart.quantity AS cart_quantity,
+            cart.price AS cart_price,
+            cart.product_pic AS cart_product_pic,
+            cart.product_name AS cart_product_name,
+            cart.product_brand AS cart_product_brand,
+            cart.product_sn AS cart_product_sn,
+            cart.product_sub_title AS cart_product_sub_title,
+            cart.product_sku_code AS cart_product_sku_code,
+            cart.member_nickname AS cart_member_nickname,
+            cart.product_category_id AS cart_product_category_id,
+            cart.sp_data AS cart_sp_data,
+            p.publish_status AS cart_STATUS,
+            cart.create_by AS cart_create_by,
+            cart.create_time AS cart_create_time,
+            cart.update_by AS cart_update_by,
+            cart.update_time AS cart_update_time,
+            cart.remark AS cart_remark,
+            sku.stock-sku.lock_stock AS cart_real_stock,
+            cart.del_flag AS cart_del_flag
+        FROM
+            oms_cart_item cart
+            LEFT JOIN biz_shop_info shop ON cart.shop_id = shop.id
+            LEFT JOIN pms_sku_stock sku ON sku.id = cart.product_sku_id
+            LEFT JOIN pms_product p ON p.id = cart.product_id
+        WHERE
+            cart.member_id = ?
+            AND cart.cart_type = ?[6,"0"]
+16:44:29.774 [QuartzScheduler_RuoyiScheduler-abc-PC1610003037137_ClusterManager] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 1085 millis. SELECT * FROM QRTZ_SCHEDULER_STATE WHERE SCHED_NAME = 'RuoyiScheduler'[]
+16:45:50.199 [QuartzScheduler_RuoyiScheduler-abc-PC1610003037137_ClusterManager] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 1196 millis. UPDATE QRTZ_SCHEDULER_STATE SET LAST_CHECKIN_TIME = ? WHERE SCHED_NAME = 'RuoyiScheduler' AND INSTANCE_NAME = ?[1610009149002,"abc-PC1610003037137"]
+16:46:10.432 [QuartzScheduler_RuoyiScheduler-abc-PC1610003037137_MisfireHandler] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 1121 millis. SELECT COUNT(TRIGGER_NAME) FROM QRTZ_TRIGGERS WHERE SCHED_NAME = 'RuoyiScheduler' AND NOT (MISFIRE_INSTR = -1) AND NEXT_FIRE_TIME < ? AND TRIGGER_STATE = ?[1610009157310,"WAITING"]

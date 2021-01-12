@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsOrderReturnAddress.mapper.OmsOrderReturnAddressMapper">
+    
+    <resultMap type="OmsOrderReturnAddress" id="OmsOrderReturnAddressResult">
+        <result property="id"    column="id"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="name"    column="name"    />
+        <result property="sendStatus"    column="send_status"    />
+        <result property="receiveStatus"    column="receive_status"    />
+        <result property="persionName"    column="persion_name"    />
+        <result property="persionPhone"    column="persion_phone"    />
+        <result property="province"    column="province"    />
+        <result property="city"    column="city"    />
+        <result property="region"    column="region"    />
+        <result property="detailAddress"    column="detail_address"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectOmsOrderReturnAddressVo">
+        select id, shop_id, name, send_status, receive_status, persion_name, persion_phone, province, city, region, detail_address, create_by, create_time, update_by, update_time, remark, del_flag from oms_order_return_address
+    </sql>
+
+    <select id="selectOmsOrderReturnAddressList" parameterType="OmsOrderReturnAddress" resultMap="OmsOrderReturnAddressResult">
+        <include refid="selectOmsOrderReturnAddressVo"/>
+        <where>
+           del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="sendStatus != null  and sendStatus != ''"> and send_status = #{sendStatus}</if>
+            <if test="receiveStatus != null  and receiveStatus != ''"> and receive_status = #{receiveStatus}</if>
+            <if test="persionName != null  and persionName != ''"> and persion_name like concat('%', #{persionName}, '%')</if>
+            <if test="persionPhone != null  and persionPhone != ''"> and persion_phone like concat('%', #{persionPhone}, '%')</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
+            <if test="detailAddress != null  and detailAddress != ''"> and detail_address = #{detailAddress}</if>
+        </where>
+    </select>
+
+    <select id="countOmsOrderReturnAddress" parameterType="OmsOrderReturnAddress" resultType="int">
+        select count(*) from oms_order_return_address
+        <where>
+            del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="sendStatus != null  and sendStatus != ''"> and send_status = #{sendStatus}</if>
+            <if test="receiveStatus != null  and receiveStatus != ''"> and receive_status = #{receiveStatus}</if>
+            <if test="persionName != null  and persionName != ''"> and persion_name like concat('%', #{persionName}, '%')</if>
+            <if test="persionPhone != null  and persionPhone != ''"> and persion_phone like concat('%', #{persionPhone}, '%')</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
+            <if test="detailAddress != null  and detailAddress != ''"> and detail_address = #{detailAddress}</if>
+        </where>
+    </select>
+
+    <select id="checkOmsOrderReturnAddressUnique" parameterType="OmsOrderReturnAddress" resultType="int">
+        select count(*) from oms_order_return_address
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="name != null  and name != ''"> and name = #{name}</if>
+            <if test="sendStatus != null  and sendStatus != ''"> and send_status = #{sendStatus}</if>
+            <if test="receiveStatus != null  and receiveStatus != ''"> and receive_status = #{receiveStatus}</if>
+            <if test="persionName != null  and persionName != ''"> and persion_name = #{persionName}</if>
+            <if test="persionPhone != null  and persionPhone != ''"> and persion_phone = #{persionPhone}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
+            <if test="detailAddress != null  and detailAddress != ''"> and detail_address = #{detailAddress}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOmsOrderReturnAddressById" parameterType="Long" resultMap="OmsOrderReturnAddressResult">
+        <include refid="selectOmsOrderReturnAddressVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertOmsOrderReturnAddress" parameterType="OmsOrderReturnAddress" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_order_return_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">shop_id,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="sendStatus != null  and sendStatus != ''">send_status,</if>
+            <if test="receiveStatus != null  and receiveStatus != ''">receive_status,</if>
+            <if test="persionName != null  and persionName != ''">persion_name,</if>
+            <if test="persionPhone != null  and persionPhone != ''">persion_phone,</if>
+            <if test="province != null  and province != ''">province,</if>
+            <if test="city != null  and city != ''">city,</if>
+            <if test="region != null  and region != ''">region,</if>
+            <if test="detailAddress != null  and detailAddress != ''">detail_address,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="sendStatus != null  and sendStatus != ''">#{sendStatus},</if>
+            <if test="receiveStatus != null  and receiveStatus != ''">#{receiveStatus},</if>
+            <if test="persionName != null  and persionName != ''">#{persionName},</if>
+            <if test="persionPhone != null  and persionPhone != ''">#{persionPhone},</if>
+            <if test="province != null  and province != ''">#{province},</if>
+            <if test="city != null  and city != ''">#{city},</if>
+            <if test="region != null  and region != ''">#{region},</if>
+            <if test="detailAddress != null  and detailAddress != ''">#{detailAddress},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOmsOrderReturnAddress" parameterType="OmsOrderReturnAddress">
+        update oms_order_return_address
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="sendStatus != null  and sendStatus != ''">send_status = #{sendStatus},</if>
+            <if test="receiveStatus != null  and receiveStatus != ''">receive_status = #{receiveStatus},</if>
+            <if test="persionName != null  and persionName != ''">persion_name = #{persionName},</if>
+            <if test="persionPhone != null  and persionPhone != ''">persion_phone = #{persionPhone},</if>
+            <if test="province != null  and province != ''">province = #{province},</if>
+            <if test="city != null  and city != ''">city = #{city},</if>
+            <if test="region != null  and region != ''">region = #{region},</if>
+            <if test="detailAddress != null  and detailAddress != ''">detail_address = #{detailAddress},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOmsOrderReturnAddressById" parameterType="Long">
+        <!-- update oms_order_return_address set del_flag = '1' where id = #{id} -->
+        delete from oms_order_return_address where id = #{id}
+    </delete>
+
+    <delete id="deleteOmsOrderReturnAddressByIds" parameterType="String">
+        update oms_order_return_address set del_flag = '1' where id in
+        <!-- delete from oms_order_return_address where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

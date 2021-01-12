@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.bizShopInfo.mapper.BizShopInfoMapper">
+
+    <resultMap type="BizShopInfo" id="BizShopInfoResult">
+        <result property="id"    column="id"    />
+        <result property="code"    column="code"    />
+        <result property="tag"    column="tag"    />
+        <result property="pic"    column="pic"    />
+        <result property="recommend"    column="recommend"    />
+        <result property="ishot"    column="ishot"    />
+        <result property="paymentDisplay"    column="payment_display"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="status"    column="status"    />
+        <result property="audit"    column="audit"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="province"    column="province"    />
+        <result property="city"    column="city"    />
+        <result property="district"    column="district"    />
+        <result property="address"    column="address"    />
+        <result property="longitude"    column="longitude"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="legalPerson"    column="legal_person"    />
+        <result property="tel"    column="tel"    />
+        <result property="serviceTel"    column="service_tel"    />
+        <result property="license"    column="license"    />
+        <result property="sfzFront"    column="sfz_front"    />
+        <result property="sfzBack"    column="sfz_back"    />
+        <result property="submitInfo"    column="submit_info"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="bindName"    column="bind_name"    />
+        <result property="account"    column="account"    />
+        <result property="orgId"    column="org_id"    />
+        <result property="cash"    column="cash"    />
+        <result property="brokerage"    column="brokerage"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBizShopInfoVo">
+        select id, pic,recommend,ishot,payment_display,tag,code, category_id, status, audit, company_name, province, city, district, address, longitude, latitude, legal_person, tel, service_tel, license, sfz_front, sfz_back, submit_info, account_type, bind_name, account,org_id, cash, brokerage, create_by, create_time, update_by, update_time, remark, del_flag from biz_shop_info
+    </sql>
+
+    <select id="selectBizShopInfoList" parameterType="BizShopInfo" resultMap="BizShopInfoResult">
+        <include refid="selectBizShopInfoVo"/>
+        <where>
+            del_flag = '0'
+            <if test="recommend != null and recommend != '' "> and recommend = #{recommend}</if>
+            <if test="ishot != null and ishot != '' "> and ishot = #{ishot}</if>
+            <if test="paymentDisplay != null and paymentDisplay != '' "> and payment_display = #{paymentDisplay}</if>
+            <if test="code != null and code != '' "> and code = #{code}</if>
+            <if test="categoryId != null "> and category_id = #{categoryId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="audit != null  and audit != ''"> and audit = #{audit}</if>
+            <if test="companyName != null  and companyName != ''"> and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="district != null  and district != ''"> and district = #{district}</if>
+            <if test="legalPerson != null  and legalPerson != ''"> and legal_person like concat('%', #{legalPerson}, '%')</if>
+            <if test="tel != null  and tel != ''"> and tel like concat('%', #{tel}, '%')</if>
+            <if test="serviceTel != null  and serviceTel != ''"> and service_tel like concat('%', #{serviceTel}, '%')</if>
+            <if test="accountType != null  and accountType != ''"> and account_type = #{accountType}</if>
+            <if test="bindName != null  and bindName != ''"> and bind_name like concat('%', #{bindName}, '%')</if>
+            <if test="account != null  and account != ''"> and account like concat('%', #{account}, '%')</if>
+            <if test="orgId != null  and orgId != ''"> and org_id = #{orgId}</if>
+        </where>
+    </select>
+
+    <select id="countBizShopInfo" parameterType="BizShopInfo" resultType="int">
+        select count(*) from biz_shop_info
+        <where>
+            del_flag = '0'
+            <if test="recommend != null and recommend != '' "> and recommend = #{recommend}</if>
+            <if test="ishot != null and ishot != '' "> and ishot = #{ishot}</if>
+            <if test="paymentDisplay != null and paymentDisplay != '' "> and payment_display = #{paymentDisplay}</if>
+            <if test="code != null and code != '' "> and code = #{code}</if>
+            <if test="categoryId != null "> and category_id = #{categoryId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="audit != null  and audit != ''"> and audit = #{audit}</if>
+            <if test="companyName != null  and companyName != ''"> and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="district != null  and district != ''"> and district = #{district}</if>
+            <if test="legalPerson != null  and legalPerson != ''"> and legal_person like concat('%', #{legalPerson}, '%')</if>
+            <if test="tel != null  and tel != ''"> and tel like concat('%', #{tel}, '%')</if>
+            <if test="serviceTel != null  and serviceTel != ''"> and service_tel like concat('%', #{serviceTel}, '%')</if>
+            <if test="accountType != null  and accountType != ''"> and account_type = #{accountType}</if>
+            <if test="bindName != null  and bindName != ''"> and bind_name like concat('%', #{bindName}, '%')</if>
+            <if test="account != null  and account != ''"> and account like concat('%', #{account}, '%')</if>
+            <if test="orgId != null  and orgId != ''"> and org_id = #{orgId}</if>
+        </where>
+    </select>
+
+    <select id="selectBizShopInfoById" parameterType="Long" resultMap="BizShopInfoResult">
+        <include refid="selectBizShopInfoVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+
+    <insert id="insertBizShopInfo" parameterType="BizShopInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into biz_shop_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pic != null  and pic != ''">pic,</if>
+            <if test="recommend != null  and recommend != ''">recommend,</if>
+            <if test="ishot != null  and ishot != ''">ishot,</if>
+            <if test="paymentDisplay != null  and paymentDisplay != ''">paymentDisplay,</if>
+            <if test="tag != null  and tag != ''">tag,</if>
+            <if test="code != null  and code != ''">code,</if>
+            <if test="categoryId != null ">category_id,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="audit != null  and audit != ''">audit,</if>
+            <if test="companyName != null  and companyName != ''">company_name,</if>
+            <if test="province != null  and province != ''">province,</if>
+            <if test="city != null  and city != ''">city,</if>
+            <if test="district != null  and district != ''">district,</if>
+            <if test="address != null  and address != ''">address,</if>
+            <if test="longitude != null  and longitude != ''">longitude,</if>
+            <if test="latitude != null  and latitude != ''">latitude,</if>
+            <if test="legalPerson != null  and legalPerson != ''">legal_person,</if>
+            <if test="tel != null  and tel != ''">tel,</if>
+            <if test="serviceTel != null  and serviceTel != ''">service_tel,</if>
+            <if test="license != null  and license != ''">license,</if>
+            <if test="sfzFront != null  and sfzFront != ''">sfz_front,</if>
+            <if test="sfzBack != null  and sfzBack != ''">sfz_back,</if>
+            <if test="submitInfo != null  and submitInfo != ''">submit_info,</if>
+            <if test="accountType != null  and accountType != ''">account_type,</if>
+            <if test="bindName != null  and bindName != ''">bind_name,</if>
+            <if test="account != null  and account != ''">account,</if>
+            <if test="orgId != null  and orgId != ''">org_id,</if>
+            <if test="cash != null ">cash,</if>
+            <if test="brokerage != null ">brokerage,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pic != null  and pic != ''">#{pic},</if>
+            <if test="recommend != null  and recommend != ''">#{recommend},</if>
+            <if test="ishot != null  and ishot != ''">#{ishot},</if>
+            <if test="paymentDisplay != null  and paymentDisplay != ''">#{paymentDisplay},</if>
+            <if test="tag != null  and tag != ''">#{tag},</if>
+            <if test="code != null  and code != ''">#{code},</if>
+            <if test="categoryId != null ">#{categoryId},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="audit != null  and audit != ''">#{audit},</if>
+            <if test="companyName != null  and companyName != ''">#{companyName},</if>
+            <if test="province != null  and province != ''">#{province},</if>
+            <if test="city != null  and city != ''">#{city},</if>
+            <if test="district != null  and district != ''">#{district},</if>
+            <if test="address != null  and address != ''">#{address},</if>
+            <if test="longitude != null  and longitude != ''">#{longitude},</if>
+            <if test="latitude != null  and latitude != ''">#{latitude},</if>
+            <if test="legalPerson != null  and legalPerson != ''">#{legalPerson},</if>
+            <if test="tel != null  and tel != ''">#{tel},</if>
+            <if test="serviceTel != null  and serviceTel != ''">#{serviceTel},</if>
+            <if test="license != null  and license != ''">#{license},</if>
+            <if test="sfzFront != null  and sfzFront != ''">#{sfzFront},</if>
+            <if test="sfzBack != null  and sfzBack != ''">#{sfzBack},</if>
+            <if test="submitInfo != null  and submitInfo != ''">#{submitInfo},</if>
+            <if test="accountType != null  and accountType != ''">#{accountType},</if>
+            <if test="bindName != null  and bindName != ''">#{bindName},</if>
+            <if test="account != null  and account != ''">#{account},</if>
+            <if test="orgId != null  and orgId != ''">#{orgId},</if>
+            <if test="cash != null ">#{cash},</if>
+            <if test="brokerage != null ">#{brokerage},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizShopInfo" parameterType="BizShopInfo">
+        update biz_shop_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="code != null  and code != ''">code = #{code},</if>
+            <if test="pic != null  and pic != ''">pic = #{pic},</if>
+            <if test="tag != null  and tag != ''">tag = #{tag},</if>
+            <if test="recommend != null  and recommend != ''">recommend = #{recommend},</if>
+            <if test="ishot != null  and ishot != ''">ishot = #{ishot},</if>
+            <if test="paymentDisplay != null  and paymentDisplay != ''">payment_display = #{paymentDisplay},</if>
+            <if test="categoryId != null ">category_id = #{categoryId},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="audit != null  and audit != ''">audit = #{audit},</if>
+            <if test="companyName != null  and companyName != ''">company_name = #{companyName},</if>
+            <if test="province != null  and province != ''">province = #{province},</if>
+            <if test="city != null  and city != ''">city = #{city},</if>
+            <if test="district != null  and district != ''">district = #{district},</if>
+            <if test="address != null  and address != ''">address = #{address},</if>
+            <if test="longitude != null  and longitude != ''">longitude = #{longitude},</if>
+            <if test="latitude != null  and latitude != ''">latitude = #{latitude},</if>
+            <if test="legalPerson != null  and legalPerson != ''">legal_person = #{legalPerson},</if>
+            <if test="tel != null  and tel != ''">tel = #{tel},</if>
+            <if test="serviceTel != null  and serviceTel != ''">service_tel = #{serviceTel},</if>
+            <if test="license != null  and license != ''">license = #{license},</if>
+            <if test="sfzFront != null  and sfzFront != ''">sfz_front = #{sfzFront},</if>
+            <if test="sfzBack != null  and sfzBack != ''">sfz_back = #{sfzBack},</if>
+            <if test="submitInfo != null  and submitInfo != ''">submit_info = #{submitInfo},</if>
+            <if test="accountType != null  and accountType != ''">account_type = #{accountType},</if>
+            <if test="bindName != null  and bindName != ''">bind_name = #{bindName},</if>
+            <if test="account != null  and account != ''">account = #{account},</if>
+            <if test="orgId != null  and orgId != ''">org_id = #{orgId},</if>
+            <if test="cash != null ">cash = #{cash},</if>
+            <if test="brokerage != null ">brokerage = #{brokerage},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null ">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizShopInfoById" parameterType="Long">
+        <!-- update biz_shop_info set del_flag = '1' where id = #{id} -->
+        delete from biz_shop_info where id = #{id}
+    </delete>
+
+    <delete id="deleteBizShopInfoByIds" parameterType="String">
+        update biz_shop_info set del_flag = '1' where id in
+        <!-- delete from biz_shop_info where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

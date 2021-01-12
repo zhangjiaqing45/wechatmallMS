@@ -1,0 +1,14 @@
+
+Z
+java:S1128"DRemove this unused import 'javax.naming.event.ObjectChangeListener'.(µÖ¨Ş
+g
+java:S3252g"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(çìÀ¸ùÿÿÿÿ
+b
+java:S3252W"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".( ¦
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ûÉû”ùÿÿÿÿ
+=
+java:S1068&"'Remove this unused "log" private field.(Ãğë€
+h
+java:S3252Æ"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(¿™¡¬øÿÿÿÿ
+V
+java:S1128"@Remove this unused import 'org.apache.ibatis.annotations.Param'.(á¬Ó²

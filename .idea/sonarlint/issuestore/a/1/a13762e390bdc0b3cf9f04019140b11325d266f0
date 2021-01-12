@@ -1,0 +1,16 @@
+
+I
+java:S1874'"3Remove this use of "description"; it is deprecated.(­ŠıÕ
+B
+java:S1068,"'Remove this unused "log" private field.(íÌÆûşÿÿÿÿ
+a
+java:S1192l"KDefine a constant instead of duplicating this literal "pmsProduct" 4 times.(ï¸ëÙ
+w
+java:S1192s"\Define a constant instead of duplicating this literal "ç™»å½•ç”¨æˆ·éåº—é“ºç”¨æˆ·" 4 times.(×Á»ÿıÿÿÿÿ
+\
+java:S1128"FRemove this unused import 'org.apache.shiro.authz.annotation.Logical'.(šü—†
+E
+java:S3740F"/Provide the parametrized type for this generic.(¦óì“
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ï¥’õÿÿÿÿÿ
+t
+java:S2293k"YReplace the type specification in this constructor call with the diamond operator ("<>").(Ë½Î¾şÿÿÿÿ

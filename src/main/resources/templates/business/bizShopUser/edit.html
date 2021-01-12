@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <th:block th:include="include :: header('编辑店铺用户')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body>
+<div class="main-content">
+    <form id="form-bizShopUser-edit" class="form-horizontal" th:object="${user}">
+        <h4 class="form-header h4">基本信息<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 默认密码为：<span th:text="${@config.getKey('sys.user.initPassword')}"></span></span></h4>
+        <input name="userId" type="hidden" th:field="*{userId}"/>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label is-required">用户名称：</label>
+                    <div class="col-sm-8">
+                        <input name="userName" placeholder="请输入用户名称" class="form-control" type="text" th:field="*{userName}" maxlength="30" required>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label is-required">归属店铺：</label>
+                    <div class="col-sm-8" th:if="${isAdmin}">
+                        <div class="input-group">
+                            <input name="deptId" type="hidden" th:field="*{deptId}" />
+                            <input name="deptName" onclick="selectShop();" type="text" placeholder="请选择归属店铺" th:field="*{deptName}" class="form-control" readonly required>
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-8" th:unless="${isAdmin}">
+                        <input name="deptId" type="hidden" th:field="*{deptId}" />
+                        <input class="form-control" th:field="*{deptName}" type="text" readonly required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label is-required">手机号码：</label>
+                    <div class="col-sm-8">
+                        <input id="phonenumber" name="phonenumber" placeholder="请输入手机号码" class="form-control" th:field="*{phonenumber}" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">邮箱：</label>
+                    <div class="col-sm-8">
+                        <input id="email" name="email" class="form-control email" type="text" maxlength="30" th:field="*{email}" placeholder="请输入邮箱" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label is-required">登录账号：</label>
+                    <div class="col-sm-10">
+                        <input placeholder="请输入登录账号" th:field="*{loginName}" class="form-control" type="text" readonly required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">用户性别：</label>
+                    <div class="col-sm-8">
+                        <select name="sex" class="form-control m-b" th:with="type=${@dict.getType('sys_user_sex')}">
+                            <option value="">请选择</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{sex}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label is-required">用户状态：</label>
+                    <div class="col-sm-8">
+                        <div class="radio-box" th:each="dict : ${@dict.getType('biz_status')}">
+                            <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:field="*{status}">
+                            <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label is-required">角色：</label>
+                    <div class="col-xs-10">
+                        <label th:each="role:${roles}" class="check-box">
+                            <input name="role" type="radio" th:value="${role.roleId}" th:text="${role.roleName}" th:field="*{roleId}" required>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h4 class="form-header h4">其他信息</h4>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">备注：</label>
+                    <div class="col-xs-10">
+                        <textarea name="remark" maxlength="500" class="form-control" rows="3">[[*{remark}]]</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script>
+    var prefixUser = ctx + "system/user";
+    var prefixShop = ctx + "business/bizShopInfo";
+    var prefix = ctx + "business/bizShopUser";
+
+    $("#form-bizShopUser-edit").validate({
+        onkeyup: false,
+        rules: {
+            password: {
+                minlength: 5,
+                maxlength: 20
+            },
+            email: {
+                email: true,
+                required: false,
+                remote: {
+                    url: prefixUser + "/checkEmailUnique",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "userId": function () {
+                            return $("#userId").val();
+                        },
+                        "email": function () {
+                            return $.common.trim($("#email").val());
+                        }
+                    },
+                    dataFilter: function (data, type) {
+                        return $.validate.unique(data);
+                    }
+                }
+            },
+            phonenumber: {
+                isPhone: true,
+                remote: {
+                    url: prefixUser + "/checkPhoneUnique",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "userId": function () {
+                            return $("#userId").val();
+                        },
+                        "phonenumber": function () {
+                            return $.common.trim($("#phonenumber").val());
+                        }
+                    },
+                    dataFilter: function (data, type) {
+                        return $.validate.unique(data);
+                    }
+                }
+            },
+        },
+        messages: {
+            "email": {
+                email: "请填写正确的邮箱",
+                remote: "Email已经存在"
+            },
+            "phonenumber": {
+                remote: "手机号码已经存在"
+            },
+            role: {
+                required: "请选择角色"
+            }
+        },
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            var data = $("#form-bizShopUser-edit").serializeArray();
+            var roleIds = $("input[name='roleId']:checked").val();
+            data.push({"name": "roleIds", "value": roleIds});
+            $.operate.save(prefix + "/edit", data);
+        }
+    }
+
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='deptId']").val(shop.id);
+            $("input[name='deptName']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+
+</script>
+</body>
+</html>

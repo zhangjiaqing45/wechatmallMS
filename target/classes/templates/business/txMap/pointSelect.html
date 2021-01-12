@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="email=no" name="format-detection">
+    <title>地图选点</title>
+</head>
+<body>
+<div id="map" style="height:100%; z-index: 1111;">
+    <iframe width="100%" height="100%" frameborder=0 th:src="${mapSelectUrl}"></iframe>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/ajax/libs/layer/layer.min.js}"></script>
+<script>
+    $(function(){
+        $('#map').css('height',window.screen.availHeight);
+    });
+
+    window.addEventListener('message', function(event) {
+        // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
+        var loc = event.data;
+        if (loc && loc.module === 'locationPicker') {
+            //防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
+            // console.log('location', loc);
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+            (parent.pointSelectCallback && typeof (parent.pointSelectCallback) === "function") && parent.pointSelectCallback(loc);
+        }
+    }, false);
+</script>
+
+</body>
+</html>

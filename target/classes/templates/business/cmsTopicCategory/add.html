@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增话题分类')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-cmsTopicCategory-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">分类名称：</label>
+                <div class="col-sm-8">
+                    <input name="name" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">分类状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('biz_status')}">
+                        <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:checked="${dict.default}" required>
+                        <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">分类图标：</label>
+                <div class="col-sm-8">
+                    <input id="icon" name="icon" class="form-control" type="hidden" required>
+                    <div id="iconImgShow" class="fileinput hidden">
+                        <div class="thumbnail" style="width: 100px; height: 75px;">
+                            <img style="max-height: 100%;" src="" onclick="$.modal.preview($(this).prop('src'));" />
+                        </div>
+                    </div>
+                    <button id="iconImgBtn" class="btn btn-success" type="button">
+                        <i class="fa fa-upload"></i>&nbsp;&nbsp; <span class="bold">上传分类图标</span>
+                    </button>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 分类显示的图标 </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">分类排序：</label>
+                <div class="col-sm-8">
+                    <input name="sort" class="form-control" value="99999" type="text" required>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 数字越小排序越靠前</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: layui-all-js"/>
+    <script type="text/javascript">
+        var prefix = ctx + "business/cmsTopicCategory";
+        $("#form-cmsTopicCategory-add").validate({
+            focusCleanup: true,
+            ignore: [],
+            rules: {
+                name: {
+                    rangelength: [2, 20],
+                    remote: {
+                        url: prefix + "/checkUnique",
+                        type: "post",
+                        dataType: "json",
+                        data: {
+                            "name": function () {
+                                return $.common.trim($("input[name='name']").val());
+                            }
+                        },
+                        dataFilter: function (data, type) {
+                            return $.validate.unique(data);
+                        }
+                    }
+                },
+                sort: {
+                    positiveIntegerZero: true,
+                    maxlength: 5,
+                }
+            },
+            messages: {
+                name: {
+                    rangelength: $.validator.format("模板名称在 {0} 到 {1} 之间"),
+                    remote: "分类名称已经存在",
+                },
+                icon: {
+                    required: "请上传分类图标"
+                },
+                sort: {
+                    maxlength: $.validator.format( "排序数字最长 {0} 位" ),
+                }
+            }
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-cmsTopicCategory-add').serialize());
+            }
+        }
+
+        $.operate.layuiUpload("#iconImgBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function(r) {
+            $("#iconImgShow").hasClass("hidden") && $("#iconImgShow").removeClass("hidden");
+            $("#iconImgShow .thumbnail img").prop("src", respath + r.fileName);
+            $("input[name='icon']").val(r.fileName);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+.reg-a{
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.reg-a a{
+    float: left;
+    margin-right: 30px;
+    display: block;
+    width: 200px;
+    background-color: #ade6d9;
+    text-align: center;
+    color: #fff;
+    line-height: 32px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+}
+.reg-a .active{
+    background-color: #00cca1;
+}
+.reg-b1{
+    background-color: #F9F9F9;
+    border: solid 1px #c1c1c1;
+    padding: 19px;
+    margin-bottom: 10px;
+    border-radius: 7px;
+}
+.reg-b1-a{
+    height: 400px;
+    font-size: 12px;
+    line-height: 25px;
+}
+.reg-b2-a{
+    margin-bottom: 20px;
+}
+.reg-b2-a input{
+    vertical-align: middle;
+}
+.reg-b2-a label{
+    vertical-align: middle;
+    font-size: 14px;
+}
+.reg-b2-b{
+    text-align: center;
+}
+.reg-b2-b a{
+    display: inline-block;
+    width: 130px;
+    line-height: 40px;
+    text-align: center;
+    margin: 0 20px;
+    color: #FFFFFF;
+    background-color: #999;
+    text-decoration: none;
+}
+
+.check-box {
+    color: #2411fd;
+    font-weight: bold;
+}
+
+.notice-content {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 10px 15px;
+}
+
+.notice-content img {
+    max-width: 100% !important;
+}

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.umsMember.mapper.UmsMemberMapper">
+    
+    <resultMap type="UmsMember" id="UmsMemberResult">
+        <result property="id"    column="id"    />
+        <result property="pid"    column="pid"    />
+        <result property="username"    column="username"    />
+        <result property="password"    column="password"    />
+        <result property="salt"    column="salt"    />
+        <result property="status"    column="status"    />
+        <result property="sourceType"    column="source_type"    />
+        <result property="phone"    column="phone"    />
+        <result property="nickname"    column="nickname"    />
+        <result property="sex"    column="sex"    />
+        <result property="headimgurl"    column="headimgurl"    />
+        <result property="country"    column="country"    />
+        <result property="province"    column="province"    />
+        <result property="city"    column="city"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="account"    column="account"    />
+        <result property="subscribe"    column="subscribe"    />
+        <result property="openid"    column="openid"    />
+        <result property="unionid"    column="unionid"    />
+        <result property="cash"    column="cash"    />
+        <result property="integration"    column="integration"    />
+        <result property="historyIntegration"    column="history_integration"    />
+        <result property="commissionWait"    column="commission_wait"    />
+        <result property="commission"    column="commission"    />
+        <result property="historyCommission"    column="history_commission"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="roleType"    column="role_type"    />
+        <result property="verifier"    column="verifier"    />
+        <result property="shopId"    column="shop_id"    />
+    </resultMap>
+
+    <sql id="selectUmsMemberVo">
+        select id, pid, username, password, salt, verifier,status, source_type, phone, nickname, sex, headimgurl, country, province, city, account_type, account, subscribe, openid, unionid, cash, integration, history_integration, commission_wait, commission, history_commission, create_time, update_by, update_time, remark, del_flag, role_type, shop_id,depositgroup,surname,idcard from ums_member
+    </sql>
+
+    <select id="selectUmsMemberList" parameterType="UmsMember" resultMap="UmsMemberResult">
+        <include refid="selectUmsMemberVo"/>
+        <where>
+           del_flag = '0'
+            <if test="pid != null "> and pid = #{pid}</if>
+            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
+            <if test="password != null  and password != ''"> and password = #{password}</if>
+            <if test="salt != null  and salt != ''"> and salt = #{salt}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="sourceType != null  and sourceType != ''"> and source_type = #{sourceType}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="headimgurl != null  and headimgurl != ''"> and headimgurl = #{headimgurl}</if>
+            <if test="country != null  and country != ''"> and country = #{country}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="accountType != null  and accountType != ''"> and account_type = #{accountType}</if>
+            <if test="account != null  and account != ''"> and account = #{account}</if>
+            <if test="subscribe != null  and subscribe != ''"> and subscribe = #{subscribe}</if>
+            <if test="openid != null  and openid != ''"> and openid = #{openid}</if>
+            <if test="unionid != null  and unionid != ''"> and unionid = #{unionid}</if>
+            <if test="cash != null "> and cash = #{cash}</if>
+            <if test="integration != null "> and integration = #{integration}</if>
+            <if test="historyIntegration != null "> and history_integration = #{historyIntegration}</if>
+            <if test="commissionWait != null "> and commission_wait = #{commissionWait}</if>
+            <if test="commission != null "> and commission = #{commission}</if>
+            <if test="historyCommission != null "> and history_commission = #{historyCommission}</if>
+            <if test="roleType != null  and roleType != ''"> and role_type = #{roleType}</if>
+            <if test="verifier != null  and verifier != ''"> and verifier = #{verifier}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+        </where>
+    </select>
+
+    <select id="countUmsMember" parameterType="UmsMember" resultType="int">
+        select count(*) from ums_member
+        <where>
+            del_flag = '0'
+            <if test="pid != null "> and pid = #{pid}</if>
+            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
+            <if test="password != null  and password != ''"> and password = #{password}</if>
+            <if test="salt != null  and salt != ''"> and salt = #{salt}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="sourceType != null  and sourceType != ''"> and source_type = #{sourceType}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="headimgurl != null  and headimgurl != ''"> and headimgurl = #{headimgurl}</if>
+            <if test="country != null  and country != ''"> and country = #{country}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="accountType != null  and accountType != ''"> and account_type = #{accountType}</if>
+            <if test="account != null  and account != ''"> and account = #{account}</if>
+            <if test="subscribe != null  and subscribe != ''"> and subscribe = #{subscribe}</if>
+            <if test="openid != null  and openid != ''"> and openid = #{openid}</if>
+            <if test="unionid != null  and unionid != ''"> and unionid = #{unionid}</if>
+            <if test="cash != null "> and cash = #{cash}</if>
+            <if test="integration != null "> and integration = #{integration}</if>
+            <if test="historyIntegration != null "> and history_integration = #{historyIntegration}</if>
+            <if test="commissionWait != null "> and commission_wait = #{commissionWait}</if>
+            <if test="commission != null "> and commission = #{commission}</if>
+            <if test="historyCommission != null "> and history_commission = #{historyCommission}</if>
+            <if test="roleType != null  and roleType != ''"> and role_type = #{roleType}</if>
+            <if test="verifier != null  and verifier != ''"> and verifier = #{verifier}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+        </where>
+    </select>
+
+    <select id="checkUmsMemberUnique" parameterType="UmsMember" resultType="int">
+        select count(*) from ums_member
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="pid != null "> and pid = #{pid}</if>
+            <if test="username != null  and username != ''"> and username = #{username}</if>
+            <if test="password != null  and password != ''"> and password = #{password}</if>
+            <if test="salt != null  and salt != ''"> and salt = #{salt}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="sourceType != null  and sourceType != ''"> and source_type = #{sourceType}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="nickname != null  and nickname != ''"> and nickname = #{nickname}</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="headimgurl != null  and headimgurl != ''"> and headimgurl = #{headimgurl}</if>
+            <if test="country != null  and country != ''"> and country = #{country}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="accountType != null  and accountType != ''"> and account_type = #{accountType}</if>
+            <if test="account != null  and account != ''"> and account = #{account}</if>
+            <if test="subscribe != null  and subscribe != ''"> and subscribe = #{subscribe}</if>
+            <if test="openid != null  and openid != ''"> and openid = #{openid}</if>
+            <if test="unionid != null  and unionid != ''"> and unionid = #{unionid}</if>
+            <if test="cash != null "> and cash = #{cash}</if>
+            <if test="integration != null "> and integration = #{integration}</if>
+            <if test="historyIntegration != null "> and history_integration = #{historyIntegration}</if>
+            <if test="commissionWait != null "> and commission_wait = #{commissionWait}</if>
+            <if test="commission != null "> and commission = #{commission}</if>
+            <if test="historyCommission != null "> and history_commission = #{historyCommission}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="roleType != null  and roleType != ''"> and role_type = #{roleType}</if>
+            <if test="verifier != null  and verifier != ''"> and verifier = #{verifier}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+        </where>
+    </select>
+
+
+    <select id="selectUmsMemberById" parameterType="Long" resultMap="UmsMemberResult">
+        <include refid="selectUmsMemberVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertUmsMember" parameterType="UmsMember" useGeneratedKeys="true" keyProperty="id">
+        insert into ums_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pid != null ">pid,</if>
+            <if test="username != null  and username != ''">username,</if>
+            <if test="password != null  and password != ''">password,</if>
+            <if test="salt != null  and salt != ''">salt,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="sourceType != null  and sourceType != ''">source_type,</if>
+            <if test="phone != null  and phone != ''">phone,</if>
+            <if test="nickname != null  and nickname != ''">nickname,</if>
+            <if test="sex != null  and sex != ''">sex,</if>
+            <if test="headimgurl != null  and headimgurl != ''">headimgurl,</if>
+            <if test="country != null  and country != ''">country,</if>
+            <if test="province != null  and province != ''">province,</if>
+            <if test="city != null  and city != ''">city,</if>
+            <if test="accountType != null  and accountType != ''">account_type,</if>
+            <if test="account != null  and account != ''">account,</if>
+            <if test="subscribe != null  and subscribe != ''">subscribe,</if>
+            <if test="openid != null  and openid != ''">openid,</if>
+            <if test="unionid != null  and unionid != ''">unionid,</if>
+            <if test="cash != null ">cash,</if>
+            <if test="integration != null ">integration,</if>
+            <if test="historyIntegration != null ">history_integration,</if>
+            <if test="commissionWait != null ">commission_wait,</if>
+            <if test="commission != null ">commission,</if>
+            <if test="historyCommission != null ">history_commission,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="roleType != null  and roleType != ''">role_type,</if>
+            <if test="shopId != null ">shop_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pid != null ">#{pid},</if>
+            <if test="username != null  and username != ''">#{username},</if>
+            <if test="password != null  and password != ''">#{password},</if>
+            <if test="salt != null  and salt != ''">#{salt},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="sourceType != null  and sourceType != ''">#{sourceType},</if>
+            <if test="phone != null  and phone != ''">#{phone},</if>
+            <if test="nickname != null  and nickname != ''">#{nickname},</if>
+            <if test="sex != null  and sex != ''">#{sex},</if>
+            <if test="headimgurl != null  and headimgurl != ''">#{headimgurl},</if>
+            <if test="country != null  and country != ''">#{country},</if>
+            <if test="province != null  and province != ''">#{province},</if>
+            <if test="city != null  and city != ''">#{city},</if>
+            <if test="accountType != null  and accountType != ''">#{accountType},</if>
+            <if test="account != null  and account != ''">#{account},</if>
+            <if test="subscribe != null  and subscribe != ''">#{subscribe},</if>
+            <if test="openid != null  and openid != ''">#{openid},</if>
+            <if test="unionid != null  and unionid != ''">#{unionid},</if>
+            <if test="cash != null ">#{cash},</if>
+            <if test="integration != null ">#{integration},</if>
+            <if test="historyIntegration != null ">#{historyIntegration},</if>
+            <if test="commissionWait != null ">#{commissionWait},</if>
+            <if test="commission != null ">#{commission},</if>
+            <if test="historyCommission != null ">#{historyCommission},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="roleType != null  and roleType != ''">#{roleType},</if>
+            <if test="shopId != null ">#{shopId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUmsMember" parameterType="UmsMember">
+        update ums_member
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pid != null ">pid = #{pid},</if>
+            <if test="username != null  and username != ''">username = #{username},</if>
+            <if test="password != null  and password != ''">password = #{password},</if>
+            <if test="salt != null  and salt != ''">salt = #{salt},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="sourceType != null  and sourceType != ''">source_type = #{sourceType},</if>
+            <if test="phone != null  and phone != ''">phone = #{phone},</if>
+            <if test="nickname != null  and nickname != ''">nickname = #{nickname},</if>
+            <if test="sex != null  and sex != ''">sex = #{sex},</if>
+            <if test="headimgurl != null  and headimgurl != ''">headimgurl = #{headimgurl},</if>
+            <if test="country != null  and country != ''">country = #{country},</if>
+            <if test="province != null  and province != ''">province = #{province},</if>
+            <if test="city != null  and city != ''">city = #{city},</if>
+            <if test="accountType != null  and accountType != ''">account_type = #{accountType},</if>
+            <if test="account != null  and account != ''">account = #{account},</if>
+            <if test="subscribe != null  and subscribe != ''">subscribe = #{subscribe},</if>
+            <if test="openid != null  and openid != ''">openid = #{openid},</if>
+            <if test="unionid != null  and unionid != ''">unionid = #{unionid},</if>
+            <if test="cash != null ">cash = #{cash},</if>
+            <if test="integration != null ">integration = #{integration},</if>
+            <if test="historyIntegration != null ">history_integration = #{historyIntegration},</if>
+            <if test="commissionWait != null ">commission_wait = #{commissionWait},</if>
+            <if test="commission != null ">commission = #{commission},</if>
+            <if test="historyCommission != null ">history_commission = #{historyCommission},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="roleType != null  and roleType != ''">role_type = #{roleType},</if>
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUmsMemberById" parameterType="Long">
+        <!-- update ums_member set del_flag = '1' where id = #{id} -->
+        delete from ums_member where id = #{id}
+    </delete>
+
+    <delete id="deleteUmsMemberByIds" parameterType="String">
+        update ums_member set del_flag = '1' where id in
+        <!-- delete from ums_member where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

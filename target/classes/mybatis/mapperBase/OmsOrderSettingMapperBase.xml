@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsOrderSetting.mapper.OmsOrderSettingMapper">
+    
+    <resultMap type="OmsOrderSetting" id="OmsOrderSettingResult">
+        <result property="id"    column="id"    />
+        <result property="status"    column="status"    />
+        <result property="autoConfirmReceive"    column="auto_confirm_receive"    />
+        <result property="autoCancelGeneralOrder"    column="auto_cancel_general_order"    />
+        <result property="autoCancelGroupOrder"    column="auto_cancel_group_order"    />
+        <result property="autoCancelFlashOrder"    column="auto_cancel_flash_order"    />
+        <result property="autoCancelIntegralOrder"    column="auto_cancel_integral_order"    />
+        <result property="autoCloseOrder"    column="auto_close_order"    />
+        <result property="commissionAging"    column="commission_aging"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectOmsOrderSettingVo">
+        select id, status, auto_confirm_receive, auto_cancel_general_order, auto_cancel_group_order, auto_cancel_flash_order, auto_cancel_integral_order, auto_close_order, commission_aging, create_by, create_time, update_by, update_time, remark, del_flag from oms_order_setting
+    </sql>
+
+    <select id="selectOmsOrderSettingList" parameterType="OmsOrderSetting" resultMap="OmsOrderSettingResult">
+        <include refid="selectOmsOrderSettingVo"/>
+        <where>
+           del_flag = '0'
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="autoConfirmReceive != null "> and auto_confirm_receive = #{autoConfirmReceive}</if>
+            <if test="autoCancelGeneralOrder != null "> and auto_cancel_general_order = #{autoCancelGeneralOrder}</if>
+            <if test="autoCancelGroupOrder != null "> and auto_cancel_group_order = #{autoCancelGroupOrder}</if>
+            <if test="autoCancelFlashOrder != null "> and auto_cancel_flash_order = #{autoCancelFlashOrder}</if>
+            <if test="autoCancelIntegralOrder != null "> and auto_cancel_integral_order = #{autoCancelIntegralOrder}</if>
+            <if test="autoCloseOrder != null "> and auto_close_order = #{autoCloseOrder}</if>
+            <if test="commissionAging != null "> and commission_aging = #{commissionAging}</if>
+        </where>
+    </select>
+
+    <select id="countOmsOrderSetting" parameterType="OmsOrderSetting" resultType="int">
+        select count(*) from oms_order_setting
+        <where>
+            del_flag = '0'
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="autoConfirmReceive != null "> and auto_confirm_receive = #{autoConfirmReceive}</if>
+            <if test="autoCancelGeneralOrder != null "> and auto_cancel_general_order = #{autoCancelGeneralOrder}</if>
+            <if test="autoCancelGroupOrder != null "> and auto_cancel_group_order = #{autoCancelGroupOrder}</if>
+            <if test="autoCancelFlashOrder != null "> and auto_cancel_flash_order = #{autoCancelFlashOrder}</if>
+            <if test="autoCancelIntegralOrder != null "> and auto_cancel_integral_order = #{autoCancelIntegralOrder}</if>
+            <if test="autoCloseOrder != null "> and auto_close_order = #{autoCloseOrder}</if>
+            <if test="commissionAging != null "> and commission_aging = #{commissionAging}</if>
+        </where>
+    </select>
+
+    <select id="checkOmsOrderSettingUnique" parameterType="OmsOrderSetting" resultType="int">
+        select count(*) from oms_order_setting
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="autoConfirmReceive != null "> and auto_confirm_receive = #{autoConfirmReceive}</if>
+            <if test="autoCancelGeneralOrder != null "> and auto_cancel_general_order = #{autoCancelGeneralOrder}</if>
+            <if test="autoCancelGroupOrder != null "> and auto_cancel_group_order = #{autoCancelGroupOrder}</if>
+            <if test="autoCancelFlashOrder != null "> and auto_cancel_flash_order = #{autoCancelFlashOrder}</if>
+            <if test="autoCancelIntegralOrder != null "> and auto_cancel_integral_order = #{autoCancelIntegralOrder}</if>
+            <if test="autoCloseOrder != null "> and auto_close_order = #{autoCloseOrder}</if>
+            <if test="commissionAging != null "> and commission_aging = #{commissionAging}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOmsOrderSettingById" parameterType="Long" resultMap="OmsOrderSettingResult">
+        <include refid="selectOmsOrderSettingVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertOmsOrderSetting" parameterType="OmsOrderSetting" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_order_setting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="status != null  and status != ''">status,</if>
+            <if test="autoConfirmReceive != null ">auto_confirm_receive,</if>
+            <if test="autoCancelGeneralOrder != null ">auto_cancel_general_order,</if>
+            <if test="autoCancelGroupOrder != null ">auto_cancel_group_order,</if>
+            <if test="autoCancelFlashOrder != null ">auto_cancel_flash_order,</if>
+            <if test="autoCancelIntegralOrder != null ">auto_cancel_integral_order,</if>
+            <if test="autoCloseOrder != null ">auto_close_order,</if>
+            <if test="commissionAging != null ">commission_aging,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="autoConfirmReceive != null ">#{autoConfirmReceive},</if>
+            <if test="autoCancelGeneralOrder != null ">#{autoCancelGeneralOrder},</if>
+            <if test="autoCancelGroupOrder != null ">#{autoCancelGroupOrder},</if>
+            <if test="autoCancelFlashOrder != null ">#{autoCancelFlashOrder},</if>
+            <if test="autoCancelIntegralOrder != null ">#{autoCancelIntegralOrder},</if>
+            <if test="autoCloseOrder != null ">#{autoCloseOrder},</if>
+            <if test="commissionAging != null ">#{commissionAging},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOmsOrderSetting" parameterType="OmsOrderSetting">
+        update oms_order_setting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="autoConfirmReceive != null ">auto_confirm_receive = #{autoConfirmReceive},</if>
+            <if test="autoCancelGeneralOrder != null ">auto_cancel_general_order = #{autoCancelGeneralOrder},</if>
+            <if test="autoCancelGroupOrder != null ">auto_cancel_group_order = #{autoCancelGroupOrder},</if>
+            <if test="autoCancelFlashOrder != null ">auto_cancel_flash_order = #{autoCancelFlashOrder},</if>
+            <if test="autoCancelIntegralOrder != null ">auto_cancel_integral_order = #{autoCancelIntegralOrder},</if>
+            <if test="autoCloseOrder != null ">auto_close_order = #{autoCloseOrder},</if>
+            <if test="commissionAging != null ">commission_aging = #{commissionAging},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOmsOrderSettingById" parameterType="Long">
+        <!-- update oms_order_setting set del_flag = '1' where id = #{id} -->
+        delete from oms_order_setting where id = #{id}
+    </delete>
+
+    <delete id="deleteOmsOrderSettingByIds" parameterType="String">
+        update oms_order_setting set del_flag = '1' where id in
+        <!-- delete from oms_order_setting where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsHomeSignReward.mapper.SmsHomeSignRewardMapper">
+    
+    <resultMap type="SmsHomeSignReward" id="SmsHomeSignRewardResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="nickname"    column="nickname"    />
+        <result property="settingId"    column="setting_id"    />
+        <result property="signType"    column="sign_type"    />
+        <result property="rewardVal"    column="reward_val"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectSmsHomeSignRewardVo">
+        select id, user_id, nickname, setting_id, sign_type, reward_val, create_time from sms_home_sign_reward
+    </sql>
+
+    <select id="selectSmsHomeSignRewardList" parameterType="SmsHomeSignReward" resultMap="SmsHomeSignRewardResult">
+        <include refid="selectSmsHomeSignRewardVo"/>
+        <where>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="signType != null  and signType != ''"> and sign_type = #{signType}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="countSmsHomeSignReward" parameterType="SmsHomeSignReward" resultType="int">
+        select count(*) from sms_home_sign_reward
+        <where>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="signType != null  and signType != ''"> and sign_type = #{signType}</if>
+        </where>
+    </select>
+
+    <select id="selectSmsHomeSignRewardById" parameterType="Long" resultMap="SmsHomeSignRewardResult">
+        <include refid="selectSmsHomeSignRewardVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSmsHomeSignReward" parameterType="SmsHomeSignReward" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_home_sign_reward
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="nickname != null  and nickname != ''">nickname,</if>
+            <if test="settingId != null ">setting_id,</if>
+            <if test="signType != null  and signType != ''">sign_type,</if>
+            <if test="rewardVal != null ">reward_val,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="nickname != null  and nickname != ''">#{nickname},</if>
+            <if test="settingId != null ">#{settingId},</if>
+            <if test="signType != null  and signType != ''">#{signType},</if>
+            <if test="rewardVal != null ">#{rewardVal},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSmsHomeSignReward" parameterType="SmsHomeSignReward">
+        update sms_home_sign_reward
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="nickname != null  and nickname != ''">nickname = #{nickname},</if>
+            <if test="settingId != null ">setting_id = #{settingId},</if>
+            <if test="signType != null  and signType != ''">sign_type = #{signType},</if>
+            <if test="rewardVal != null ">reward_val = #{rewardVal},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsHomeSignRewardById" parameterType="Long">
+        <!-- update sms_home_sign_reward set del_flag = '1' where id = #{id} -->
+        delete from sms_home_sign_reward where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsHomeSignRewardByIds" parameterType="String">
+        update sms_home_sign_reward set del_flag = '1' where id in
+        <!-- delete from sms_home_sign_reward where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

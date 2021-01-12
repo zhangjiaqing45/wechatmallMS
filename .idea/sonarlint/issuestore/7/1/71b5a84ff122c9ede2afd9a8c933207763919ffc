@@ -1,0 +1,20 @@
+
+=
+java:S10681"'Remove this unused "log" private field.(©ÀãÀ
+S	java:S106~"9Replace this use of System.out or System.err by a logger.(ïÎØ¶úÿÿÿÿ
+E
+java:S1128$"*Remove this unused import 'java.util.Map'.(¼è½Òşÿÿÿÿ
+Z
+java:S3252"DUse static access with "com.alibaba.fastjson.JSON" for "parseArray".(³‹úŸ
+I
+java:S1874,"3Remove this use of "description"; it is deprecated.(÷Òşš
+s
+java:S1128"]Remove this unused import 'com.fante.project.api.umsProcess.controller.WeixinUserController'.(¶Ş²è
+I
+java:S1128"".Remove this unused import 'java.util.HashMap'.(™˜”€ùÿÿÿÿ
+N	java:S106Œ"9Replace this use of System.out or System.err by a logger.(‰ÖP
+[
+java:S3252"DUse static access with "com.alibaba.fastjson.JSON" for "parseArray".(³‹úŸ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ï¦Òÿÿÿÿÿ
+e
+java:S3252U"JUse static access with "org.apache.commons.lang3.StringUtils" for "EMPTY".(‡ÎŞÖşÿÿÿÿ

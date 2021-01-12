@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsCoupon.mapper.SmsCouponMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SmsCouponResultExt" type="扩展类全包名" extends="SmsCouponResult">
+
+    </resultMap>
+     -->
+    <!--(app)根据id查询商品到可用优惠券-->
+    <select id="getUsableCouponsByProductId" resultMap="SmsCouponResult">
+        <include refid="selectSmsCouponVo"/>
+        where
+        del_flag = '0'
+        <!-- 结束时间 大于等于 现在 -->
+        and end_time &gt;= now()
+        <!-- 自己领取类型 -->
+        and `type` = '1'
+        <!-- 上架状态 -->
+        and `status` = '1'
+        <!-- 总数量大于领取数量 -->
+        and `count` &gt; 0
+        and
+        (
+            id in
+            (
+                <!--查询指定分类或者指定商品 中 包含查询商品 的 可用优惠券id-->
+                select coupon_id from
+                (
+                    <!--优惠券指定商品关系表 中根据商品id 查询优惠券-->
+                    select p.coupon_id from sms_coupon_product_relation p where p.product_id = #{productId}
+
+                    UNION
+                    <!--优惠券指定分类关系表 中根据商品分类 查询优惠券-->
+                    select
+                        cpcr.coupon_id
+                    from
+                        pms_product p
+                        left join sms_coupon_product_cate_relation cpcr
+                        on p.product_category_id = cpcr.product_category_id
+                    where p.id = #{productId}
+
+                    UNION
+                    <!--查询全场通用优惠券-->
+                    select id from sms_coupon where shop_id = #{shopId} and use_type = '0'
+                ) x
+                <!--如果指定会员id,则排除掉会员已领取到优惠券-->
+                <if test="memberId!=null">
+                    where
+                    x.coupon_id not in
+                    (
+                        <!--查询会员已经领取到优惠券id-->
+                        select coupon_id FROM sms_coupon_history where user_id = #{memberId}
+                    )
+                </if>
+            )
+        )
+    </select>
+    <!--(app)根据店铺id查询商品的可用优惠券-->
+    <select id="getUsableCouponsByShopId" resultMap="SmsCouponResult">
+       <include refid="selectSmsCouponVo"/>
+       <where>
+           del_flag = '0'
+           <!-- 结束时间 大于等于 现在 -->
+           and end_time &gt;= now()
+           <!-- 自己领取类型 -->
+           and `type` = '1'
+           <!-- 上架状态 -->
+           and STATUS = '1'
+           <!-- 总数量大于领取数量 -->
+           and `count` &gt; receive_count
+           <if test="shopId != null ">and shop_id = #{shopId}</if>
+           <if test="memberId != null">
+               AND id NOT IN (
+               SELECT coupon_id FROM sms_coupon_history WHERE user_id = #{memberId} )
+           </if>
+       </where>
+    </select>
+    <!--(app)获取优惠券并验证是否可用-->
+    <select id="getUsableCouponsById" resultMap="SmsCouponResult">
+        <include refid="selectSmsCouponVo"/>
+        <where>
+            id = #{couponId}
+            and
+            del_flag = '0'
+            <!-- 结束时间 大于等于 现在 -->
+            and end_time &gt;= now()
+            <!-- 自己领取类型 -->
+            and `type` = '1'
+            <!-- 上架状态 -->
+            and STATUS = '1'
+            <!-- 排除自己领取过的 -->
+            <if test="memberId != null">
+                AND id NOT IN (
+                    SELECT coupon_id FROM sms_coupon_history WHERE user_id = #{memberId}
+                )
+            </if>
+        </where>
+    </select>
+    <!--领取优惠券 减库存 加领取数量-->
+    <update id="memeberGetCoupon">
+        update sms_coupon set receive_count = receive_count+1
+        where id = #{couponId}
+        and del_flag = '0'
+        <!-- 结束时间 大于等于 现在 -->
+        and end_time &gt;= now()
+        <!-- 自己领取类型 -->
+        and `type` = '1'
+        <!-- 上架状态 -->
+        and STATUS = '1'
+        <!-- 总数量大于领取数量 -->
+        and `count` &gt; 0
+    </update>
+    <!--添加使用量-->
+    <update id="memeberUseCoupon">
+        update sms_coupon set use_count = use_count+1
+        where id = #{couponId}
+        and del_flag = '0'
+        <!-- 结束时间 大于等于 现在 -->
+        and end_time &gt;= now()
+        <!-- 自己领取类型 -->
+        and `type` = '1'
+        <!-- 上架状态 -->
+        and STATUS = '1'
+        <!-- 总数量大于领取数量 -->
+        and `count` &gt; 0
+    </update>
+    <!--获取用户可用优惠券-->
+    <select id="getMemberEnableCoupon" resultType="com.fante.project.api.appView.domain.SmsMemberCouponDetail">
+        SELECT
+            c.shop_id,
+            c.name,
+            c.type,
+            c.status,
+            c.use_type,
+            c.amount,
+            c.min_point,
+            c.start_time,
+            c.end_time,
+            c.use_count,
+            c.receive_count,
+            c.code,
+            c.create_by,
+            c.create_time,
+            c.update_by,
+            c.update_time,
+            c.remark,
+            c.enable_time,
+            c.publish_count,
+            c.per_limit,
+            c.member_level,
+            c.coupon_type,
+            c.discount,
+            c.id,
+            bsi.company_name as shop_name,
+            ch.coupon_code as v_code,
+            ch.use_status as use_status
+        FROM
+            sms_coupon_history ch
+            INNER JOIN sms_coupon c ON ch.coupon_id = c.id
+            left join biz_shop_info bsi on bsi.id = c.shop_id
+        WHERE
+        ch.user_id = #{memberId}
+    AND ch.use_status =#{useStatus}
+    AND c.`status` = '1'
+    <!--AND c.start_time &lt;= NOW()
+    AND c.end_time &gt;= NOW()-->
+</select>
+<!--(app)根据店铺id查询商品的可用优惠券-->
+    <select id="getOfferCouponsByShopId" resultMap="SmsCouponResult">
+        <include refid="selectSmsCouponVo"/>
+        <where>
+            del_flag = '0'
+            <!-- 结束时间 大于等于 现在 -->
+            and end_time &gt;= now()
+            <!-- 自己领取类型 -->
+            and `type` = #{type}
+            <!-- 上架状态 -->
+            and `status` = '1'
+            <!-- 总数量大于领取数量 -->
+            and `count` &gt; 0
+            <if test="shopId != null ">and shop_id = #{shopId}</if>
+        </where>
+    </select>
+    <!--查询优惠券包括店铺名称-->
+    <select id="selectSmsCouponDetailList" resultType="com.fante.project.api.appView.domain.SmsMemberCouponDetail">
+        select
+            sc.id,
+            sc.shop_id,
+            sc.name,
+            sc.type,
+            sc.status,
+            sc.use_type,
+            sc.amount,
+            sc.min_point,
+            sc.start_time,
+            sc.end_time,
+            sc.count,
+            sc.use_count,
+            sc.receive_count,
+            sc.code,
+            sc.create_by,
+            sc.create_time,
+            sc.update_by,
+            sc.update_time,
+            sc.remark,
+            sc.del_flag,
+            sc.enable_time,
+            sc.publish_count,
+            sc.per_limit,
+            sc.member_level,
+            sc.coupon_type,
+            sc.discount,
+            bsi.company_name as shop_name
+        from sms_coupon sc
+        left join biz_shop_info bsi on bsi.id = sc.shop_id
+        <where>
+            sc.del_flag = '0'
+            <if test="shopId != null and shopId != ''"> and sc.shop_id = #{shopId}</if>
+            <if test="type != null  and type != ''"> and sc.type = #{type}</if>
+            <if test="status != null  and status != ''"> and sc.status = #{status}</if>
+            <if test="name != null  and name != ''"> and sc.name like concat('%', #{name}, '%')</if>
+            <if test="count != null "> and sc.count = #{count}</if>
+            <if test="amount != null "> and sc.amount = #{amount}</if>
+            <if test="perLimit != null "> and sc.per_limit = #{perLimit}</if>
+            <if test="minPoint != null "> and sc.min_point = #{minPoint}</if>
+            <if test="useType != null and useType != ''"> and sc.use_type = #{useType}</if>
+            <if test="publishCount != null "> and sc.publish_count = #{publishCount}</if>
+            <if test="useCount != null "> and sc.use_count = #{useCount}</if>
+            <if test="receiveCount != null "> and sc.receive_count = #{receiveCount}</if>
+            <if test="enableTime != null "> and sc.enable_time = #{enableTime}</if>
+            <if test="couponType != null  and couponType != ''"> and sc.coupon_type = #{couponType}</if>
+            <if test="discount != null"> and sc.discount = #{discount}</if>
+            <if test="code != null  and code != ''"> and sc.code like concat('%', #{code}, '%')</if>
+            <if test="memberLevel != null  and memberLevel != ''"> and sc.member_level = #{memberLevel}</if>
+        </where>
+    </select>
+
+    <!--查询优惠券包括店铺名称-->
+    <select id="selectSmsCouponListDTOList" resultType="com.fante.project.business.smsCoupon.domain.SmsCouponListDTO">
+        /*select
+        sc.id,
+        sc.shop_id,
+        sc.name,
+        sc.type,
+        sc.status,
+        sc.use_type,
+        sc.amount,
+        sc.min_point,
+        sc.start_time,
+        sc.end_time,
+        sc.count,
+        sc.use_count,
+        sc.receive_count,
+        sc.code,
+        sc.create_by,
+        sc.create_time,
+        sc.update_by,
+        sc.update_time,
+        sc.remark,
+        sc.del_flag,
+        sc.enable_time,
+        sc.publish_count,
+        sc.per_limit,
+        sc.member_level,
+        sc.coupon_type,
+        sc.discount,
+        bsi.company_name as shop_name
+        from sms_coupon sc
+        left join biz_shop_info bsi on bsi.id = sc.shop_id*/
+        select
+          sc.id,
+          sc.shop_id,
+          sc.name,
+          sc.type,
+          sc.status,
+          sc.use_type,
+          sc.amount,
+          sc.min_point,
+          sc.start_time,
+          sc.end_time,
+          sc.count,
+          ifnull(sch.use_status,0) as use_count,
+          sc.receive_count,
+          sc.code,
+          sc.create_by,
+          sc.create_time,
+          sc.update_by,
+          sc.update_time,
+          sc.remark,
+          sc.del_flag,
+          sc.enable_time,
+          sc.publish_count,
+          sc.per_limit,
+          sc.member_level,
+          sc.coupon_type,
+          sc.discount,
+          bsi.company_name as shop_name
+        from
+          sms_coupon sc
+        left join biz_shop_info bsi on bsi.id = sc.shop_id
+        left join
+        (
+          select
+          sc.id,
+          sc.shop_id,
+          sc.name,
+          COUNT(sh.use_status) as use_status
+          from
+          sms_coupon sc
+          ,sms_coupon_history sh
+          where
+          sc.id = sh.coupon_id
+          AND sh.use_status = '1'
+          group by
+          sc.id
+        )  sch
+        on
+          sc.id =  sch.id
+        <where>
+            sc.del_flag = '0'
+            <if test="shopId != null and shopId != ''"> and sc.shop_id = #{shopId}</if>
+            <if test="type != null  and type != ''"> and sc.type = #{type}</if>
+            <if test="status != null  and status != ''"> and sc.status = #{status}</if>
+            <if test="name != null  and name != ''"> and sc.name like concat('%', #{name}, '%')</if>
+            <if test="count != null "> and sc.count = #{count}</if>
+            <if test="amount != null "> and sc.amount = #{amount}</if>
+            <if test="perLimit != null "> and sc.per_limit = #{perLimit}</if>
+            <if test="minPoint != null "> and sc.min_point = #{minPoint}</if>
+            <if test="useType != null and useType != ''"> and sc.use_type = #{useType}</if>
+            <if test="publishCount != null "> and sc.publish_count = #{publishCount}</if>
+            <if test="useCount != null "> and sch.use_status = #{useCount}</if>
+            <if test="receiveCount != null "> and sc.receive_count = #{receiveCount}</if>
+            <if test="enableTime != null "> and sc.enable_time = #{enableTime}</if>
+            <if test="couponType != null  and couponType != ''"> and sc.coupon_type = #{couponType}</if>
+            <if test="discount != null"> and sc.discount = #{discount}</if>
+            <if test="code != null  and code != ''"> and sc.code like concat('%', #{code}, '%')</if>
+            <if test="memberLevel != null  and memberLevel != ''"> and sc.member_level = #{memberLevel}</if>
+        </where>
+    </select>
+</mapper>

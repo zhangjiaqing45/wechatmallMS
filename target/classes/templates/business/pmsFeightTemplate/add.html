@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增运费模版')" />
+    <style type="text/css">
+        .dest-label {
+            width: 150px;
+        }
+        .dest-label-static {
+            width: 150px;
+            padding-left: 0px;
+        }
+        .free-total {
+            color: #26a;
+            font-weight: 700;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+        .label-del {
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-pmsFeightTemplate-add">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">归属店铺：</label>
+                <div class="col-sm-8" th:if="${isAdmin}">
+                    <div class="input-group">
+                        <input name="shopId" type="hidden" />
+                        <input name="shopName" onclick="selectShop();"  type="text" placeholder="请选择归属店铺" class="form-control" readonly required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+                <div class="col-sm-8" th:unless="${isAdmin}">
+                    <input name="shopId" type="hidden" th:value="${shop?.id}" required/>
+                    <input class="form-control" th:value="${shop?.companyName}" type="text" readonly required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">模板名称：</label>
+                <div class="col-sm-8">
+                    <input name="name" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">付费区域运费：</label>
+                <div class="col-sm-8">
+                    <div class="input-group" >
+                        <input name="feightFee" class="form-control" type="text" required>
+                        <span class="input-group-addon">元</span>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-3 control-label is-required">模板状态：</label>-->
+                <!--<div class="col-sm-8">-->
+                    <!--<div class="radio-box" th:each="dict : ${@dict.getType('biz_status')}">-->
+                        <!--<input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:checked="${dict.default}" required>-->
+                        <!--<label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">包邮配送区域：</label>
+                <div class="col-sm-8">
+                    <div class="input-group m-b">
+                        <div type="text" class="form-control-static">已选择<span class="free-total">0</span>个区域</div>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-success" style="border-radius: 0px;padding: 3px 12px;" onclick="selectAll();" >全选 </button>
+                        </span>
+                    </div>
+                    <div class="input-group m-b all-dest">
+
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">买家付运费区域：</label>
+                <div class="col-sm-8 toll-dest">
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">不配送区域：</label>
+                <div class="col-sm-8 exclude-dest">
+
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "business/pmsFeightTemplate";
+        var prefixShop = ctx + "business/bizShopInfo";
+
+        $(function () {
+            buildDest();
+            buildTollDest();
+            buildExcludeDest();
+
+            eventInit();
+            eventChecked();
+            eventUncheck();
+
+            eventTollDel();
+            eventExcludeDel();
+        });
+
+        /**
+         * 设置iCheck
+         */
+        function eventInit() {
+            $(".check-box:not(.noicheck),.radio-box:not(.noicheck)").each(function () {
+                $(this).iCheck({
+                    checkboxClass: 'icheckbox-blue',
+                    radioClass: 'iradio-blue',
+                })
+            });
+        }
+
+        /**
+         * checkbox选中事件
+         */
+        function eventChecked() {
+            $(".free-input").on("ifChecked", function(event){
+                selectCount();
+                var checkedVal = $(this).val();
+                $(".toll-dest .dest-label-static").each(function(index, elem) {
+                    if (checkedVal == $(elem).attr("data-val")) {
+                        $(elem).remove();
+                        return false;
+                    }
+                });
+                $(".exclude-dest .dest-label-static").each(function(index, elem) {
+                    if (checkedVal == $(elem).attr("data-val")) {
+                        $(elem).remove();
+                        return false;
+                    }
+                });
+            });
+        }
+
+        /**
+         * checkbox取消选中事件
+         */
+        function eventUncheck() {
+            $(".free-input").on("ifUnchecked", function(event){
+                selectCount();
+                var tpl = "<label class=\"check-box dest-label-static\" data-val=\"" + $(this).val() + "\" >" + $(this).val() + " <a href=\"javascript:;\" class=\"label-del\">删除</a></label></label>\n";
+                $(".toll-dest").append(tpl);
+            });
+        }
+
+        /**
+         * 付费区域删除，进入不配送区域
+         */
+        function eventTollDel() {
+            $("body").on("click", ".toll-dest .label-del", function() {
+                var self = this;
+                var tollVal = $(self).parent(".dest-label-static").attr("data-val");
+                $.modal.confirm("删除后，" + tollVal + "将不支持配送", function () {
+                    $(self).parent(".dest-label-static").remove();
+                    var tpl = "<label class=\"check-box dest-label-static\" data-val=\"" + tollVal + "\" >" + tollVal + " <a href=\"javascript:;\" class=\"label-del\">删除</a></label></label>\n";
+                    $(".exclude-dest").append(tpl);
+                });
+            });
+        }
+
+        /**
+         * 不配送区域删除，该区域重新支持包邮配送
+         */
+        function eventExcludeDel() {
+            $("body").on("click", ".exclude-dest .label-del", function() {
+                var self = this;
+                var excludeVal = $(self).parent(".dest-label-static").attr("data-val");
+                $.modal.confirm("删除后，" + excludeVal + "将重新支持包邮配送", function () {
+                    $(self).parent(".dest-label-static").remove();
+                    $(".free-input[value='"+excludeVal+"']").iCheck('check');
+                });
+            });
+        }
+
+        /**
+         * 初始化区域
+         */
+        function buildDest() {
+            var tpl = "";
+            for (var i in DESTINATION.ALL) {
+                var checkSign = (DESTINATION.TOLL[i] || DESTINATION.EXCLUDE[i]) ? "" : "checked";
+                tpl += "<label class=\"check-box dest-label\">\n" +
+                    "      <input class=\"free-input\" type=\"checkbox\" " + checkSign + " value=\"" + DESTINATION.ALL[i] + "\">" + DESTINATION.ALL[i] + "\n" +
+                    "   </label>\n";
+            }
+            $(".all-dest").html(tpl);
+            selectCount();
+        }
+
+        /**
+         * 构建收费区域
+         */
+        function buildTollDest() {
+            var tpl = "";
+            for (var i in DESTINATION.TOLL) {
+                tpl += "<label class=\"check-box dest-label-static\" data-val=\"" + DESTINATION.TOLL[i] + "\" >" + DESTINATION.TOLL[i] + " <a href=\"javascript:;\" class=\"label-del\">删除</a></label></label>\n";
+            }
+            $(".toll-dest").html(tpl);
+        }
+
+        /**
+         * 构建不配送区域
+         */
+        function buildExcludeDest() {
+            var tpl = "";
+            for (var i in DESTINATION.EXCLUDE) {
+                tpl += "<label class=\"check-box dest-label-static\" data-val=\"" + DESTINATION.EXCLUDE[i] + "\" >" + DESTINATION.EXCLUDE[i] + " <a href=\"javascript:;\" class=\"label-del\">删除</a></label></label>\n";
+            }
+            $(".exclude-dest").html(tpl);
+        }
+
+
+        function selectCount() {
+            $(".free-total").text($(".free-input:checked").length);
+        }
+
+        /**
+         * 全选
+         */
+        function selectAll(){
+            $(".free-input").iCheck('check');
+            $(".toll-dest").html("");
+            $(".exclude-dest").html("");
+        }
+
+
+        $("#form-pmsFeightTemplate-add").validate({
+            focusCleanup: true,
+            rules: {
+                feightFee: {
+                    isPrice: true,
+                },
+                name: {
+                    rangelength: [2, 50],
+                }
+            },
+            messages: {
+                name: {
+                    rangelength: $.validator.format("模板名称在 {0} 到 {1} 之间"),
+                }
+            }
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                var freeArr = [], tollArr = [], excludeArr = [];
+                $(".free-input:checked").each(function(index, elem) {
+                    freeArr.push($(this).val());
+                });
+                $(".toll-dest .dest-label-static").each(function(index, elem) {
+                    tollArr.push($(this).attr("data-val"));
+                });
+                $(".exclude-dest .dest-label-static").each(function(index, elem) {
+                    excludeArr.push($(this).attr("data-val"));
+                });
+
+                var data = $('#form-pmsFeightTemplate-add').serializeArray();
+                data.push({"name": "freeDest", "value": freeArr.join()});
+                data.push({"name": "tollDest", "value": tollArr.join()});
+                data.push({"name": "excludeDest", "value": excludeArr.join()});
+
+                $.operate.save(prefix + "/add", data);
+            }
+        }
+
+        /**
+         * 选择店铺
+         */
+        function selectShop(){
+            $.modal.open("选择店铺", prefixShop + "/select");
+        }
+
+        /**
+         * 选择店铺回调
+         * @param shop
+         */
+        function shopSelectCallback(shop) {
+            if (shop && shop.id) {
+                $("input[name='shopId']").val(shop.id);
+                $("input[name='shopName']").val(shop.companyName + "(" + shop.city + ")");
+            } else {
+                $.modal.msgWarning("未选择店铺");
+            }
+        }
+    </script>
+</body>
+</html>

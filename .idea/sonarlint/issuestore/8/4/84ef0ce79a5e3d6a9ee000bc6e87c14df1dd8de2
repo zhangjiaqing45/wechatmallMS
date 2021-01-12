@@ -1,0 +1,14 @@
+
+g	java:S117¬"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ôÙêÕ
+f	java:S117¯"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ğñ™_
+l	java:S117±"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ê©–âúÿÿÿÿ
+l	java:S117¶"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(çØ­½şÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ñ¨Ş
+A
+java:S1128 "+Remove this unused import 'java.util.Date'.(¸…¼ü
+_
+java:S1128"DRemove this unused import 'org.apache.poi.ss.formula.functions.Now'.(£óŠÇıÿÿÿÿ
+g
+java:S1128"LRemove this unused import 'com.fante.common.business.enums.UmsAddressConst'.(›¼ òûÿÿÿÿ
+a
+java:S3252¡"JUse static access with "org.apache.commons.lang3.StringUtils" for "EMPTY".(”ñ²Æ

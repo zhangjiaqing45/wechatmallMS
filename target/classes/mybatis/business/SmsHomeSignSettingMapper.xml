@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsHomeSignSetting.mapper.SmsHomeSignSettingMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SmsHomeSignSettingResultExt" type="扩展类全包名" extends="SmsHomeSignSettingResult">
+
+    </resultMap>
+     -->
+    <select id="selectByTypeAndTimes" parameterType="SmsHomeSignSetting" resultMap="SmsHomeSignSettingResult">
+        <include refid="selectSmsHomeSignSettingVo"/>
+        <where>
+            del_flag = '0'
+            <if test="signType != null  and signType != ''"> and sign_type = #{signType}</if>
+            <if test="signTimes != null"> and sign_times = #{signTimes}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="checkSignSettingUnique" parameterType="SmsHomeSignSetting" resultType="int">
+        select count(*) from sms_home_sign_setting
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="signType != null  and signType != ''"> and sign_type = #{signType}</if>
+            <if test="signTimes != null  and signTimes != ''"> and sign_times = #{signTimes}</if>
+        </where>
+    </select>
+
+</mapper>

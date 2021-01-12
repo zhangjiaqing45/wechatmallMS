@@ -1,0 +1,8 @@
+
+k
+java:S3252ˆ"OUse static access with "org.apache.commons.lang3.StringUtils" for "isAnyBlank".(§ˆî¾úÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(·Éˆç
+c
+java:S3252Š"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(«ßã¤
+f
+java:S3252®"OUse static access with "org.apache.commons.lang3.StringUtils" for "isAnyBlank".(ÆÇüÅ

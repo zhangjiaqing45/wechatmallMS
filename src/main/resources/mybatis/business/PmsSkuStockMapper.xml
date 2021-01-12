@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsSkuStock.mapper.PmsSkuStockMapper">
+    <delete id="deleteByExample">
+       update pms_sku_stock set del_flag = '1' where
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="skuCode != null  and skuCode != ''"> and sku_code = #{skuCode}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="lowStock != null "> and low_stock = #{lowStock}</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="sale != null "> and sale = #{sale}</if>
+            <if test="promotionPrice != null "> and promotion_price = #{promotionPrice}</if>
+            <if test="lockStock != null "> and lock_stock = #{lockStock}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </delete>
+    <insert id="beachInsert" parameterType="List" >
+        INSERT INTO pms_sku_stock
+        (
+            shop_id,
+            product_id,
+            sku_code,
+            price,
+            stock,
+            low_stock,
+            pic,
+            sp_data,
+            create_by,
+            create_time,
+            remark
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+            #{item.shopId},
+            #{item.productId},
+            #{item.skuCode},
+            #{item.price},
+            #{item.stock},
+            #{item.lowStock},
+            #{item.pic},
+            #{item.spData},
+            #{item.createBy},
+            #{item.createTime},
+            #{item.remark}
+        )
+        </foreach>
+    </insert>
+
+    <select id="stockoutList" parameterType="com.fante.project.business.pmsSkuStock.domain.PmsSkuStockResult" resultType="com.fante.project.business.pmsSkuStock.domain.PmsSkuStockResult">
+        select
+        sku.id,
+        sku.product_id,
+        p.name as product_name,
+        p.publish_status,
+        sku.shop_id,
+        sku.sku_code,
+        sku.price,
+        sku.stock,
+        sku.low_stock,
+        sku.pic,
+        sku.sale,
+        sku.promotion_price,
+        sku.lock_stock,
+        sku.sp_data,
+        sku.status,
+        sku.create_by,
+        sku.create_time,
+        sku.update_by,
+        sku.update_time,
+        sku.remark,
+        sku.del_flag from pms_sku_stock sku
+        inner join pms_product p on  p.id = sku.product_id
+        <where>
+            p.del_flag = '0' and sku.del_flag = '0'
+            <if test="productName != null  and productName != ''"> and p.name like concat('%', #{productName}, '%')</if>
+            <if test="shopId != null "> and sku.shop_id = #{shopId}</if>
+            <if test="skuCode != null  and skuCode != ''"> and sku.sku_code like concat('%', #{skuCode}, '%')</if>
+            <if test="price != null "> and sku.price = #{price}</if>
+            <if test="stock != null "> and sku.stock = #{stock}</if>
+            <if test="lowStock != null "> and sku.stock &lt;= sku.low_stock+sku.lock_stock</if>
+            <if test="pic != null  and pic != ''"> and sku.pic = #{pic}</if>
+            <if test="sale != null "> and sku.sale = #{sale}</if>
+            <if test="promotionPrice != null "> and sku.promotion_price = #{promotionPrice}</if>
+            <if test="lockStock != null "> and sku.lock_stock = #{lockStock}</if>
+            <if test="spData != null  and spData != ''"> and sku.sp_data = #{spData}</if>
+            <if test="status != null  and status != ''"> and sku.status = #{status}</if>
+        </where>
+    </select>
+    <select id="selectPmsSkuStockByIds" resultMap="PmsSkuStockResult">
+        <include refid="selectPmsSkuStockVo"/>
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and stauts = '0'
+    </select>
+    <select id="selectPmsSkuStockByCartIds" resultType="com.fante.project.api.omsOrderProcess.domain.CartSkuDto">
+        SELECT
+            sku.id,
+            sku.product_id,
+            sku.shop_id,
+            sku.sku_code,
+            sku.price,
+            sku.price promotion_price,
+            sku.stock,
+            sku.pic,
+            sku.sale,
+            sku.lock_stock,
+            sku.sp_data,
+            sku.`status`,
+            sku.create_by,
+            sku.create_time,
+            sku.update_by,
+            sku.update_time,
+            sku.remark,
+            p.product_category_id,
+            p.name product_name,
+            cart.id cart_id,
+            cart.quantity
+        FROM
+            pms_sku_stock sku
+            LEFT JOIN oms_cart_item cart ON cart.product_sku_id = sku.id
+            LEFT JOIN pms_product p ON p.id = sku.product_id
+        WHERE
+            cart.id IN
+            <foreach item="id" collection="cartIds" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        and p.del_flag = '0'
+        and sku.del_flag = '0'
+        and p.publish_status = '1'
+
+    </select>
+    <select id="getProductDetailBySkuId"  resultType="com.fante.project.api.omsOrderProcess.domain.CartSkuDto">
+         SELECT
+            sku.id,
+            sku.product_id,
+            sku.shop_id,
+            sku.sku_code,
+            sku.price,
+            sku.price promotion_price,
+            sku.stock,
+            sku.pic,
+            sku.sale,
+            sku.lock_stock,
+            sku.sp_data,
+            sku.STATUS,
+            sku.create_by,
+            sku.create_time,
+            sku.update_by,
+            sku.update_time,
+            sku.remark,
+            p.product_category_id,
+            p.name product_name
+        FROM
+            pms_sku_stock sku
+            inner join pms_product p
+            on sku.product_id = p.id
+        WHERE sku.id= #{skuId}
+            and p.del_flag = '0'
+            and sku.del_flag = '0'
+            and p.publish_status = '1'
+    </select>
+    <!--取消 普通订单 减锁定库存-->
+    <update id="recoverOrderStock">
+        UPDATE pms_sku_stock
+        SET lock_stock =
+        CASE
+        <foreach collection="list" item = "orderItem" >
+            WHEN id = #{orderItem.productSkuId} and lock_stock &gt;=#{orderItem.productQuantity}
+            THEN lock_stock - #{orderItem.productQuantity}
+        </foreach >
+        END
+        WHERE
+        id IN
+        <foreach collection="list" item ="orderItem" separator= "," open="(" close=")" >
+            #{orderItem.productSkuId}
+        </foreach>
+    </update>
+    <!--验证库存-->
+    <select id="validateStock" resultType="com.fante.project.api.omsOrderProcess.domain.ValidateStockDTO">
+        SELECT
+        *
+        FROM
+        (
+            SELECT
+                CASE
+                <foreach collection="list" item ="item" separator= " " >
+                    WHEN id=#{item.skuId} and stock - lock_stock &lt; #{item.quantity} THEN #{item.productName}
+                </foreach>
+                ELSE NULL
+                END  product_name,
+                sp_data,
+                id AS sku_id
+            FROM
+            pms_sku_stock
+            WHERE id IN
+            <foreach collection="list" item ="item" separator= "," open="(" close=")" >
+                #{item.skuId}
+            </foreach>
+        ) sku
+        WHERE
+        sku.product_name IS NOT NULL
+    </select>
+    <!--批量添加锁定库存-->
+    <update id="batchAddLockStock">
+        update pms_sku_stock set lock_stock = case
+        id
+        <foreach collection="list" item="item">
+            WHEN #{item.skuId} THEN lock_stock+#{item.quantity}
+        </foreach>
+        END
+        WHERE
+        id IN
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.skuId}
+        </foreach>
+        AND del_flag = '0'
+    </update>
+    <!--支付成功:扣减库存-->
+    <update id="subtractStock">
+        update pms_sku_stock SET
+        lock_stock = CASE id
+        <foreach collection="list" item="item">
+            WHEN #{item.productSkuId} THEN lock_stock-#{item.productQuantity}
+        </foreach>
+        END,
+        sale = CASE id
+        <foreach collection="list" item="item">
+            WHEN #{item.productSkuId} THEN sale+#{item.productQuantity}
+        </foreach>
+        END,
+        stock = CASE id
+        <foreach collection="list" item="item">
+            WHEN #{item.productSkuId} THEN stock-#{item.productQuantity}
+        </foreach>
+        END
+        WHERE
+        id IN
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.productSkuId}
+        </foreach>
+    <!--AND `status` = '1'-->
+         AND del_flag = '0'
+</update>
+<!--修改sku库存/预警/价格-->
+    <update id="updateStockOrLowStockOrPrice">
+        update pms_sku_stock
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="price != null ">price = #{price},</if>
+            <if test="stock != null ">stock = #{stock},</if>
+            <if test="lowStock != null ">low_stock = #{lowStock},</if>
+        </trim>
+        where id = #{id}
+        <if test="stock != null "> and lock_stock &lt;= #{stock}</if>
+    </update>
+
+</mapper>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <th:block th:include="include :: header('集成Redis')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content fadeInRight">
+    <div class="row">
+        <div class="col-sm-10">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <h3>消息队列RabbitMQ集成准备</h3>
+                    <div class="alert alert-success">
+                        <ol>
+                            <li>安装RabbitMQ环境：Erlang</li>
+                            <li>安装RabbitMQ</li>
+                            <li>配置RabbitMQ并启动服务</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <h3>提供如下示例</h3>
+                    <div class="alert alert-info">
+                        <ul>
+                            <li>Direct Exchange（直连交换机）</li>
+                            <li>Fanout Exchange（扇型交换机）</li>
+                            <li>Topic Exchange（主题交换机）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <h3>示例位置</h3>
+                    <div class="alert alert-warning">
+                        <ol>
+                            <li>消息队列配置：com.fante.framework.rabbitmq.RabbitConfig</li>
+                            <li>交换机和队列配置：com.fante.framework.rabbitmq.exConfig.*</li>
+                            <li>交换机、队列和路由键枚举配置：com.fante.framework.rabbitmq.enums.*</li>
+                            <li>测试生产者：com.fante.project.demo.sender.*</li>
+                            <li>测试消费者：com.fante.project.demo.receiver.*</li>
+                            <li>测试调用：com.fante.project.demo.controller.DemoRabbitMQController</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

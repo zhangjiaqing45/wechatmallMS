@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh" >
+<head>
+    <th:block th:include="include :: header('店铺入驻')"/>
+    <th:block th:include="include :: jigsaw-css"/>
+    <link th:href="@{/css/reg.css}" rel="stylesheet"/>
+    <script>
+        if (window.top !== window.self) {
+            window.top.location = window.location
+        }
+    </script>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-7 col-sm-offset-2">
+            <div class="ibox">
+                <!--<div class="ibox-title">-->
+                <!--<h5></h5>-->
+                <!--</div>-->
+                <div class="ibox-content">
+                    <h2>店铺入驻</h2>
+                    <p>请填写注册用户信息</p>
+                    <div class="reg">
+                        <div class="reg-a">
+                            <a href="javascript:void(0);">入驻须知</a>
+                            <a class="active" href="javascript:void(0);">注册账号</a>
+                            <a href="javascript:void(0);">信息完善</a>
+                        </div>
+                        <div class="reg-b">
+                            <div class="reg-b1 hidden">
+                                <form class="form-horizontal m" id="form-user-register">
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label is-required">用户名称：</label>
+                                        <div class="col-sm-7">
+                                            <input name="userName" placeholder="请填写用户名称" class="form-control" type="text" maxlength="30" autocomplete="off" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label is-required">登录账号：</label>
+                                        <div class="col-sm-7">
+                                            <input id="loginName" name="loginName" placeholder="请填写登录账号" class="form-control" type="text" maxlength="30" autocomplete="off" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label is-required">登录密码：</label>
+                                        <div class="col-sm-7">
+                                            <input id="password" name="password" placeholder="请填写登录密码" class="form-control" type="password" autocomplete="off" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label is-required">确认登录密码：</label>
+                                        <div class="col-sm-7">
+                                            <input name="confirm" placeholder="请确认登录密码" class="form-control" type="password" autocomplete="off" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label is-required">手机号码：</label>
+                                        <div class="col-sm-7">
+                                            <input id="phonenumber" name="phonenumber" placeholder="请填写手机号码" class="form-control" type="text" maxlength="11" autocomplete="off" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">短信验证码：</label>
+                                        <div class="col-sm-7">
+                                            <div class="input-group">
+                                                <input id="verifyCode" name="verifyCode" placeholder="请填写短信验证码" class="form-control" type="text" autocomplete="off" />
+                                                <span class="input-group-btn">
+                                                    <button id="verifyBtn" type="button" class="btn btn-block btn-success" disabled >获取验证码</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-6" style="margin-top: 30px;">
+                                            <button id="submitBtn" type="button" class="btn btn-block btn-primary" disabled >立即注册</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: jigsaw-js"/>
+<script th:inline="javascript" type="text/javascript">
+    var codeflag = false, INTERVAL = 120;
+    var smsInterval = INTERVAL, timer;
+    var prefixSms = ctx + "sms/verifyCode";
+    var prefix = ctx + "business/bizShopReg";
+    var loginUrl = ctx + "login";
+
+    $(document).ready(function () {
+        initPage();
+    });
+
+    /**
+     * 页面初始化
+     */
+    function initPage() {
+        $(".reg-b1").removeClass("hidden");
+        $("#verifyBtn").removeAttrs("disabled");
+        $("#submitBtn").removeAttrs("disabled");
+        $("#verifyBtn").on("click", getVerifyCode);
+        $("#submitBtn").on("click", submit);
+    }
+
+    /**
+     * 提交注册信息
+     */
+    function submit() {
+        if (!$.validate.form()) {
+            $.modal.msgWarning("请先完善必填信息");
+            return false;
+        }
+
+        if (!$.common.trim($("#verifyCode").val())) {
+            $.modal.msgWarning("请填写验证码");
+            return false;
+        }
+
+        $("#submitBtn").attr("disabled", "disabled");
+        $("#verifyBtn").attr("disabled", "disabled");
+        $.operate.post(prefix + "/userReg", $("#form-user-register").serialize(), function(result) {
+            if (result.code === web_status.SUCCESS) {
+                $.modal.alert(result.msg, modal_status.SUCCESS, function() {
+                    window.location.replace(loginUrl);
+                });
+            } else {
+                $("#submitBtn").removeAttrs("disabled");
+                $.modal.msgWarning(result.msg);
+            }
+        });
+    }
+
+    /**
+     * 获取验证码
+     */
+    function getVerifyCode() {
+        if (!$.validate.form()) {
+            $.modal.msgWarning("请先完善必填信息")
+            return false;
+        }
+
+        layer.open({
+            title: false,
+            type: 1,
+            closeBtn: false,
+            shadeClose: true,
+            area: ['329px', '190px'],
+            content: "<div class=\"form-group\" style=\"position:relative;\"><div id=\"captcha\"></div></div>",
+            success : function(layero, index) {
+                jigsaw.init(document.getElementById('captcha'), function () {
+                    codeflag = true;
+                    $.modal.msg("验证成功", modal_status.SUCCESS, function() {
+                        layer.close(index);
+                        sendSms();
+                    });
+                }, function () {
+                    codeflag = false;
+                    $.modal.msgWarning("请继续验证");
+                });
+            }
+        });
+    }
+
+    /**
+     * 请求获取短信验证码
+     */
+    function sendSms() {
+        $.operate.post(prefixSms, {phone: $.common.trim($("#phonenumber").val())}, function (result) {
+            if (result.code == web_status.SUCCESS) {
+                $("#verifyBtn").attr("disabled", "disabled");
+                timer = setInterval(countdown, 1000);
+                $.modal.alertSuccess(result.msg);
+            } else {
+                $.modal.alertWarning(result.msg);
+            }
+        });
+    }
+
+    /**
+     * 倒计时
+     */
+    function countdown() {
+        smsInterval --;
+        if (smsInterval > 0) {
+            var h = "已发送("+smsInterval+"s)";
+            $("#verifyBtn").html(h);
+        } else {
+            smsInterval = INTERVAL;
+            clearInterval(timer);
+            $("#verifyBtn").removeAttr("disabled");
+            $("#verifyBtn").html("获取验证码");
+        }
+    }
+
+    $("#form-user-register").validate({
+        rules: {
+            loginName: {
+                rangelength: [2, 20],
+                isUserName: true,
+                remote: {
+                    url: prefix + "/checkLoginNameUnique",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "loginName": function () {
+                            return $.common.trim($("#loginName").val());
+                        }
+                    },
+                    dataFilter: function (data, type) {
+                        return $.validate.unique(data);
+                    }
+                }
+            },
+            password: {
+                minlength: 5,
+                maxlength: 20
+            },
+            confirm: {
+                equalTo: "#password",
+            },
+            phonenumber: {
+                isPhone: true,
+                remote: {
+                    url: prefix + "/checkPhoneUnique",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "phonenumber": function () {
+                            return $.common.trim($("#phonenumber").val());
+                        }
+                    },
+                    dataFilter: function (data, type) {
+                        return $.validate.unique(data);
+                    }
+                }
+            },
+            verifyCode: {
+                minlength: 6,
+                maxlength: 6,
+                digits:true
+            }
+        },
+        messages: {
+            loginName: {
+                rangelength: $.validator.format("登录账号长度在 {0} 到 {1} 之间"),
+                remote: "登录账号已经存在"
+            },
+            phonenumber: {
+                remote: "手机号码已经存在"
+            },
+            confirm : {
+                equalTo: "两次密码输入不一致"
+            }
+        },
+        focusCleanup: true
+    });
+
+</script>
+</body>
+</html>

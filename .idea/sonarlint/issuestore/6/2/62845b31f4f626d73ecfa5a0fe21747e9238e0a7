@@ -1,0 +1,22 @@
+
+O
+java:S1128#":Remove this unused import 'com.google.common.base.Joiner'.(ö¢ËX
+x
+java:S1192ˆ"\Define a constant instead of duplicating this literal "ä¼˜æƒ åˆ¸ä½¿ç”¨èŒƒå›´å¼‚å¸¸" 3 times.(øÂð„ýÿÿÿÿ
+]
+java:S2259ú"AA "NullPointerException" could be thrown; "rsp" is nullable here.(ø›õÈýÿÿÿÿ
+m
+java:S3252ô"OUse static access with "org.apache.commons.lang3.StringUtils" for "isNotEmpty".(ß‹­È8°ü–‚å.
+\
+java:S1192è"FDefine a constant instead of duplicating this literal "<br/>" 4 times.(üÒç{
+j
+java:S3252ü"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(Ÿ¥öý8°ü–‚å.
+l	java:S117õ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÜÞƒ§úÿÿÿÿ
+<
+java:S1170l"!Make this final field static too.(ËëÑŠúÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(š¾–Ì
+o
+java:S3252×"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(ò™ùùÿÿÿÿ8°ü–‚å.
+R	java:S125ˆ"<This block of commented-out lines of code should be removed.(÷ò’Ö
+{
+java:S1128"`Remove this unused import 'com.fante.project.business.smsCouponHistory.domain.SmsCouponHistory'.(âå§æøÿÿÿÿ

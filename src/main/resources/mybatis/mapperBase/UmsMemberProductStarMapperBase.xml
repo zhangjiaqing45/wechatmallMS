@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.umsMemberProductStar.mapper.UmsMemberProductStarMapper">
+    
+    <resultMap type="UmsMemberProductStar" id="UmsMemberProductStarResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="memberId"    column="member_id"    />
+        <result property="starTime"    column="star_time"    />
+    </resultMap>
+
+    <sql id="selectUmsMemberProductStarVo">
+        select id, product_id, member_id, star_time from ums_member_product_star
+    </sql>
+
+    <select id="selectUmsMemberProductStarList" parameterType="UmsMemberProductStar" resultMap="UmsMemberProductStarResult">
+        <include refid="selectUmsMemberProductStarVo"/>
+        <where>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="starTime != null "> and star_time = #{starTime}</if>
+        </where>
+    </select>
+
+    <select id="countUmsMemberProductStar" parameterType="UmsMemberProductStar" resultType="int">
+        select count(*) from ums_member_product_star
+        <where>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="starTime != null "> and star_time = #{starTime}</if>
+        </where>
+    </select>
+
+    <select id="checkUmsMemberProductStarUnique" parameterType="UmsMemberProductStar" resultType="int">
+        select count(*) from ums_member_product_star
+        <where>
+            <if test="id != null"> and id != #{id}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="starTime != null "> and star_time = #{starTime}</if>
+        </where>
+    </select>
+
+
+    <select id="selectUmsMemberProductStarById" parameterType="Long" resultMap="UmsMemberProductStarResult">
+        <include refid="selectUmsMemberProductStarVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertUmsMemberProductStar" parameterType="UmsMemberProductStar" useGeneratedKeys="true" keyProperty="id">
+        insert into ums_member_product_star
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null ">product_id,</if>
+            <if test="memberId != null ">member_id,</if>
+            <if test="starTime != null ">star_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null ">#{productId},</if>
+            <if test="memberId != null ">#{memberId},</if>
+            <if test="starTime != null ">#{starTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUmsMemberProductStar" parameterType="UmsMemberProductStar">
+        update ums_member_product_star
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null ">product_id = #{productId},</if>
+            <if test="memberId != null ">member_id = #{memberId},</if>
+            <if test="starTime != null ">star_time = #{starTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUmsMemberProductStarById" parameterType="Long">
+        <!-- update ums_member_product_star set del_flag = '1' where id = #{id} -->
+        delete from ums_member_product_star where id = #{id}
+    </delete>
+
+    <delete id="deleteUmsMemberProductStarByIds" parameterType="String">
+        <!--  update ums_member_product_star set del_flag = '1' where id in-->
+         delete from ums_member_product_star where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

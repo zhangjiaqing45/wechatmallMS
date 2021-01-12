@@ -1,0 +1,19 @@
+
+V
+java:S3457'"AFormat specifiers should be used instead of string concatenation.(Í‹„|
+
+java:S1192%"wDefine a constant instead of duplicating this literal "------------------------------------------------------" 8 times.(ˆÏíÂ
+f
+java:S1192'"QDefine a constant instead of duplicating this literal "|---------------" 4 times.(Í‹„|
+t
+java:S1128"YRemove this unused import 'com.fante.project.business.omsOrder.service.IOmsOrderService'.(èôÓ•ıÿÿÿÿ
+V
+java:S3457E"AFormat specifiers should be used instead of string concatenation.(Í‹„|
+i
+java:S1192'"TDefine a constant instead of duplicating this literal "------------------|" 4 times.(Í‹„|
+V
+java:S3457T"AFormat specifiers should be used instead of string concatenation.(Í‹„|
+~
+java:S1128"cRemove this unused import 'com.fante.project.business.omsOrder.service.impl.OmsCancelOrderService'.(——Êÿÿÿÿÿ
+V
+java:S34576"AFormat specifiers should be used instead of string concatenation.(Í‹„|

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsOrderOperateHistory.mapper.OmsOrderOperateHistoryMapper">
+    
+    <resultMap type="OmsOrderOperateHistory" id="OmsOrderOperateHistoryResult">
+        <result property="id"    column="id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="payStatus"    column="pay_status"    />
+        <result property="sendStatus"    column="send_status"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectOmsOrderOperateHistoryVo">
+        select id, order_id, pay_status, send_status, order_status, remark, create_time, create_by, update_time, update_by, del_flag from oms_order_operate_history
+    </sql>
+
+    <select id="selectOmsOrderOperateHistoryList" parameterType="OmsOrderOperateHistory" resultMap="OmsOrderOperateHistoryResult">
+        <include refid="selectOmsOrderOperateHistoryVo"/>
+        <where>
+           del_flag = '0'
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="payStatus != null  and payStatus != ''"> and pay_status = #{payStatus}</if>
+            <if test="sendStatus != null  and sendStatus != ''"> and send_status = #{sendStatus}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and order_status = #{orderStatus}</if>
+        </where>
+    </select>
+
+    <select id="countOmsOrderOperateHistory" parameterType="OmsOrderOperateHistory" resultType="int">
+        select count(*) from oms_order_operate_history
+        <where>
+            del_flag = '0'
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="payStatus != null  and payStatus != ''"> and pay_status = #{payStatus}</if>
+            <if test="sendStatus != null  and sendStatus != ''"> and send_status = #{sendStatus}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and order_status = #{orderStatus}</if>
+        </where>
+    </select>
+
+    <select id="checkOmsOrderOperateHistoryUnique" parameterType="OmsOrderOperateHistory" resultType="int">
+        select count(*) from oms_order_operate_history
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="payStatus != null  and payStatus != ''"> and pay_status = #{payStatus}</if>
+            <if test="sendStatus != null  and sendStatus != ''"> and send_status = #{sendStatus}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and order_status = #{orderStatus}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOmsOrderOperateHistoryById" parameterType="Long" resultMap="OmsOrderOperateHistoryResult">
+        <include refid="selectOmsOrderOperateHistoryVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertOmsOrderOperateHistory" parameterType="OmsOrderOperateHistory" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_order_operate_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null ">order_id,</if>
+            <if test="payStatus != null  and payStatus != ''">pay_status,</if>
+            <if test="sendStatus != null  and sendStatus != ''">send_status,</if>
+            <if test="orderStatus != null  and orderStatus != ''">order_status,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null ">#{orderId},</if>
+            <if test="payStatus != null  and payStatus != ''">#{payStatus},</if>
+            <if test="sendStatus != null  and sendStatus != ''">#{sendStatus},</if>
+            <if test="orderStatus != null  and orderStatus != ''">#{orderStatus},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOmsOrderOperateHistory" parameterType="OmsOrderOperateHistory">
+        update oms_order_operate_history
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null ">order_id = #{orderId},</if>
+            <if test="payStatus != null  and payStatus != ''">pay_status = #{payStatus},</if>
+            <if test="sendStatus != null  and sendStatus != ''">send_status = #{sendStatus},</if>
+            <if test="orderStatus != null  and orderStatus != ''">order_status = #{orderStatus},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOmsOrderOperateHistoryById" parameterType="Long">
+        <!-- update oms_order_operate_history set del_flag = '1' where id = #{id} -->
+        delete from oms_order_operate_history where id = #{id}
+    </delete>
+
+    <delete id="deleteOmsOrderOperateHistoryByIds" parameterType="String">
+        update oms_order_operate_history set del_flag = '1' where id in
+        <!-- delete from oms_order_operate_history where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

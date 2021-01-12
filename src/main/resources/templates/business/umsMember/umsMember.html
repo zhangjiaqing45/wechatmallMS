@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('会员列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li th:if="${isAdmin}">
+                            <p>用户来源：</p>
+                            <select name="sourceType" th:with="type=${@custom.memberSource()}">
+                                <option value="">请选择</option>
+                                <option th:each="t : ${type}" th:text="${t.value}" th:value="${t.key}"></option>
+                            </select>
+                        </li>
+                        <li th:if="${isAdmin}">
+                            <p>帐号状态：</p>
+                            <select name="status" th:with="type=${@custom.commonUseStatus()}">
+                                <option value="">请选择</option>
+                                <option th:each="t : ${type}" th:text="${t.value}" th:value="${t.key}"></option>
+                            </select>
+                        </li>
+                        <li th:if="${isAdmin}">
+                            <p>用户账号：</p>
+                            <input type="text" name="username"/>
+                        </li>
+                        <li>
+                            <p>身份证号：</p>
+                            <input type="text" name="idcard"/>
+                        </li>
+                        <li>
+                            <p>用户手机：</p>
+                            <input type="text" name="phone"/>
+                        </li>
+                        <li>
+                            <p>用户昵称：</p>
+                            <input type="text" name="nickname"/>
+                        </li>
+                        <li>
+                            <p>账户类型：</p>
+                            <select name="accountType" th:with="type=${@dict.getType('biz_account_type')}">
+                                <option value="">请选择</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>结算账户：</p>
+                            <input type="text" name="account"/>
+                        </li>
+                        <li>
+                            <p>订阅标识：</p>
+                            <select name="subscribe" th:with="type=${@custom.memberSubscribe()}">
+                                <option value="">请选择</option>
+                                <option th:each="t : ${type}" th:text="${t.value}" th:value="${t.key}"></option>
+                            </select>
+                        </li>
+                        <li th:if="${isAdmin}">
+                            <p>openid：</p>
+                            <input type="text" name="openid"/>
+                        </li>
+                        <li th:if="${isAdmin}">
+                            <p>unionid：</p>
+                            <input type="text" name="unionid"/>
+                        </li>
+                        <li>
+                            <p>所属店铺：</p>
+                            <input type="text" name="shopName"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="business:umsMember:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <!--<a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="business:umsMember:edit">-->
+            <!--<i class="fa fa-edit"></i> 修改-->
+            <!--</a>-->
+            <!--<a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="business:umsMember:remove">-->
+            <!--<i class="fa fa-remove"></i> 删除-->
+            <!--</a>-->
+            <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:umsMember:export">-->
+            <!--<i class="fa fa-download"></i> 导出-->
+            <!--</a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:umsMember:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:umsMember:remove')}]];
+    var statusDatas = [[${@custom.commonUseStatusAll()}]];
+    var sexDatas = [[${@dict.getType('sys_user_sex')}]];
+    var accountTypeDatas = [[${@dict.getType('biz_account_type')}]];
+    var sourceTypeDatas = [[${@custom.memberSourceAll()}]];
+    var subscribeTypeDatas = [[${@custom.memberSubscribeAll()}]];
+    var isAdmin = [[${isAdmin}]];
+
+    var prefix = ctx + "business/umsMember";
+    var prefixShop = ctx + "business/bizShopInfo";
+    //初始核销员状态
+    var verifier = '1';
+    //当前用户id
+    var currentId;
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            showColumns: isAdmin,
+            modalName: "会员信息",
+            sortName: "id",
+            sortOrder: "desc",
+            columns: [
+                //     {
+                //     checkbox: true
+                // },
+                {
+                    field: 'id',
+                    title: '主键',
+                    visible: false
+                },
+                {
+                    field: 'pid',
+                    title: '上级ID',
+                    visible: false
+                },
+                {
+                    field: 'openid',
+                    title: '公众号openid',
+                    visible: false
+                },
+                {
+                    field: 'unionid',
+                    title: '微信unionid',
+                    visible: false
+                },
+                {
+                    field: 'headimgurl',
+                    title: '用户头像',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'username',
+                    title: '用户名',
+                    visible: false
+                },
+                {
+                    field: 'status',
+                    title: '帐号状态',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        if (statusDatas[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", statusDatas[value].style, statusDatas[value].desc);
+                        }
+                    }
+                },
+                {
+                    field: 'sourceType',
+                    title: '用户来源',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        if (sourceTypeDatas[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", sourceTypeDatas[value].style, sourceTypeDatas[value].desc);
+                        }
+                    }
+                },
+                {
+                    field: 'nickname',
+                    title: '昵称'
+                },
+                {
+                    field: 'idcard',
+                    title: '身份证号'
+                },
+                {
+                    field: 'phone',
+                    title: '用户手机'
+                },
+                {
+                    field: 'sex',
+                    title: '用户性别',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(sexDatas, value);
+                    }
+                },
+                // {
+                //     field : 'country',
+                //     title : '位置',
+                //     formatter : function(value, row, index) {
+                //         var pos = "";
+                //         if (row.country) {
+                //             pos += row.country;
+                //         }
+                //         if (row.province) {
+                //             pos += " / " + row.province;
+                //         }
+                //         if (row.city) {
+                //             pos += " / " + row.city;
+                //         }
+                //         return pos;
+                //     }
+                // },
+                {
+                    field: 'accountType',
+                    title: '结算账户类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(accountTypeDatas, value);
+                    }
+                },
+                {
+                    field: 'account',
+                    title: '结算账户'
+                },
+                {
+                    field: 'subscribe',
+                    title: '订阅标识',
+                    formatter: function (value, row, index) {
+                        if (subscribeTypeDatas[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", subscribeTypeDatas[value].style, subscribeTypeDatas[value].desc);
+                        }
+                    }
+                },
+                {
+                    field: 'cash',
+                    title: '现金余额',
+                    formatter: function (value, row, index) {
+                        return $.common.sprintf('<a href="javascript:void(0)" onclick="cashDetail(\'' + row.id + '\', \'' + row.nickname + '\')"><i class="fa fa-jpy"></i><b> %s</b></a>', value);
+                    }
+                },
+                {
+                    field: 'integration',
+                    title: '积分余额',
+                    formatter: function (value, row, index) {
+                        return $.common.sprintf('<a href="javascript:void(0)" onclick="integrationDetail(\'' + row.id + '\', \'' + row.nickname + '\')"><i class="fa fa-jpy"></i><b> %s</b></a>', value);
+                    }
+                },
+                // {
+                //     field : 'historyIntegration',
+                //     title : '历史积分'
+                // },
+                // {
+                //     field : 'commissionWait',
+                //     title : '待入佣金'
+                // },
+                {
+                    field: 'commission',
+                    title: '佣金余额',
+                    formatter: function (value, row, index) {
+                        return $.common.sprintf('<a href="javascript:void(0)" onclick="commissionDetail(\'' + row.id + '\', \'' + row.nickname + '\')"><i class="fa fa-jpy"></i><b> %s</b></a>', value);
+                    }
+                },
+                // {
+                //     field : 'historyCommission',
+                //     title : '历史佣金'
+                // },
+                {
+                    field: 'shopName',
+                    title: '所属店铺'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if (row.verifier === '1') {
+                            //是核销人员
+                            actions.push('<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="cancelVerifier(\'' + row.id + '\')">取消核销员</a> ');
+                        } else {
+                            //不是核销人员
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="setVerifier(\'' + row.id + '\')">设为核销员</a> ');
+                        }
+                        return actions.join('');
+                    }
+                }
+            ]
+        };
+        $.table.init(options);
+    });
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            updateVerifier(shop.id);
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+
+    /**
+     * 更新核销人员状态
+     */
+    function updateVerifier(shopId) {
+        var data = {
+            id: currentId,
+            shopId: shopId ? shopId : 0,
+            verifier: verifier
+        };
+        $.operate.post(prefix + "/verifier", data);
+    }
+
+    /**
+     * 设置为核销人员
+     */
+    function setVerifier(memberId) {
+        verifier = '1';
+        currentId = memberId;
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 取消核销人员资格
+     */
+    function cancelVerifier(memberId) {
+        verifier = '0';
+        currentId = memberId;
+        updateVerifier(0);
+    }
+
+    function cashDetail(id, name) {
+        $.modal.confirm("查看用户[ " + name + " ]<b> 现金账户 </b>明细", function () {
+            var options = {
+                title: "用户[ " + name + " ]<b> 现金账户 </b>明细",
+                url: prefix + "/cash/" + id,
+                btn: false
+            };
+            $.modal.openOptions(options);
+        });
+    }
+
+    function integrationDetail(id, name) {
+        $.modal.confirm("查看用户[ " + name + " ]<b> 积分账户 </b>明细", function () {
+            var options = {
+                title: "用户[ " + name + " ]<b> 积分账户 </b>明细",
+                url: prefix + "/integral/" + id,
+                btn: false
+            };
+            $.modal.openOptions(options);
+        });
+    }
+
+    function commissionDetail(id, name) {
+        $.modal.confirm("查看用户[ " + name + " ]<b> 佣金账户 </b>明细", function () {
+            var options = {
+                title: "用户[ " + name + " ]<b> 佣金账户 </b>明细",
+                url: prefix + "/commission/" + id,
+                btn: false
+            };
+            $.modal.openOptions(options);
+        });
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsGroupGameRecord.mapper.SmsGroupGameRecordMapper">
+    
+    <resultMap type="SmsGroupGameRecord" id="SmsGroupGameRecordResult">
+        <result property="id"    column="id"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="groupGameId"    column="group_game_id"    />
+        <result property="targetMemberCount"    column="target_member_count"    />
+        <result property="lockMemberCount"    column="lock_member_count"    />
+        <result property="groupMemberCount"    column="group_member_count"    />
+        <result property="status"    column="status"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productPic"    column="product_pic"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="productSn"    column="product_sn"    />
+    </resultMap>
+
+    <sql id="selectSmsGroupGameRecordVo">
+        select id, shop_name, shop_id, group_game_id, target_member_count, lock_member_count, group_member_count, status, product_name, product_pic, create_by, create_time, update_by, update_time, remark, del_flag, product_sn from sms_group_game_record
+    </sql>
+
+    <select id="selectSmsGroupGameRecordList" parameterType="SmsGroupGameRecord" resultMap="SmsGroupGameRecordResult">
+        <include refid="selectSmsGroupGameRecordVo"/>
+        <where>
+           del_flag = '0'
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="groupGameId != null "> and group_game_id = #{groupGameId}</if>
+            <if test="targetMemberCount != null "> and target_member_count = #{targetMemberCount}</if>
+            <if test="lockMemberCount != null "> and lock_member_count = #{lockMemberCount}</if>
+            <if test="groupMemberCount != null "> and group_member_count = #{groupMemberCount}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+        </where>
+    </select>
+
+    <select id="countSmsGroupGameRecord" parameterType="SmsGroupGameRecord" resultType="int">
+        select count(*) from sms_group_game_record
+        <where>
+            del_flag = '0'
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="groupGameId != null "> and group_game_id = #{groupGameId}</if>
+            <if test="targetMemberCount != null "> and target_member_count = #{targetMemberCount}</if>
+            <if test="lockMemberCount != null "> and lock_member_count = #{lockMemberCount}</if>
+            <if test="groupMemberCount != null "> and group_member_count = #{groupMemberCount}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+        </where>
+    </select>
+
+    <select id="checkSmsGroupGameRecordUnique" parameterType="SmsGroupGameRecord" resultType="int">
+        select count(*) from sms_group_game_record
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="shopName != null  and shopName != ''"> and shop_name = #{shopName}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="groupGameId != null "> and group_game_id = #{groupGameId}</if>
+            <if test="targetMemberCount != null "> and target_member_count = #{targetMemberCount}</if>
+            <if test="lockMemberCount != null "> and lock_member_count = #{lockMemberCount}</if>
+            <if test="groupMemberCount != null "> and group_member_count = #{groupMemberCount}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="productName != null  and productName != ''"> and product_name = #{productName}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+        </where>
+    </select>
+
+
+    <select id="selectSmsGroupGameRecordById" parameterType="Long" resultMap="SmsGroupGameRecordResult">
+        <include refid="selectSmsGroupGameRecordVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertSmsGroupGameRecord" parameterType="SmsGroupGameRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_group_game_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopName != null  and shopName != ''">shop_name,</if>
+            <if test="shopId != null ">shop_id,</if>
+            <if test="groupGameId != null ">group_game_id,</if>
+            <if test="targetMemberCount != null ">target_member_count,</if>
+            <if test="lockMemberCount != null ">lock_member_count,</if>
+            <if test="groupMemberCount != null ">group_member_count,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="productName != null  and productName != ''">product_name,</if>
+            <if test="productPic != null  and productPic != ''">product_pic,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="productSn != null  and productSn != ''">product_sn,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopName != null  and shopName != ''">#{shopName},</if>
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="groupGameId != null ">#{groupGameId},</if>
+            <if test="targetMemberCount != null ">#{targetMemberCount},</if>
+            <if test="lockMemberCount != null ">#{lockMemberCount},</if>
+            <if test="groupMemberCount != null ">#{groupMemberCount},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="productName != null  and productName != ''">#{productName},</if>
+            <if test="productPic != null  and productPic != ''">#{productPic},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="productSn != null  and productSn != ''">#{productSn},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSmsGroupGameRecord" parameterType="SmsGroupGameRecord">
+        update sms_group_game_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopName != null  and shopName != ''">shop_name = #{shopName},</if>
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="groupGameId != null ">group_game_id = #{groupGameId},</if>
+            <if test="targetMemberCount != null ">target_member_count = #{targetMemberCount},</if>
+            <if test="lockMemberCount != null ">lock_member_count = #{lockMemberCount},</if>
+            <if test="groupMemberCount != null ">group_member_count = #{groupMemberCount},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="productName != null  and productName != ''">product_name = #{productName},</if>
+            <if test="productPic != null  and productPic != ''">product_pic = #{productPic},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="productSn != null  and productSn != ''">product_sn = #{productSn},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsGroupGameRecordById" parameterType="Long">
+        <!-- update sms_group_game_record set del_flag = '1' where id = #{id} -->
+        delete from sms_group_game_record where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsGroupGameRecordByIds" parameterType="String">
+        update sms_group_game_record set del_flag = '1' where id in
+        <!-- delete from sms_group_game_record where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

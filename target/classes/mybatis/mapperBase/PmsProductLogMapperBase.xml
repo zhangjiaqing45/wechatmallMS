@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsProductLog.mapper.PmsProductLogMapper">
+    
+    <resultMap type="PmsProductLog" id="PmsProductLogResult">
+        <result property="id"    column="id"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="skuId"    column="sku_id"    />
+        <result property="skuSpData"    column="sku_sp_data"    />
+        <result property="productType"    column="product_type"    />
+        <result property="action"    column="action"    />
+        <result property="oldValue"    column="old_value"    />
+        <result property="newValue"    column="new_value"    />
+        <result property="description"    column="description"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectPmsProductLogVo">
+        select id, shop_id, shop_name, product_id, product_name, sku_id, sku_sp_data, product_type, action, old_value, new_value, description, create_by, create_time, update_by, update_time, remark, del_flag from pms_product_log
+    </sql>
+
+    <select id="selectPmsProductLogList" parameterType="PmsProductLog" resultMap="PmsProductLogResult">
+        <include refid="selectPmsProductLogVo"/>
+        <where>
+           del_flag = '0'
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="skuSpData != null  and skuSpData != ''"> and sku_sp_data like concat('%', #{skuSpData}, '%')</if>
+            <if test="action != null  and action != ''"> and action = #{action}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+        </where>
+    </select>
+
+    <select id="countPmsProductLog" parameterType="PmsProductLog" resultType="int">
+        select count(*) from pms_product_log
+        <where>
+            del_flag = '0'
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="skuSpData != null  and skuSpData != ''"> and sku_sp_data like concat('%', #{skuSpData}, '%')</if>
+            <if test="action != null  and action != ''"> and action = #{action}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+        </where>
+    </select>
+
+    <select id="checkPmsProductLogUnique" parameterType="PmsProductLog" resultType="int">
+        select count(*) from pms_product_log
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="shopName != null  and shopName != ''"> and shop_name = #{shopName}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productName != null  and productName != ''"> and product_name = #{productName}</if>
+            <if test="skuId != null "> and sku_id = #{skuId}</if>
+            <if test="skuSpData != null  and skuSpData != ''"> and sku_sp_data = #{skuSpData}</if>
+            <if test="productType != null  and productType != ''"> and product_type = #{productType}</if>
+            <if test="action != null  and action != ''"> and action = #{action}</if>
+            <if test="oldValue != null  and oldValue != ''"> and old_value = #{oldValue}</if>
+            <if test="newValue != null  and newValue != ''"> and new_value = #{newValue}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectPmsProductLogById" parameterType="Long" resultMap="PmsProductLogResult">
+        <include refid="selectPmsProductLogVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertPmsProductLog" parameterType="PmsProductLog" useGeneratedKeys="true" keyProperty="id">
+        insert into pms_product_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">shop_id,</if>
+            <if test="shopName != null  and shopName != ''">shop_name,</if>
+            <if test="productId != null ">product_id,</if>
+            <if test="productName != null  and productName != ''">product_name,</if>
+            <if test="skuId != null ">sku_id,</if>
+            <if test="skuSpData != null  and skuSpData != ''">sku_sp_data,</if>
+            <if test="productType != null  and productType != ''">product_type,</if>
+            <if test="action != null  and action != ''">action,</if>
+            <if test="oldValue != null  and oldValue != ''">old_value,</if>
+            <if test="newValue != null  and newValue != ''">new_value,</if>
+            <if test="description != null  and description != ''">description,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="shopName != null  and shopName != ''">#{shopName},</if>
+            <if test="productId != null ">#{productId},</if>
+            <if test="productName != null  and productName != ''">#{productName},</if>
+            <if test="skuId != null ">#{skuId},</if>
+            <if test="skuSpData != null  and skuSpData != ''">#{skuSpData},</if>
+            <if test="productType != null  and productType != ''">#{productType},</if>
+            <if test="action != null  and action != ''">#{action},</if>
+            <if test="oldValue != null  and oldValue != ''">#{oldValue},</if>
+            <if test="newValue != null  and newValue != ''">#{newValue},</if>
+            <if test="description != null  and description != ''">#{description},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePmsProductLog" parameterType="PmsProductLog">
+        update pms_product_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="shopName != null  and shopName != ''">shop_name = #{shopName},</if>
+            <if test="productId != null ">product_id = #{productId},</if>
+            <if test="productName != null  and productName != ''">product_name = #{productName},</if>
+            <if test="skuId != null ">sku_id = #{skuId},</if>
+            <if test="skuSpData != null  and skuSpData != ''">sku_sp_data = #{skuSpData},</if>
+            <if test="productType != null  and productType != ''">product_type = #{productType},</if>
+            <if test="action != null  and action != ''">action = #{action},</if>
+            <if test="oldValue != null  and oldValue != ''">old_value = #{oldValue},</if>
+            <if test="newValue != null  and newValue != ''">new_value = #{newValue},</if>
+            <if test="description != null  and description != ''">description = #{description},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePmsProductLogById" parameterType="Long">
+        <!-- update pms_product_log set del_flag = '1' where id = #{id} -->
+        delete from pms_product_log where id = #{id}
+    </delete>
+
+    <delete id="deletePmsProductLogByIds" parameterType="String">
+        update pms_product_log set del_flag = '1' where id in
+        <!-- delete from pms_product_log where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

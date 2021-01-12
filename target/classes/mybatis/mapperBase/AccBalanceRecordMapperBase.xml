@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.accBalanceRecord.mapper.AccBalanceRecordMapper">
+    
+    <resultMap type="AccBalanceRecord" id="AccBalanceRecordResult">
+        <result property="id"    column="id"    />
+        <result property="memberId"    column="member_id"    />
+        <result property="money"    column="money"    />
+        <result property="type"    column="type"    />
+        <result property="operation"    column="operation"    />
+        <result property="description"    column="description"    />
+        <result property="cashApplyId"    column="cash_apply_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectAccBalanceRecordVo">
+        select id, member_id, money, type, operation, description, cash_apply_id, create_by, create_time, update_by, update_time, remark, del_flag from acc_balance_record
+    </sql>
+
+    <select id="selectAccBalanceRecordList" parameterType="AccBalanceRecord" resultMap="AccBalanceRecordResult">
+        <include refid="selectAccBalanceRecordVo"/>
+        <where>
+           del_flag = '0'
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="money != null "> and money = #{money}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="operation != null  and operation != ''"> and operation = #{operation}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="cashApplyId != null "> and cash_apply_id = #{cashApplyId}</if>
+        </where>
+    </select>
+
+    <select id="countAccBalanceRecord" parameterType="AccBalanceRecord" resultType="int">
+        select count(*) from acc_balance_record
+        <where>
+            del_flag = '0'
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="money != null "> and money = #{money}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="operation != null  and operation != ''"> and operation = #{operation}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="cashApplyId != null "> and cash_apply_id = #{cashApplyId}</if>
+        </where>
+    </select>
+
+    <select id="checkAccBalanceRecordUnique" parameterType="AccBalanceRecord" resultType="int">
+        select count(*) from acc_balance_record
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="money != null "> and money = #{money}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="operation != null  and operation != ''"> and operation = #{operation}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="cashApplyId != null "> and cash_apply_id = #{cashApplyId}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectAccBalanceRecordById" parameterType="Long" resultMap="AccBalanceRecordResult">
+        <include refid="selectAccBalanceRecordVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertAccBalanceRecord" parameterType="AccBalanceRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into acc_balance_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="memberId != null ">member_id,</if>
+            <if test="money != null ">money,</if>
+            <if test="type != null  and type != ''">type,</if>
+            <if test="operation != null  and operation != ''">operation,</if>
+            <if test="description != null  and description != ''">description,</if>
+            <if test="cashApplyId != null ">cash_apply_id,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="memberId != null ">#{memberId},</if>
+            <if test="money != null ">#{money},</if>
+            <if test="type != null  and type != ''">#{type},</if>
+            <if test="operation != null  and operation != ''">#{operation},</if>
+            <if test="description != null  and description != ''">#{description},</if>
+            <if test="cashApplyId != null ">#{cashApplyId},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAccBalanceRecord" parameterType="AccBalanceRecord">
+        update acc_balance_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="memberId != null ">member_id = #{memberId},</if>
+            <if test="money != null ">money = #{money},</if>
+            <if test="type != null  and type != ''">type = #{type},</if>
+            <if test="operation != null  and operation != ''">operation = #{operation},</if>
+            <if test="description != null  and description != ''">description = #{description},</if>
+            <if test="cashApplyId != null ">cash_apply_id = #{cashApplyId},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAccBalanceRecordById" parameterType="Long">
+        <!-- update acc_balance_record set del_flag = '1' where id = #{id} -->
+        delete from acc_balance_record where id = #{id}
+    </delete>
+
+    <delete id="deleteAccBalanceRecordByIds" parameterType="String">
+        update acc_balance_record set del_flag = '1' where id in
+        <!-- delete from acc_balance_record where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

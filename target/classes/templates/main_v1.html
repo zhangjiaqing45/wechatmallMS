@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计</title>
+    <link rel="shortcut icon" href="favicon.ico">
+<!--    <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}" rel="stylesheet"/>
+    <link href="../static/css/main/animate.min.css" th:href="@{/css/main/animate.min.css}" rel="stylesheet"/>
+    <link href="../static/css/main/style.min862f.css" th:href="@{/css/main/style.min862f.css}" rel="stylesheet"/>-->
+    <th:block th:include="include :: header('首页')"/>
+    <th:block th:include="include :: datetimepicker-css" />
+    <style type="text/css">
+        .select-time-com input {
+            width: 93px !important;
+        }
+
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content">
+    <!--订单信息-->
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">今日</span>
+                    <h5>总订单量</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="countDayOfOrder">0</h1>
+                    <!--<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
+                    </div>-->
+                    <!--<small>总订单量</small>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">本月</span>
+                    <h5>总订单量</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="countMonthOfOrder">0</h1>
+                   <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
+                    </div>-->
+                    <!--<small>总订单量</small>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">今日</span>
+                    <h5>成交总额</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="sumDayOfMoney">￥ 0</h1>
+                    <!--<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
+                    </div>-->
+                   <!-- <small>成交总额</small>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">本月</span>
+                    <h5>成交总额</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="sumMonthOfMoney">￥ 0</h1>
+                    <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
+                     </div>-->
+                    <!--<small>成交总额</small>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--账户信息-->
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">今日</span>
+                    <h5>店铺提现</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="sumDayOfShopCash">￥ 0</h1>
+                    <!--<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
+                    </div>-->
+                    <!--<small>提现总额</small>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">本月</span>
+                    <h5>店铺提现</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="sumMonthOfShopCash">￥ 0</h1>
+                    <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
+                     </div>-->
+                    <!--<small>提现总额</small>-->
+                </div>
+            </div>
+        </div>
+        <!--优惠券-->
+         <div class="col-sm-3">
+           <div class="ibox float-e-margins">
+               <div class="ibox-title">
+                   <span class="label label-success pull-right">今日</span>
+                   <h5>优惠券使用量</h5>
+               </div>
+               <div class="ibox-content">
+                   <h1 class="no-margins" id="sumDayOfCoupon"> 0</h1>
+                   <!--<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
+                   </div>-->
+                   <!--<small>发放总额</small>-->
+               </div>
+           </div>
+       </div>
+       <div class="col-sm-3">
+           <div class="ibox float-e-margins">
+               <div class="ibox-title">
+                   <span class="label label-info pull-right">本月</span>
+                   <h5>优惠券使用量</h5>
+               </div>
+               <div class="ibox-content">
+                   <h1 class="no-margins" id="sumMonthOfCoupon"> 0</h1>
+                   <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
+                    </div>-->
+                   <!--<small>发放总额</small>-->
+               </div>
+           </div>
+       </div>
+        <!--用户提现-->
+       <!-- <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">今日</span>
+                    <h5>用户提现</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="sumDayOfMemberCash">￥ 0</h1>
+                    &lt;!&ndash;<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
+                    </div>&ndash;&gt;
+                    &lt;!&ndash;<small>发放总额</small>&ndash;&gt;
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">本月</span>
+                    <h5>用户提现</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="sumMonthOfMemberCash">￥ 0</h1>
+                    &lt;!&ndash; <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
+                     </div>&ndash;&gt;
+                    &lt;!&ndash;<small>发放总额</small>&ndash;&gt;
+                </div>
+            </div>
+        </div>-->
+</div>
+    <!--图表查询-->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>优惠券</h5>
+                    <div class="pull-right">
+                        <div class="select-list">
+                        <ul>
+                        <li class="select-time-com">
+                            <input type="text" class="time-input-com" id="startTime" placeholder="开始时间"
+                                   name="startTime" readonly/>
+                            <span>-</span>
+                            <input type="text" class="time-input-com" id="endTime" placeholder="结束时间"
+                                   name="endTime" readonly/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="getEchartData()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                        </li>
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-9">
+                            <div class="flot-chart" style="height: 400px;">
+                                <!--条形图-->
+                                <div class="flot-chart-content" id="container"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <ul class="stat-list">
+                                <li>
+                                    <h2 class="no-margins" id="countDaysOfCoupon">0</h2>
+                                    <small>优惠券使用量</small>
+                                    <!-- <div class="stat-percent">48% <i class="fa fa-level-up text-navy"></i>
+                                    </div>-->
+                                    <div class="progress progress-mini">
+                                        <div style="width: 100%;" class="progress-bar"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <h2 class="no-margins" id="countDaysOfOrder">0</h2>
+                                    <small>订单总数</small>
+                                    <!-- <div class="stat-percent">48% <i class="fa fa-level-up text-navy"></i>
+                                    </div>-->
+                                    <div class="progress progress-mini">
+                                        <div style="width: 100%;" class="progress-bar"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <h2 class="no-margins " id="sumDaysOfMoney">￥ 0</h2>
+                                    <small>交易总额</small>
+                                    <!--<div class="stat-percent">60% <i class="fa fa-level-down text-navy"></i>
+                                    </div>-->
+                                    <div class="progress progress-mini">
+                                        <div style="width: 100%;" class="progress-bar"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <h2 class="no-margins " id="sumDaysOfMemberCash">￥ 0</h2>
+                                    <small>用户提现</small>
+                                    <!--<div class="stat-percent">22% <i class="fa fa-bolt text-navy"></i>
+                                    </div>-->
+                                    <div class="progress progress-mini">
+                                        <div style="width: 100%;" class="progress-bar"></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--会员信息-->
+    <div class="row" id="shopHidden">
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">今日</span>
+                    <h5>新增会员</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="countDayOfMember">0</h1>
+                    <!--<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
+                    </div>-->
+                    <!--<small></small>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">本月</span>
+                    <h5>新增会员</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="countMonthOfMember">0</h1>
+                    <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
+                     </div>-->
+                    <!--<small></small>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">今日</span>
+                    <h5>新增店铺</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="countDayOfShop">0</h1>
+                    <!--<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
+                    </div>-->
+                    <!--<small></small>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">本月</span>
+                    <h5>新增店铺</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins" id="countMonthOfShop">0</h1>
+                    <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
+                     </div>-->
+                   <!-- <small></small>-->
+                </div>
+            </div>
+        </div>
+    </div>
+   <!-- <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>用户项目列表</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <table class="table table-hover no-margins">
+                        <thead>
+                        <tr>
+                            <th>状态</th>
+                            <th>日期</th>
+                            <th>用户</th>
+                            <th>值</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 11:20</td>
+                            <td>青衣5858</td>
+                            <td class="text-navy"><i class="fa fa-level-up"></i> 24%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-warning">已取消</span>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 10:40</td>
+                            <td>徐子崴</td>
+                            <td class="text-navy"><i class="fa fa-level-up"></i> 66%</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 01:30</td>
+                            <td>姜岚昕</td>
+                            <td class="text-navy"><i class="fa fa-level-up"></i> 54%</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 02:20</td>
+                            <td>武汉大兵哥</td>
+                            <td class="text-navy"><i class="fa fa-level-up"></i> 12%</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 09:40</td>
+                            <td>荆莹儿</td>
+                            <td class="text-navy"><i class="fa fa-level-up"></i> 22%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-primary">已完成</span>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 04:10</td>
+                            <td>栾某某</td>
+                            <td class="text-navy"><i class="fa fa-level-up"></i> 66%</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 12:08</td>
+                            <td>范范范二妮</td>
+                            <td class="text-navy"><i class="fa fa-level-up"></i> 23%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>-->
+</div>
+<!--<script th:src="@{/js/jquery.min.js}"></script>-->
+<!--<script th:src="@{/js/bootstrap.min.js}"></script>-->
+<!--<script th:src="@{/ajax/libs/flot/jquery.flot.js}"></script>-->
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: echarts-js"/>
+<th:block th:include="include :: datetimepicker-js" />
+<!--<th:block th:include="include :: sparkline-js"/>-->
+<script type="text/javascript">
+    var prefix = ctx + "business/home";
+    var url_getEchartData = prefix + "/getEchartData";
+    var url_getHomeData = prefix + "/getHomeData";
+
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom);
+    var option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                    color: '#999'
+                }
+            }
+        },
+        toolbox: {
+            feature: {
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        legend: {
+            data: ['订单总量', '总交易额']
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                axisPointer: {
+                    type: 'shadow'
+                }
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: '优惠券领取量',
+                min: 0,
+                max: 250,
+                interval: 50,
+                axisLabel: {
+                    formatter: '{value} '
+                }
+            },
+            {
+                type: 'value',
+                name: '',
+                min: 0,
+                max: 25,
+                interval: 5,
+                axisLabel: {
+                    formatter: '{value} 元'
+                }
+            }
+        ],
+        series: [
+            {
+                name: '优惠券使用量',
+                type: 'bar',
+                data: []
+            },
+            {
+                name: '',//交易金额
+                type: 'line',
+                yAxisIndex: 1,
+                data: []
+            }
+        ]
+    };
+    /**
+     * 获取 当月每日订单数量及成交额曲线图统计；
+     */
+    function getEchartData(){
+        var startTime = $("#startTime").val();
+        var endTime = $("#endTime").val();
+        //验证时间
+        if(startTime&&endTime&&startTime > endTime){
+            $.modal.msgWarning("选择的开始时间必须小于结束时间");
+            return
+        }
+
+        $.operate.post(url_getEchartData, {startTime:startTime,endTime:endTime}, function(resp){
+            if(resp.code === web_status.SUCCESS){
+                //log.log(resp);
+                option.xAxis[0].data = resp.homeChartInfo.xAxis;
+                option.series[0].data = resp.homeChartInfo.series.nums;
+                option.series[1].data = resp.homeChartInfo.series.totals;
+                var maxCount = parseInt(resp.homeChartInfo.maxOrderCount);
+                var maxMoney = parseInt(resp.homeChartInfo.maxOrderMoney);
+                maxCount = Math.ceil(maxCount/10)*10;
+                maxMoney = Math.ceil(maxMoney/1000)*1000;
+
+                option.yAxis[0].max = Math.ceil(maxCount + maxCount/10);
+                option.yAxis[1].max = Math.ceil(maxMoney + maxMoney/10);
+                option.yAxis[0].interval = Math.ceil(maxCount/5);
+                option.yAxis[1].interval = Math.ceil(maxMoney/5);
+
+                if (option && typeof option === "object") {
+                    myChart.setOption(option, true);
+                }
+                /**优惠券使用量*/
+                $("#countDaysOfCoupon").text(resp.someDaysOrderInfo.someDayCouponCount);
+                /**获取时间段内订单总量*/
+                $("#countDaysOfOrder").text(resp.someDaysOrderInfo.countDaysOfOrder);
+                /**获取时间段内订单成交总额*/
+                $("#sumDaysOfMoney").text(resp.someDaysOrderInfo.sumDaysOfMoney);
+                /**获取时间段内佣金总额*/
+                $("#sumDaysOfMemberCash").text(resp.someDaysOrderInfo.sumDaysOfMemberCash*-1);
+            }
+        })
+    }
+    /**
+     * 获取 当月每日订单数量及成交额曲线图统计；
+     */
+    function getHomeData(){
+        $.operate.get(url_getHomeData, function(resp){
+            if(resp.code === web_status.SUCCESS){
+                //log.log(resp);
+                /**获取当日订单总量*/
+                $("#countDayOfOrder").text(resp.homeData.countDayOfOrder);
+                /**获取当月订单总量*/
+                $("#countMonthOfOrder").text(resp.homeData.countMonthOfOrder);
+                /**获取当日订单成交总额*/
+                $("#sumDayOfMoney").text(resp.homeData.sumDayOfMoney);
+                /**获取当月订单成交总额*/
+                $("#sumMonthOfMoney").text(resp.homeData.sumMonthOfMoney);
+                /**当日，当月新增会员总数量*/
+                $("#countDayOfMember").text(resp.homeData.countDayOfMember);
+                /**当月，新增会员总数量*/
+                $("#countMonthOfMember").text(resp.homeData.countMonthOfMember);
+                /** 当日，新增店铺总数*/
+                $("#countDayOfShop").text(resp.homeData.countDayOfShop);
+                /** 当月，新增店铺总数*/
+                $("#countMonthOfShop").text(resp.homeData.countMonthOfShop);
+                /** 当日总提现金额*/
+                $("#sumDayOfShopCash").text(resp.homeData.sumDayOfShopCash*-1);
+                /** 当月总提现金额*/
+                $("#sumMonthOfShopCash").text(resp.homeData.sumMonthOfShopCash*-1);
+                /**当日总佣金发放金额*/
+                $("#sumDayOfMemberCash").text(resp.homeData.sumDayOfMemberCash*-1);
+                /**当月总佣金发放金额*/
+                $("#sumMonthOfMemberCash").text(resp.homeData.sumMonthOfMemberCash*-1);
+
+                /**优惠券今日使用量*/
+                $("#sumDayOfCoupon").text(resp.homeData.sumDayOfCoupon);
+                /**优惠券本月使用量*/
+                $("#sumMonthOfCoupon").text(resp.homeData.sumMonthOfCoupon);
+
+                //有id则隐藏 没有则显示
+                if(resp.shopId){
+                    $("#shopHidden").remove()
+                }
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        getHomeData();
+        getEchartData();
+
+        $("#startTime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: "month",
+            todayBtn: true,
+            autoclose: true,
+            // startDate: new Date(),
+        }).on('changeDate', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var startTime = event.date;
+            $('#endTime').datetimepicker('setStartDate', startTime);
+        });
+
+        $("#endTime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: "month",
+            todayBtn: true,
+            autoclose: true,
+            // startDate: new Date(),
+        }).on('changeDate', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var endTime = event.date;
+            $("#startTime").datetimepicker('setEndDate', endTime);
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsSkuStock.mapper.PmsSkuStockMapper">
+    
+    <resultMap type="PmsSkuStock" id="PmsSkuStockResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="skuCode"    column="sku_code"    />
+        <result property="price"    column="price"    />
+        <result property="stock"    column="stock"    />
+        <result property="lowStock"    column="low_stock"    />
+        <result property="pic"    column="pic"    />
+        <result property="sale"    column="sale"    />
+        <result property="promotionPrice"    column="promotion_price"    />
+        <result property="lockStock"    column="lock_stock"    />
+        <result property="spData"    column="sp_data"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectPmsSkuStockVo">
+        select id, product_id, shop_id, sku_code, price, stock, low_stock, pic, sale, promotion_price, lock_stock, sp_data, status, create_by, create_time, update_by, update_time, remark, del_flag from pms_sku_stock
+    </sql>
+
+    <select id="selectPmsSkuStockList" parameterType="PmsSkuStock" resultMap="PmsSkuStockResult">
+        <include refid="selectPmsSkuStockVo"/>
+        <where>
+           del_flag = '0'
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="skuCode != null  and skuCode != ''"> and sku_code = #{skuCode}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="lowStock != null "> and low_stock = #{lowStock}</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="sale != null "> and sale = #{sale}</if>
+            <if test="promotionPrice != null "> and promotion_price = #{promotionPrice}</if>
+            <if test="lockStock != null "> and lock_stock = #{lockStock}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+
+    <select id="countPmsSkuStock" parameterType="PmsSkuStock" resultType="int">
+        select count(*) from pms_sku_stock
+        <where>
+            del_flag = '0'
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="skuCode != null  and skuCode != ''"> and sku_code = #{skuCode}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="lowStock != null "> and low_stock = #{lowStock}</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="sale != null "> and sale = #{sale}</if>
+            <if test="promotionPrice != null "> and promotion_price = #{promotionPrice}</if>
+            <if test="lockStock != null "> and lock_stock = #{lockStock}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+
+    <select id="checkPmsSkuStockUnique" parameterType="PmsSkuStock" resultType="int">
+        select count(*) from pms_sku_stock
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="skuCode != null  and skuCode != ''"> and sku_code = #{skuCode}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="lowStock != null "> and low_stock = #{lowStock}</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="sale != null "> and sale = #{sale}</if>
+            <if test="promotionPrice != null "> and promotion_price = #{promotionPrice}</if>
+            <if test="lockStock != null "> and lock_stock = #{lockStock}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectPmsSkuStockById" parameterType="Long" resultMap="PmsSkuStockResult">
+        <include refid="selectPmsSkuStockVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertPmsSkuStock" parameterType="PmsSkuStock" useGeneratedKeys="true" keyProperty="id">
+        insert into pms_sku_stock
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null ">product_id,</if>
+            <if test="shopId != null ">shop_id,</if>
+            <if test="skuCode != null  and skuCode != ''">sku_code,</if>
+            <if test="price != null ">price,</if>
+            <if test="stock != null ">stock,</if>
+            <if test="lowStock != null ">low_stock,</if>
+            <if test="pic != null  and pic != ''">pic,</if>
+            <if test="sale != null ">sale,</if>
+            <if test="promotionPrice != null ">promotion_price,</if>
+            <if test="lockStock != null ">lock_stock,</if>
+            <if test="spData != null  and spData != ''">sp_data,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null ">#{productId},</if>
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="skuCode != null  and skuCode != ''">#{skuCode},</if>
+            <if test="price != null ">#{price},</if>
+            <if test="stock != null ">#{stock},</if>
+            <if test="lowStock != null ">#{lowStock},</if>
+            <if test="pic != null  and pic != ''">#{pic},</if>
+            <if test="sale != null ">#{sale},</if>
+            <if test="promotionPrice != null ">#{promotionPrice},</if>
+            <if test="lockStock != null ">#{lockStock},</if>
+            <if test="spData != null  and spData != ''">#{spData},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePmsSkuStock" parameterType="PmsSkuStock">
+        update pms_sku_stock
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null ">product_id = #{productId},</if>
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="skuCode != null  and skuCode != ''">sku_code = #{skuCode},</if>
+            <if test="price != null ">price = #{price},</if>
+            <if test="stock != null ">stock = #{stock},</if>
+            <if test="lowStock != null ">low_stock = #{lowStock},</if>
+            <if test="pic != null  and pic != ''">pic = #{pic},</if>
+            <if test="sale != null ">sale = #{sale},</if>
+            <if test="promotionPrice != null ">promotion_price = #{promotionPrice},</if>
+            <if test="lockStock != null ">lock_stock = #{lockStock},</if>
+            <if test="spData != null  and spData != ''">sp_data = #{spData},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePmsSkuStockById" parameterType="Long">
+        <!-- update pms_sku_stock set del_flag = '1' where id = #{id} -->
+        delete from pms_sku_stock where id = #{id}
+    </delete>
+
+    <delete id="deletePmsSkuStockByIds" parameterType="String">
+        update pms_sku_stock set del_flag = '1' where id in
+        <!-- delete from pms_sku_stock where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

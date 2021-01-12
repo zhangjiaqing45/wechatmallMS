@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改账户出入账记录')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-accAccountRecord-edit" th:object="${accAccountRecord}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">到账店铺id：</label>
+                <div class="col-sm-8">
+                    <input name="shopId" th:field="*{shopId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">金额(可以是负数)：</label>
+                <div class="col-sm-8">
+                    <input name="money" th:field="*{money}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">操作:0佣金收入 1订单金额入账 2退货订单出账 3退货佣金出账4店铺提现出账5.用户提现出账：</label>
+                <div class="col-sm-8">
+                    <input name="operation" th:field="*{operation}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">金额类型->0:佣金1:商品：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control m-b">
+                        <option value="">所有</option>
+                    </select>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">描述:{}:商品购买,转入金额/{}:商品退货,资金返还/{}:申请提现,资金转出：</label>
+                <div class="col-sm-8">
+                    <input name="description" th:field="*{description}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">申请单号(退货申请/提现申请)：</label>
+                <div class="col-sm-8">
+                    <input name="applyId" th:field="*{applyId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">订单号：</label>
+                <div class="col-sm-8">
+                    <input name="orderId" th:field="*{orderId}" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/accAccountRecord";
+        $("#form-accAccountRecord-edit").validate({
+            ignore:[],
+                rules: {
+                    shopId:{
+                        maxlength: 20,
+                    },
+                    money:{
+                        maxlength: 11,2,
+                    },
+                    operation:{
+                        maxlength: 1,
+                    },
+                    type:{
+                        maxlength: 1,
+                    },
+                    description: {
+                        maxlength: 30
+                    },
+                    applyId:{
+                        maxlength: 20,
+                    },
+                    orderId:{
+                        maxlength: 20,
+                    },
+                    createBy:{
+                        maxlength: 50,
+                    },
+                    createTime:{
+                    },
+                    updateBy:{
+                        maxlength: 50,
+                    },
+                    updateTime:{
+                    },
+                    remark: {
+                        maxlength: 20
+                    },
+                    delFlag:{
+                        maxlength: 1,
+                    },
+                },
+                messages: {
+                    shopId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    money:{
+                        maxlength: "最多输入11,2 个字符.",
+                    },
+                    operation:{
+                        maxlength: "最多输入1 个字符.",
+                    },
+                    type:{
+                        maxlength: "最多输入1 个字符.",
+                    },
+                    description: {
+                        maxlength: "最多输入20个字符.",
+                    },
+                    applyId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    orderId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    createBy:{
+                        maxlength: "最多输入50 个字符.",
+                    },
+                    createTime:{
+                    },
+                    updateBy:{
+                        maxlength: "最多输入50 个字符.",
+                    },
+                    updateTime:{
+                    },
+                    remark: {
+                        maxlength: "最多输入20个字符.",
+                    },
+                    delFlag:{
+                        maxlength: "最多输入1 个字符.",
+                    },
+        },
+        focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-accAccountRecord-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

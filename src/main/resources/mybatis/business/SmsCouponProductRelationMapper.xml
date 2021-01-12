@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsCouponProductRelation.mapper.SmsCouponProductRelationMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SmsCouponProductRelationResultExt" type="扩展类全包名" extends="SmsCouponProductRelationResult">
+
+    </resultMap>
+     -->
+
+    <sql id="selectJoinListVo">
+        select pr.id, pr.coupon_id, pr.product_id, p.`name` as product_name, p.product_sn, p.publish_status
+        from sms_coupon_product_relation pr
+        inner join pms_product p on pr.product_id = p.id
+    </sql>
+
+    <select id="selectJoinList"
+            parameterType="com.fante.project.business.smsCouponProductRelation.domain.SmsCouponProductRelationDTO"
+            resultType="com.fante.project.business.smsCouponProductRelation.domain.SmsCouponProductRelationDTO">
+        <include refid="selectJoinListVo"/>
+        <where>
+            <if test="couponId != null "> and pr.coupon_id = #{couponId}</if>
+            <if test="productId != null "> and pr.product_id = #{productId}</if>
+            <if test="productName != null  and productName != ''"> and p.`name` like concat('%', #{productName}, '%')</if>
+            <if test="productSn != null  and productSn != ''"> and p.product_sn like concat('%', #{productSn}, '%')</if>
+            <if test="publishStatus != null  and publishStatus != ''"> and p.publish_status = #{publishStatus} </if>
+        </where>
+    </select>
+
+    <select id="selectProductForCoupon"
+            parameterType="com.fante.project.business.smsCouponProductRelation.domain.SmsCouponProductRelationDTO"
+            resultType="com.fante.project.business.smsCouponProductRelation.domain.SmsCouponProductRelationDTO">
+        select
+            p.id as productId, p.product_sn, p.shop_id, p.name as productName, p.publish_status
+        from pms_product p
+        <where>
+            p.del_flag = '0'
+            <if test="shopId != null"> and p.shop_id = #{shopId}</if>
+            <if test="productSn != null and productSn != ''"> and p.product_sn like concat('%', #{productSn}, '%') </if>
+            <if test="productName != null and productName != ''"> and p.name like concat('%', #{productName}, '%') </if>
+            <if test="publishStatus != null and publishStatus != ''"> and p.publish_status = #{publishStatus}</if>
+            <if test="couponId != null">
+                and not exists (
+                    select
+                        cpr.product_id
+                    from sms_coupon_product_relation cpr
+                    <where>
+                        cpr.product_id = p.id
+                        and cpr.coupon_id = #{couponId}
+                    </where>
+                )
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByCouponId" parameterType="Long">
+        delete from sms_coupon_product_relation where coupon_id = #{couponId}
+    </delete>
+
+    <insert id="batchInsertProductForCoupon" parameterType="list">
+        insert into sms_coupon_product_relation
+        (
+            coupon_id,
+            product_id
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.couponId},
+            #{item.productId}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

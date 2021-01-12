@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改积分商品分类')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-pmsIntegralProductCategory-edit" th:object="${pmsIntegralProductCategory}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <input name="shopId" th:field="*{shopId}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">商品分类：</label>
+                <div class="col-sm-4">
+                    <select name="name" class="form-control" th:with="type=${@custom.getFristPmsCategory()}" th:field="*{name}" required>
+                        <option value="">请选择</option>
+                        <option th:each="dict : ${type}" th:text="${dict.name}" th:value="${dict.name}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">分类图标：</label>
+                <div class="col-sm-8">
+                    <input id="icon" name="icon" th:field="*{icon}" class="form-control" type="hidden" required>
+                    <div id="iconImgShow" class="fileinput" th:class="*{icon} ? '' : 'hidden'">
+                        <div class="thumbnail" style="width: 100px; height: 75px;">
+                            <img style="max-height: 100%;" th:src="${@config.resPath()} + @{${pmsIntegralProductCategory.icon}}" onclick="$.modal.preview($(this).prop('src'));" />
+                        </div>
+                    </div>
+                    <button id="iconImgBtn" class="btn btn-success" type="button">
+                        <i class="fa fa-upload"></i>&nbsp;&nbsp; <span class="bold">上传分类图标</span>
+                    </button>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 分类显示的图标 </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">显示状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('biz_status')}">
+                        <input type="radio" th:id="${'showStatus_' + dict.dictCode}" name="showStatus" th:value="${dict.dictValue}" th:field="*{showStatus}" required>
+                        <label th:for="${'showStatus_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">商品数量：</label>
+                <div class="col-sm-8">
+                    <input name="productCount" class="form-control" type="text" th:field="*{productCount}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">分类排序：</label>
+                <div class="col-sm-8">
+                    <input name="sort" class="form-control" th:field="*{sort}" value="99999" type="text" required>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 数字越小排序越靠前</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">描述：</label>
+                <div class="col-sm-8">
+                    <input name="description" th:field="*{description}" class="form-control" type="text">
+                </div>
+            </div>
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-3 control-label is-required">分类级别：</label>-->
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="level" th:field="*{level}" class="form-control" type="text">-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-3 control-label is-required">商品数量：</label>-->
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="productCount" th:field="*{productCount}" class="form-control" type="text">-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-3 control-label is-required">导航栏显示：</label>-->
+                <!--<div class="col-sm-8">-->
+                    <!--<div class="radio-box" th:each="dict : ${@dict.getType('sys_yes_no')}">-->
+                        <!--<input type="radio" th:id="${'navStatus_' + dict.dictCode}" name="navStatus" th:value="${dict.dictValue}" th:field="*{navStatus}">-->
+                        <!--<label th:for="${'navStatus_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: layui-all-js"/>
+    <script type="text/javascript">
+        var prefix = ctx + "business/pmsIntegralProductCategory";
+        $("#form-pmsIntegralProductCategory-edit").validate({
+            focusCleanup: true,
+            ignore: [],
+            rules: {
+                name: {
+            //        rangelength: [2, 20],
+                    remote: {
+                        url: prefix + "/checkUnique",
+                        type: "post",
+                        dataType: "json",
+                        data: {
+                            "id": function () {
+                                return $.common.trim($("input[name='id']").val());
+                            },
+                            "name": function () {
+                                return $.common.trim($("select[name='name']").val());
+                            }
+                        },
+                        dataFilter: function (data, type) {
+                            return $.validate.unique(data);
+                        }
+                    }
+                },
+                sort: {
+                    positiveIntegerZero: true,
+                    maxlength: 5,
+                },
+                description: {
+                    rangelength: [2, 50],
+                }
+            },
+            messages: {
+                name: {
+              //      rangelength: $.validator.format("模板名称在 {0} 到 {1} 之间"),
+                    remote: "分类名称已经存在",
+                },
+                icon: {
+                    required: "请上传分类图标"
+                },
+                sort: {
+                    maxlength: $.validator.format( "排序数字最长 {0} 位" ),
+                },
+                description: {
+                    rangelength: $.validator.format("描述字数在 {0} 到 {1} 之间"),
+                }
+            }
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-pmsIntegralProductCategory-edit').serialize());
+            }
+        }
+        $.operate.layuiUpload("#iconImgBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function(r) {
+            $("#iconImgShow").hasClass("hidden") && $("#iconImgShow").removeClass("hidden");
+            $("#iconImgShow .thumbnail img").prop("src", respath + r.fileName);
+            $("input[name='icon']").val(r.fileName);
+        });
+
+    </script>
+</body>
+</html>

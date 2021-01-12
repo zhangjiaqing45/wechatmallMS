@@ -1,0 +1,10 @@
+
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(›öÀ©
+i
+java:S1128"NRemove this unused import 'com.fante.project.api.mq.sender.CancelGroupSender'.(ÚáÕ‡úÿÿÿÿ
+n
+java:S1128&"XRemove this unused import 'com.fante.project.weixin.core.service.impl.WeixinPayService'.(ä©©
+g
+java:S3252 "KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(ĞÿĞûÿÿÿÿ
+C
+java:S1602©",Remove useless curly braces around statement(ÑÈµ

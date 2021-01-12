@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增订单')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-omsOrder-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">店铺id：</label>
+                <div class="col-sm-8">
+                    <input name="shopId" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">支付订单编号：</label>
+                <div class="col-sm-8">
+                    <input name="payOrderId" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">订单编号：</label>
+                <div class="col-sm-8">
+                    <input name="orderSn" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">用户id：</label>
+                <div class="col-sm-8">
+                    <input name="memberId" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">应付金额：</label>
+                <div class="col-sm-8">
+                    <input name="payAmount" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">商品原始总金额(不包括运费增和券减)：</label>
+                <div class="col-sm-8">
+                    <input name="productTotalAmount" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">运费总金额：</label>
+                <div class="col-sm-8">
+                    <input name="freightAmount" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">优惠券抵扣金额：</label>
+                <div class="col-sm-8">
+                    <input name="couponAmount" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">优惠券类型：</label>
+                <div class="col-sm-8">
+                    <select name="couponType" class="form-control m-b"  >
+                        <option value="">所有</option>
+                    </select>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">优惠券详情json格式：</label>
+                <div class="col-sm-8">
+                    <input name="couponData" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">订单类型：1购物车2普通商品3团购4秒杀5积分：</label>
+                <div class="col-sm-8">
+                    <select name="orderType" class="form-control m-b" th:with="type=${@dict.getType('biz_status')}"  >
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">活动id：</label>
+                <div class="col-sm-8">
+                    <input name="gameId" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">活动信息：</label>
+                <div class="col-sm-8">
+                    <input name="gameInfo" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">纸质发票：</label>
+                <div class="col-sm-8">
+                    <select name="billType" class="form-control m-b"  >
+                        <option value="">所有</option>
+                    </select>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">发票抬头：</label>
+                <div class="col-sm-8">
+                    <input name="billHeader" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">发票内容：</label>
+                <div class="col-sm-8">
+                    <input name="billContent" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">收票人电话：</label>
+                <div class="col-sm-8">
+                    <input name="billReceiverPhone" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">收票人邮箱：</label>
+                <div class="col-sm-8">
+                    <input name="billReceiverEmail" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">收货人姓名：</label>
+                <div class="col-sm-8">
+                    <input name="receiverName" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">收货人电话：</label>
+                <div class="col-sm-8">
+                    <input name="receiverPhone" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">收货人邮编：</label>
+                <div class="col-sm-8">
+                    <input name="receiverPostCode" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">省份/直辖市：</label>
+                <div class="col-sm-8">
+                    <input name="receiverProvince" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">城市：</label>
+                <div class="col-sm-8">
+                    <input name="receiverCity" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">区：</label>
+                <div class="col-sm-8">
+                    <input name="receiverRegion" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">详细地址：</label>
+                <div class="col-sm-8">
+                    <input name="receiverDetailAddress" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label  ">订单备注：</label>
+                <div class="col-sm-8">
+                    <textarea name="note" class="form-control"  ></textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">订单状态：</label>
+                <div class="col-sm-8">
+                    <select name="status" class="form-control m-b" th:with="type=${@dict.getType('biz_status')}"  >
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">已确认：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box">
+                        <input type="radio" name="confirmStatus" value=""  >
+                        <label th:for="confirmStatus" th:text="未知"></label>
+                    </div>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">支付时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="paymentTime" class="form-control" placeholder="yyyy-MM-dd" type="text"  >
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">发货时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="deliveryTime" class="form-control" placeholder="yyyy-MM-dd" type="text"  >
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">确认收货时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="receiveTime" class="form-control" placeholder="yyyy-MM-dd" type="text"  >
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">自动确认时间：</label>
+                <div class="col-sm-8">
+                    <input name="autoConfirmDay" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">评价时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="commentTime" class="form-control" placeholder="yyyy-MM-dd" type="text"  >
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">删除标记：</label>
+                <div class="col-sm-8">
+                    <input name="delFlag" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">可以获得的积分：</label>
+                <div class="col-sm-8">
+                    <input name="integration" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">可以活动的成长值：</label>
+                <div class="col-sm-8">
+                    <input name="growth" class="form-control" type="text"  >
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/omsOrder";
+        $("#form-omsOrder-add").validate({
+            ignore:[],
+            rules: {
+                shopId:{
+                    maxlength: 20,
+                },
+                payOrderId:{
+                    maxlength: 20,
+                },
+                orderSn:{
+                    maxlength: 64,
+                },
+                memberId:{
+                    maxlength: 20,
+                },
+                payAmount:{
+                    maxlength: 10,2,
+                },
+                productTotalAmount:{
+                    maxlength: 10,2,
+                },
+                freightAmount:{
+                    maxlength: 10,2,
+                },
+                couponAmount:{
+                    maxlength: 10,2,
+                },
+                couponType:{
+                    maxlength: 1,
+                },
+                couponData:{
+                    maxlength: 255,
+                },
+                orderType:{
+                    maxlength: 1,
+                },
+                gameId:{
+                    maxlength: 20,
+                },
+                gameInfo:{
+                    maxlength: 100,
+                },
+                billType:{
+                    maxlength: 1,
+                },
+                billHeader:{
+                    maxlength: 200,
+                },
+                billContent:{
+                    maxlength: 200,
+                },
+                billReceiverPhone:{
+                    maxlength: 32,
+                },
+                billReceiverEmail:{
+                    maxlength: 64,
+                },
+                receiverName:{
+                    maxlength: 100,
+                },
+                receiverPhone:{
+                    maxlength: 32,
+                },
+                receiverPostCode:{
+                    maxlength: 32,
+                },
+                receiverProvince:{
+                    maxlength: 32,
+                },
+                receiverCity:{
+                    maxlength: 32,
+                },
+                receiverRegion:{
+                    maxlength: 32,
+                },
+                receiverDetailAddress:{
+                    maxlength: 200,
+                },
+                note:{
+                    maxlength: 500,
+                },
+                status:{
+                    maxlength: 1,
+                },
+                confirmStatus:{
+                    maxlength: 1,
+                },
+                createTime:{
+                },
+                paymentTime:{
+                },
+                deliveryTime:{
+                },
+                receiveTime:{
+                },
+                autoConfirmDay:{
+                    maxlength: 11,
+                },
+                commentTime:{
+                },
+                createBy:{
+                    maxlength: 50,
+                },
+                updateBy:{
+                    maxlength: 50,
+                },
+                updateTime:{
+                },
+                remark: {
+                    maxlength: 20
+                },
+                delFlag:{
+                    maxlength: 1,
+                },
+                integration:{
+                    maxlength: 11,
+                },
+                growth:{
+                    maxlength: 11,
+                },
+            },
+            messages: {
+                shopId:{
+                    maxlength: "最多输入20 个字符.",
+
+                },
+
+                payOrderId:{
+                    maxlength: "最多输入20 个字符.",
+
+                },
+
+                orderSn:{
+                    maxlength: "最多输入64 个字符.",
+
+                },
+
+                memberId:{
+                    maxlength: "最多输入20 个字符.",
+
+                },
+
+                payAmount:{
+                    maxlength: "最多输入10,2 个字符.",
+
+                },
+
+                productTotalAmount:{
+                    maxlength: "最多输入10,2 个字符.",
+
+                },
+
+                freightAmount:{
+                    maxlength: "最多输入10,2 个字符.",
+
+                },
+
+                couponAmount:{
+                    maxlength: "最多输入10,2 个字符.",
+
+                },
+
+                couponType:{
+                    maxlength: "最多输入1 个字符.",
+
+                },
+
+                couponData:{
+                    maxlength: "最多输入255 个字符.",
+
+                },
+
+                orderType:{
+                    maxlength: "最多输入1 个字符.",
+
+                },
+
+                gameId:{
+                    maxlength: "最多输入20 个字符.",
+
+                },
+
+                gameInfo:{
+                    maxlength: "最多输入100 个字符.",
+
+                },
+
+                billType:{
+                    maxlength: "最多输入1 个字符.",
+
+                },
+
+                billHeader:{
+                    maxlength: "最多输入200 个字符.",
+
+                },
+
+                billContent:{
+                    maxlength: "最多输入200 个字符.",
+
+                },
+
+                billReceiverPhone:{
+                    maxlength: "最多输入32 个字符.",
+
+                },
+
+                billReceiverEmail:{
+                    maxlength: "最多输入64 个字符.",
+
+                },
+
+                receiverName:{
+                    maxlength: "最多输入100 个字符.",
+
+                },
+
+                receiverPhone:{
+                    maxlength: "最多输入32 个字符.",
+
+                },
+
+                receiverPostCode:{
+                    maxlength: "最多输入32 个字符.",
+
+                },
+
+                receiverProvince:{
+                    maxlength: "最多输入32 个字符.",
+
+                },
+
+                receiverCity:{
+                    maxlength: "最多输入32 个字符.",
+
+                },
+
+                receiverRegion:{
+                    maxlength: "最多输入32 个字符.",
+
+                },
+
+                receiverDetailAddress:{
+                    maxlength: "最多输入200 个字符.",
+
+                },
+
+                note:{
+                    maxlength: "最多输入500 个字符.",
+
+                },
+
+                status:{
+                    maxlength: "最多输入1 个字符.",
+
+                },
+
+                confirmStatus:{
+                    maxlength: "最多输入1 个字符.",
+
+                },
+
+                createTime:{
+
+                },
+
+                paymentTime:{
+
+                },
+
+                deliveryTime:{
+
+                },
+
+                receiveTime:{
+
+                },
+
+                autoConfirmDay:{
+                    maxlength: "最多输入11 个字符.",
+
+                },
+
+                commentTime:{
+
+                },
+
+                createBy:{
+                    maxlength: "最多输入50 个字符.",
+
+                },
+
+                updateBy:{
+                    maxlength: "最多输入50 个字符.",
+
+                },
+
+                updateTime:{
+
+                },
+
+                remark: {
+                    maxlength: "最多输入20个字符.",
+                },
+                delFlag:{
+                    maxlength: "最多输入1 个字符.",
+
+                },
+
+                integration:{
+                    maxlength: "最多输入11 个字符.",
+
+                },
+
+                growth:{
+                    maxlength: "最多输入11 个字符.",
+
+                },
+
+            },
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-omsOrder-add').serialize());
+            }
+        }
+
+        $("input[name='paymentTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='deliveryTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='receiveTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='commentTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

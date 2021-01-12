@@ -1,0 +1,41 @@
+
+Y
+java:S1155p">Use isEmpty() to check whether the collection is empty or not.(É€°Îøÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(âŞâù
+\
+java:S1128
+"FRemove this unused import 'com.fante.project.api.setting.OrderStting'.(ò’Ñ›
+]
+java:S1128"GRemove this unused import 'com.fante.common.utils.security.ShiroUtils'.(ØÛíù
+A
+java:S1128#"+Remove this unused import 'java.util.Date'.(¸…¼ü
+F
+java:S1128""0Remove this unused import 'java.util.ArrayList'.(÷‰îƒ
+S
+java:S1128"=Remove this unused import 'com.fante.common.utils.DateUtils'.(’ı®î
+‡
+java:S1128"lRemove this unused import 'com.fante.project.business.omsOrderOperateHistory.domain.OmsOrderOperateHistory'.(ĞÁù¾ùÿÿÿÿ
+[
+java:S1128"@Remove this unused import 'com.fante.common.constant.Constants'.(ë¸ï†üÿÿÿÿ
+h
+java:S1128"SRemove this unused import 'com.fante.project.business.omsOrder.domain.RemarkParam'.(ÅâÊ\
+‡
+java:S1128"qRemove this unused import 'com.fante.project.business.omsOrderOperateHistory.domain.OmsOrderOperateHistoryParam'.(Ä±ÇÊ
+f
+java:S1128"PRemove this unused import 'com.fante.project.business.omsOrder.domain.OmsOrder'.(­ü‡©
+S
+java:S1128&"8Remove this unused import 'java.util.stream.Collectors'.(Óóº´úÿÿÿÿ
+D
+java:S1128%".Remove this unused import 'java.util.Objects'.(¼¸õ›
+[
+java:S1128	"@Remove this unused import 'com.fante.common.utils.text.Convert'.(ìğ²Òùÿÿÿÿ
+l
+java:S1128"VRemove this unused import 'com.fante.project.business.omsOrder.domain.SendOrderParam'.(à¿ÀÂ
+t
+java:S1128"YRemove this unused import 'com.fante.project.business.omsOrder.service.IOmsOrderService'.(èôÓ•ıÿÿÿÿ
+Z
+java:S1128"ERemove this unused import 'org.springframework.util.CollectionUtils'.(åå…K
+‹
+java:S1128"uRemove this unused import 'com.fante.project.business.omsOrderOperateHistory.service.IOmsOrderOperateHistoryService'.(­„¤â
+=
+java:S10681"'Remove this unused "log" private field.(Ğ¡

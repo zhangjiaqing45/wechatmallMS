@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.umsMember.mapper.UmsMemberMapper">
+
+    <select id="selectUmsMemberByOpenid" parameterType="String" resultMap="UmsMemberResult">
+        <include refid="selectUmsMemberVo"/>
+        where openid = #{openid}
+        and del_flag = '0'
+    </select>
+    <!--支付积分-->
+    <update id="payForIntegralProduct">
+        update  ums_member set integration = integration - #{totalPrice}
+        where id = #{memberId}
+        and integration &gt;= #{totalPrice}
+    </update>
+    <!--添加积分-->
+    <update id="addMemberIntegral">
+        update  ums_member set integration = integration + #{totalPrice}
+        where id = #{memberId}
+    </update>
+    <!--佣金转余额-->
+    <update id="waitCommissionToBalance">
+         update  ums_member set commission = commission - #{money},cash = cash + #{money}
+        where id = #{memberId}
+        and commission &gt;= #{money}
+    </update>
+    <!--待入佣金转佣金-->
+    <update id="waitCommissionToCommission">
+         update  ums_member set commission_wait = commission_wait - #{money},commission  = commission  + #{money}
+        where id = #{memberId}
+        and commission_wait &gt;= #{money}
+    </update>
+    <!--超过一个月上级id不分佣,视为无效上级id-->
+    <select id="selectUmsMemberParentById" resultMap="UmsMemberResult">
+        <include refid="selectUmsMemberVo"/>
+        WHERE
+        id = (
+            SELECT
+                pid
+            FROM
+                ums_member
+            WHERE
+                id =  #{memberId}
+                <!--创建时间+时效 大于 现在视为有效 -->
+            <if test="commissionAging != null and commissionAging > 0">
+                AND DATE_ADD( create_time, INTERVAL #{commissionAging} DAY ) &gt;= NOW()
+            </if>
+        )
+    </select>
+    <!--提现扣减余额-->
+    <update id="memberBalanceToCash">
+        update ums_member set cash = cash - #{money}
+        where id = #{memberId} and cash &gt;=#{money}
+    </update>
+    <!-- 拒绝返回余额-->
+    <update id="addMemberBalanceOfRefuseCashApply">
+        update ums_member set cash = cash + #{money}
+        where id = #{memberId}
+    </update>
+    <!--下级购买商品 转入待入佣金-->
+    <update id="addWaitCommission">
+          update ums_member set commission_wait = commission_wait + #{money}
+        where id = #{memberId}
+    </update>
+    <!--退货减免待入佣金-->
+    <update id="subWaitCommission">
+          update ums_member set commission_wait = commission_wait - #{money}
+        where
+            id = #{memberId}
+            and commission_wait &gt;=  #{money}
+    </update>
+    <!--批量修改用户账户信息-待入佣金 转入 可提现佣金-->
+    <update id="batchUpdateCommission">
+        update ums_member set
+            commission_wait = CASE id
+            <foreach collection="recordList" item="item">
+                WHEN #{item.memberId} THEN commission_wait - #{item.money}
+            </foreach>
+            END,
+            `commission` = CASE id
+            <foreach collection="list" item="item">
+                WHEN #{item.memberId} THEN commission + #{item.money}
+            </foreach>
+            END
+        WHERE
+            id IN
+            <foreach collection="recordList" item="item" separator="," open="(" close=")">
+                #{item.memberId}
+            </foreach>
+    </update>
+    <!--修改用户账户信息-待入佣金 转入 可提现佣金-->
+    <update id="updateCommission">
+        update ums_member set
+            commission_wait = commission_wait - #{money},
+            `commission` = commission + #{money}
+        WHERE
+            id =  #{memberId}
+            and commission_wait &gt;=#{money}
+    </update>
+    <!--设置核销人员状态-->
+    <update id="updateVerifierStatus">
+        update ums_member set
+            verifier =  #{verifier},
+            shop_id = #{shopId}
+        WHERE
+            id =  #{id}
+    </update>
+    <!--查询可以领取该优惠券的会员-->
+    <select id="selectMemberByCouponId" resultType="com.fante.project.business.umsMember.domain.UmsMember">
+        <include refid="selectUmsMemberVo"/>
+        where del_flag = '0'
+        and id not in(
+        <!--查询该优惠券领取历史中的所有用户id-->
+            select user_id from sms_coupon_history where coupon_id = #{couponId}
+        )
+        <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+        <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+        <if test="subscribe != null  and subscribe != ''"> and subscribe = #{subscribe}</if>
+        <if test="depositgroup != null  and depositgroup != ''"> and depositgroup like concat('%', #{depositgroup}, '%')</if>
+        <if test="surname != null  and surname != ''"> and surname like concat('%', #{surname}, '%')</if>
+        <if test="idcard != null  and idcard != ''"> and idcard like concat('%', #{idcard}, '%')</if>
+    </select>
+    <!--查询会员集合通过ids-->
+    <select id="selectUmsMemberByIds" resultType="com.fante.project.business.umsMember.domain.UmsMember">
+        select id,nickname,openid from ums_member
+        where del_flag = '0'
+        and id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <!--查询会员列表(店铺名称)-->
+    <select id="selectUmsMemberAndShopNameList" resultType="com.fante.project.business.umsMember.domain.UmsMember">
+        select
+        um.id,
+        um.status,
+        um.source_type,
+        um.idcard,
+        um.phone,
+        um.nickname,
+        um.sex,
+        um.headimgurl,
+        um.country,
+        um.province,
+        um.city,
+        um.account_type,
+        um.account,
+        um.subscribe,
+        um.cash,
+        um.integration,
+        um.history_integration,
+        um.commission_wait,
+        um.commission,
+        um.history_commission,
+        um.create_time,
+        um.update_by,
+        um.update_time,
+        um.remark,
+        um.role_type,
+        um.shop_id,
+        um.verifier,
+        bsi.company_name as shopName
+        from ums_member um
+        left join biz_shop_info bsi on bsi.id = um.shop_id
+        <where>
+            um.del_flag = '0'
+            <if test="pid != null "> and um.pid = #{pid}</if>
+            <if test="username != null  and username != ''"> and um.username like concat('%', #{username}, '%')</if>
+            <if test="password != null  and password != ''"> and um.password = #{password}</if>
+            <if test="salt != null  and salt != ''"> and um.salt = #{salt}</if>
+            <if test="status != null  and status != ''"> and um.status = #{status}</if>
+            <if test="sourceType != null  and sourceType != ''"> and um.source_type = #{sourceType}</if>
+            <if test="idcard != null  and idcard != ''"> and um.idcard = #{idcard}</if>
+            <if test="phone != null  and phone != ''"> and um.phone = #{phone}</if>
+            <if test="nickname != null  and nickname != ''"> and um.nickname like concat('%', #{nickname}, '%')</if>
+            <if test="sex != null  and sex != ''"> and um.sex = #{sex}</if>
+            <if test="headimgurl != null  and headimgurl != ''"> and um.headimgurl = #{headimgurl}</if>
+            <if test="country != null  and country != ''"> and um.country = #{country}</if>
+            <if test="province != null  and province != ''"> and um.province = #{province}</if>
+            <if test="city != null  and city != ''"> and um.city = #{city}</if>
+            <if test="accountType != null  and accountType != ''"> and um.account_type = #{accountType}</if>
+            <if test="account != null  and account != ''"> and um.account = #{account}</if>
+            <if test="subscribe != null  and subscribe != ''"> and um.subscribe = #{subscribe}</if>
+            <if test="openid != null  and openid != ''"> and um.openid = #{openid}</if>
+            <if test="unionid != null  and unionid != ''"> and um.unionid = #{unionid}</if>
+            <if test="cash != null "> and um.cash = #{cash}</if>
+            <if test="integration != null "> and um.integration = #{integration}</if>
+            <if test="historyIntegration != null "> and um.history_integration = #{historyIntegration}</if>
+            <if test="commissionWait != null "> and um.commission_wait = #{commissionWait}</if>
+            <if test="commission != null "> and um.commission = #{commission}</if>
+            <if test="historyCommission != null "> and um.history_commission = #{historyCommission}</if>
+            <if test="roleType != null  and roleType != ''"> and um.role_type = #{roleType}</if>
+            <if test="verifier != null  and verifier != ''"> and um.verifier = #{verifier}</if>
+            <if test="shopId != null "> and um.shop_id = #{shopId}</if>
+            <if test="shopName != null and shopName != ''"> and bsi.company_name like concat('%',#{shopName}, '%')</if>
+        </where>
+    </select>
+    <!--将所有会员的openid以逗号隔开显示-->
+    <select id="selectMemberConcat" resultType="String">
+        select  openid from ums_member
+    </select>
+
+    <!--将所有没有身份证号的会员的openid以逗号隔开显示-->
+    <select id="selectMemberConcatForIdcard" resultType="String">
+        select  openid from ums_member where idcard is null
+    </select>
+
+    <!--批量更新会员信息的存款分组标识-->
+    <update id="bathUpdateDepositgroup">
+        update ums_member
+        <trim prefix="set" suffixOverrides=",">
+           <trim prefix="depositgroup =case" suffix="end,">
+               <foreach collection="depositgroupList" item="item"  index="index">
+                   <if test="item.IdentifyFields1 !=null" >
+                         when openid=#{item.openid} then #{item.IdentifyFields1}
+                   </if>
+                   <if test="item.IdentifyFields1 ==null">
+                         when openid=#{item.openid} then ums_member.depositgroup
+                   </if>
+               </foreach>
+           </trim>
+        </trim>
+        where openid in
+        <foreach collection="depositgroupList" index="index" item="item" separator="," open="(" close=")" >
+            #{item.openid}
+        </foreach>
+    </update>
+
+
+    <!--批量更新会员信息的存款分组标识、姓名、身份证号-->
+    <update id="bathUpdateDepositgroupAndNameAndIDcard">
+        update ums_member
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="depositgroup =case" suffix="end,">
+                <foreach collection="depositgroupList" item="item"  index="index">
+                    <if test="item.IdentifyFields1 !=null" >
+                        when openid=#{item.openid} then #{item.IdentifyFields1}
+                    </if>
+                    <if test="item.IdentifyFields1 ==null">
+                        when openid=#{item.openid} then ums_member.depositgroup
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="surname =case" suffix="end,">
+                <foreach collection="depositgroupList" item="item"  index="index">
+                    <if test="item.Name !=null" >
+                        when openid=#{item.openid} then #{item.Name}
+                    </if>
+                    <if test="item.Name ==null">
+                        when openid=#{item.openid} then ums_member.surname
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="idcard =case" suffix="end,">
+                <foreach collection="depositgroupList" item="item"  index="index">
+                    <if test="item.Idcard !=null" >
+                        when openid=#{item.openid} then #{item.Idcard}
+                    </if>
+                    <if test="item.Idcard ==null">
+                        when openid=#{item.openid} then ums_member.idcard
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where openid in
+        <foreach collection="depositgroupList" index="index" item="item" separator="," open="(" close=")" >
+            #{item.openid}
+        </foreach>
+    </update>
+
+
+    <!--批量新增会员信息的存款分组标识-->
+    <insert id="bathInsertDepositgroup">
+        insert ignore ums_member
+        (
+        subscribe,
+        openid,
+        nickname,
+        sex,
+        city,
+        country,
+        province,
+        headimgurl,
+        unionid,
+        remark,
+        depositgroup,
+        surname,
+        idcard
+        )
+        values
+        <foreach collection="depositgroupList" item="item" index="index" separator=",">
+            (
+            #{item.subscribe},
+            #{item.openid},
+            #{item.nickname},
+            #{item.sex},
+            #{item.city},
+            #{item.country},
+            #{item.province},
+            #{item.headimgurl},
+            #{item.unionid},
+            #{item.remark},
+            #{item.IdentifyFields1},
+            #{item.Name},
+            #{item.Idcard}
+            )
+        </foreach>
+    </insert>
+</mapper>

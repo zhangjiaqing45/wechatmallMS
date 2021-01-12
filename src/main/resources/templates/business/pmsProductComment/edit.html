@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改商品评价')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-pmsProductComment-edit" th:object="${pmsProductComment}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">是否展示：</label>
+                <div class="col-sm-8">
+                    <select name="showStatus" class="form-control m-b" th:with="type=${@dict.getType('biz_status')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{showStatus}"></option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "business/pmsProductComment";
+        $("#form-pmsProductComment-edit").validate({
+            ignore:[],
+                rules: {
+                    productId:{
+                        maxlength: 20,
+                    },
+                    memberId:{
+                        maxlength: 64,
+                    },
+                    productName:{
+                        maxlength: 255,
+                    },
+                    memberNickName:{
+                        maxlength: 255,
+                    },
+                    memberIcon:{
+                        maxlength: 255,
+                    },
+                    productAttribute:{
+                        maxlength: 255,
+                    },
+                    content:{
+                    },
+                    pics:{
+                        maxlength: 1000,
+                    },
+                    star:{
+                        maxlength: 3,
+                    },
+                    showStatus:{
+                        maxlength: 1,
+                    },
+                    createBy:{
+                        maxlength: 50,
+                    },
+                    createTime:{
+                    },
+                },
+                messages: {
+                    productId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    memberId:{
+                        maxlength: "最多输入64 个字符.",
+                    },
+                    productName:{
+                        maxlength: "最多输入255 个字符.",
+                    },
+                    memberNickName:{
+                        maxlength: "最多输入255 个字符.",
+                    },
+                    memberIcon:{
+                        maxlength: "最多输入255 个字符.",
+                    },
+                    productAttribute:{
+                        maxlength: "最多输入255 个字符.",
+                    },
+                    content:{
+                    },
+                    pics:{
+                        maxlength: "最多输入1000 个字符.",
+                    },
+                    star:{
+                        maxlength: "最多输入3 个字符.",
+                    },
+                    showStatus:{
+                        maxlength: "最多输入1 个字符.",
+                    },
+                    createBy:{
+                        maxlength: "最多输入50 个字符.",
+                    },
+                    createTime:{
+                    },
+        },
+        focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-pmsProductComment-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.accAccountRecord.mapper.AccAccountRecordMapper">
+    <!--核算平台欠我多少钱type = 1 或者 核算我欠合伙人等多少钱 type=0 -->
+    <select id="sumAccountMoney" resultType="java.math.BigDecimal">
+        select sum(money) from acc_account_record where shop_id = #{shopId} and `type`= #{type}
+    </select>
+    <!--根据订单 id 和 操作状态 获取唯一记录-->
+    <select id="getRecordByOrderIdAndOperation" resultMap="AccAccountRecordResult">
+        <include refid="selectAccAccountRecordVo"></include>
+        where
+            order_id = #{orderId}
+            and operation = #{operation}
+        limit 1
+    </select>
+    <!--批量插入-->
+    <insert id="batchInsertAcc">
+        insert into acc_account_record
+        (
+            shop_id,
+            money,
+            operation,
+            `type`,
+            description,
+            order_id,
+            create_by,
+            create_time
+        )
+        values
+        <foreach collection="accList" item="item" index="index" separator="," >
+            (
+            #{item.shopId},
+            #{item.money},
+            #{item.operation},
+            #{item.type},
+            #{item.description},
+            #{item.orderId},
+            #{item.createBy},
+            #{item.createTime}
+            )
+        </foreach>
+    </insert>
+
+
+    <sql id="selectJoinVo">
+        select ar.id, ar.shop_id, ar.money, ar.operation, ar.type, ar.description, ar.apply_id, ar.order_id,
+               ar.create_by, ar.create_time, ar.update_by, ar.update_time, ar.remark, ar.del_flag,
+               s.`code`, s.company_name
+        from acc_account_record ar
+        inner join biz_shop_info s on s.id = ar.shop_id
+    </sql>
+
+    <select id="selectJoinList"
+            parameterType="com.fante.project.business.accAccountRecord.domain.AccAccountRecordDTO"
+            resultType="com.fante.project.business.accAccountRecord.domain.AccAccountRecordDTO">
+        <include refid="selectJoinVo" />
+        <where>
+            ar.del_flag = '0'
+            <if test="shopId != null "> and ar.shop_id = #{shopId}</if>
+            <if test="operation != null  and operation != ''"> and ar.operation = #{operation}</if>
+            <if test="type != null  and type != ''"> and ar.type = #{type}</if>
+            <if test="description != null  and description != ''"> and ar.description = #{description}</if>
+            <if test="applyId != null "> and ar.apply_id = #{applyId}</if>
+            <if test="orderId != null "> and ar.order_id = #{orderId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(ar.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(ar.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+            <if test="code != null and code != '' "> and s.code = #{code}</if>
+            <if test="companyName != null  and companyName != ''"> and s.company_name like concat('%', #{companyName}, '%')</if>
+        </where>
+    </select>
+    <!--付款未发货取消订单-->
+    <update id="delRecordByOrderId">
+        update acc_account_record set del_flag = '1' where order_id = #{orderId}
+    </update>
+</mapper>

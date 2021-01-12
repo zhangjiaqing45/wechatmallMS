@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsIntegralProductCategory.mapper.PmsIntegralProductCategoryMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="PmsIntegralProductCategoryResultExt" type="扩展类全包名" extends="PmsIntegralProductCategoryResult">
+
+    </resultMap>
+     -->
+
+    <select id="selectJoinList" parameterType="PmsIntegralProductCategory" resultMap="PmsIntegralProductCategoryResult">
+        select c.id, c.`name`, c.icon, count(p.id) as product_count, c.show_status, c.sort, c.create_time
+        from pms_integral_product_category c
+        left join pms_integral_product p on c.id = p.product_category_id and p.del_flag='0'
+        <where>
+            c.del_flag = '0'
+            <if test="name != null  and name != ''"> and c.`name` like concat('%', #{name}, '%')</if>
+            <if test="showStatus != null  and showStatus != ''"> and c.show_status = #{showStatus}</if>
+        </where>
+        group by c.id, c.`name`, c.icon, c.show_status, c.sort, c.create_time
+    </select>
+    <!--(app)积分商品分类查询-->
+    <select id="getPmsIntegralProductCategoryForDisplay" resultType="com.fante.project.business.pmsIntegralProductCategory.domain.PmsIntegralProductCategory">
+        <include refid="selectPmsIntegralProductCategoryVo"/>
+        where
+            del_flag = '0'
+            and show_status = #{showStatus}
+    </select>
+
+</mapper>

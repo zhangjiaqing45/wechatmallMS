@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('商品评价列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="productName"/>
+                        </li>
+                        <li>
+                            <p>用户昵称：</p>
+                            <input type="text" name="memberNickName"/>
+                        </li>
+                        <li>
+                            <p>星级评价：</p>
+                            <select name="star" th:with="type=${@dict.getType('pms_common_star')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>是否展示：</p>
+                            <select name="showStatus" th:with="type=${@dict.getType('sys_show_hide')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li class="select-time">
+                            <p>创建时间：</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCreateTime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCreateTime]"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-primary multiple" onclick="passAll()" shiro:hasPermission="business:pmsProductComment:edit">
+                <i class="fa fa-edit"></i> 通过
+            </a>
+            <a class="btn btn-warning multiple" onclick="refuseAll()" shiro:hasPermission="business:pmsProductComment:edit">
+                <i class="fa fa-edit"></i> 拒绝
+            </a>
+            <a class="btn btn-danger multiple" onclick="$.operate.removeAll()" shiro:hasPermission="business:pmsProductComment:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+<!--            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:pmsProductComment:export">-->
+<!--                <i class="fa fa-download"></i> 导出-->
+<!--            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+        <div class="modal inmodal" id="myModal4" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content animated fadeIn">
+                    <div class="modal-body" id="picsDialog">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:pmsProductComment:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:pmsProductComment:remove')}]];
+    var showStatusDatas = [[${@dict.getType('sys_show_hide')}]];
+    var starDatas = [[${@dict.getType('pms_common_star')}]];
+    var picBody = '<img style="width: 100%;" src="{src}">'
+
+    //显示轮播图片
+    function showPics(pics){
+        //清空
+        $("#picsDialog").empty();
+        var picArr = pics.split(',');
+        if(picArr.length==0){
+            return false;
+        }
+        var picBodyHtmls='';
+        picArr.forEach(function (value, index, array) {
+            //图片
+            picBodyHtmls += picBody.replace(/{src}/g,value);
+        })
+        $("#picsDialog").append(picBodyHtmls);
+        //显示图片
+        $('#myModal4').modal('toggle');
+    }                                                                                                                                                                                                            var prefix = ctx + "business/pmsProductComment";
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "商品评价",
+            sortName: "createTime",
+            sortOrder: "desc",
+            //clickToSelect: true,
+            rememberSelected: true,
+            columns: [{
+                field: 'state',
+                checkbox: true
+            },
+            {
+                field : 'id',
+                title : '编号',
+                visible: false
+            },
+            {
+                field : 'productName',
+                title : '商品名称',
+                align: 'center',
+            },
+            {
+                field : 'productPic',
+                title : '商品图片',
+                align: 'center',
+                formatter : function(value, row, index) {
+                    return $.table.imageView(respath+value);
+                }
+            },
+            {
+                field : 'memberNickName',
+                title : '用户昵称',
+                align: 'center',
+            },
+            {
+                field : 'memberIcon',
+                title : '用户头像',
+                align: 'center',
+                formatter : function(value, row, index) {
+                    return $.table.imageView(respath+value);
+                }
+            },
+            {
+                field : 'productAttribute',
+                title : '商品规格',
+                align: 'center',
+                formatter : function(value, row, index) {
+                    var obj = jQuery.parseJSON(value);
+                    return  $.table.tooltip(Object.values(obj),10,'open')
+                }
+            },
+            {
+                field : 'content',
+                title : '评价内容',
+                align: 'center',
+                formatter : function(value, row, index) {
+                    return  $.table.tooltip(value,10,'open')
+                }
+            },
+            {
+                field : 'pics',
+                title : '评价图片',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    if(!value){
+                        return "-";
+                    }
+                    var btn ='   <button type="button" onclick="showPics(\''+value+'\')" class="btn btn-primary btn-xs">查看图片\n' +
+                        '   </button>';
+                    return btn;
+                }
+            },
+            {
+                field : 'star',
+                title : '星级评价',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    return $.table.selectDictLabel(starDatas, value);
+                }
+            },
+            {
+                field : 'showStatus',
+                title : '展示',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    return $.table.selectDictLabel(showStatusDatas, value);
+                }
+            },
+            {
+                field : 'createTime',
+                title : '创建时间',
+                align: 'center',
+            },
+            {
+                title: '操作',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    var actions = [];
+                    if(row.showStatus==1){
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="pass(\'' + row.id + '\')"><i class="fa fa-edit"></i>通过</a> ');
+                    }else{
+                        actions.push('<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="refuse(\'' + row.id + '\')"><i class="fa fa-edit"></i>拒绝</a> ');
+                    }
+                    actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                    return actions.join('');
+                }
+            }]
+    };
+        $.table.init(options);
+    });
+
+    /**
+     * 拒绝
+     * @param id
+     */
+    function refuse(id) {
+        $.modal.confirm("确认要隐藏这条消息吗？", function () {
+            $.operate.post(prefix + "/refuse", {"ids": id});
+        })
+    }
+
+    /**
+     * 通过
+     * @param id
+     */
+    function pass(id) {
+        $.modal.confirm("确认要显示这条消息吗？", function () {
+            $.operate.post(prefix + "/pass", {"ids": id});
+        })
+    }
+    /**
+     * 批量通过
+     * @param id
+     */
+    function passAll() {
+        table.set();
+        var rows = $.common.isEmpty(table.options.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns(table.options.uniqueId);
+        if (rows.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        $.modal.confirm("确认要在商品评价中显示选中的" + rows.length + "条数据吗?", function () {
+            var url = prefix + "/pass";
+            var data = {"ids": rows.join()};
+            $.operate.post(url,data);
+        });
+    }
+    /**
+     * 批量拒绝
+     * @param id
+     */
+    function refuseAll() {
+        table.set();
+        var rows = $.common.isEmpty(table.options.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns(table.options.uniqueId);
+        if (rows.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        $.modal.confirm("确认要在商品评价中隐藏选中的" + rows.length + "条数据吗?", function () {
+            var url = prefix + "/refuse";
+            var data = {"ids": rows.join()};
+            $.operate.post(url,data);
+        });
+    }
+</script>
+</body>
+</html>

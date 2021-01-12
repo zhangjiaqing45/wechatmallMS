@@ -1,0 +1,10 @@
+
+f
+java:S1128"PRemove this unused import 'com.fante.project.business.omsOrder.domain.OmsOrder'.(­ü‡©
+k	java:S117F"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(—¡ÓÁùÿÿÿÿ
+k	java:S117F"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(—¡ÓÁùÿÿÿÿ
+n
+java:S1128"XRemove this unused import 'com.fante.project.business.omsOrderItem.domain.OmsOrderItem'.(©×Âª
+p
+java:S1128"ZRemove this unused import 'com.fante.project.api.omsOrderProcess.domain.ValidateStockDTO'.(§Û°‚
+t	java:S116"ZRename this field "OrderHandleList" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‘¹ïÄüÿÿÿÿ

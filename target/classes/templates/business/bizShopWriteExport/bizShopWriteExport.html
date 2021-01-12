@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('店铺用户列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                       <!-- <li>
+                            <p>登录账号：</p>
+                            <input type="text" name="loginName"/>
+                        </li>
+                        <li>
+                            <p>手机号码：</p>
+                            <input type="text" name="phonenumber"/>
+                        </li>-->
+                        <li class="select-time">
+                            <p>时间：</p>
+                            <input type="text" class="time-input" id="beginTime" placeholder="开始时间" name="beginTime"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="endTime"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i> 搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="shopUserReset()"><i class="fa fa-refresh"></i> 重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:bizShopWriteExport:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:bizShopWriteExport:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:bizShopWriteExport:remove')}]];
+    var resetPwdFlag = [[${@permission.hasPermi('business:bizShopWriteExport:resetPwd')}]];
+    var statusDatas = [[${@dict.getType('biz_status')}]];
+    var prefix = ctx + "business/bizShopWriteExport";
+    var prefixShop = ctx + "business/bizShopInfo";
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "用户信息",
+            sortName: "createTime",
+            sortOrder: "desc",
+            columns: [
+            //     {
+            //     checkbox: true
+            // },
+                {
+                    field : 'deptName',
+                    title : '管理店铺'
+                },
+
+                {
+                    field : 'loginName',
+                    title : '账户账号'
+                },
+                {
+                    field : 'userName',
+                    title : '账户名称'
+                },
+                {
+                    field : 'phonenumber',
+                    title : '手机号码'
+                },
+                {
+                    field : 'region',
+                    title : '区域'
+                },
+
+                {
+                    field : 'pmscount',
+                    title : '商品数量'
+                },
+
+                {
+                    field : 'smscount',
+                    title : '优惠卷核销数量'
+
+                },
+                {
+                    field : 'createTime',
+                    title : '创建时间',
+                    visible: false
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.userId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.userId + '\')"><i class="fa fa-remove"></i>删除</a> ');
+                        actions.push('<a class="btn btn-info btn-xs ' + resetPwdFlag + '" href="javascript:void(0)" onclick="resetPwd(\'' + row.userId + '\')"><i class="fa fa-key"></i>重置</a> ');
+                        return actions.join('');
+                    },
+                    visible: false
+
+                }]
+        };
+        $.table.init(options);
+    });
+
+
+    function shopUserReset() {
+        $("input[name='deptId']").val("");
+        $.form.reset();
+    }
+
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='deptId']").val(shop.id);
+            $("input[name='dept']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+
+    /**
+     * 重置密码
+     * @param userId
+     */
+    function resetPwd(userId) {
+        var url = prefix + '/resetPwd/' + userId;
+        $.modal.open("重置密码", url, '800', '300');
+    }
+
+</script>
+</body>
+</html>

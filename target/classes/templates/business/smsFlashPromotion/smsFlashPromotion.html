@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('秒杀活动列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li th:if="${isAdmin}">
+                            <p>店铺：</p>
+                            <input type="hidden" name="shopId"/>
+                            <input type="text" name="shop" readonly placeholder="请选择店铺" onclick="selectShop();" />
+                        </li>
+                        <li>
+                            <p>活动名称：</p>
+                            <input type="text" name="title"/>
+                        </li>
+                        <li>
+                            <p>活动状态：</p>
+                            <select name="status" th:with="type=${@custom.groupGameStatus()}">
+                                <option value="">所有</option>
+                                <option th:each="type,key : ${type}" th:text="${key.current.value}"
+                                        th:value="${key.current.key}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="promotionReset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="promotionAdd()" shiro:hasPermission="business:smsFlashPromotion:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <!--                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="business:smsFlashPromotion:edit">-->
+            <!--                    <i class="fa fa-edit"></i> 修改-->
+            <!--                </a>-->
+            <!--                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="business:smsFlashPromotion:remove">-->
+            <!--                    <i class="fa fa-remove"></i> 删除-->
+            <!--                </a>-->
+            <!--                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:smsFlashPromotion:export">-->
+            <!--                    <i class="fa fa-download"></i> 导出-->
+            <!--                 </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:smsFlashPromotion:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:smsFlashPromotion:remove')}]];
+    var putawayFlag = [[${@permission.hasPermi('business:smsFlashPromotion:putaway')}]];
+    var soldoutFlag = [[${@permission.hasPermi('business:smsFlashPromotion:soldout')}]];
+    var settingFlag = [[${@permission.hasPermi('business:smsFlashPromotion:setting')}]];
+    var browseFlag = [[${@permission.hasPermi('business:smsFlashPromotion:browse')}]];
+
+    var prefix = ctx + "business/smsFlashPromotion";
+    var prefixShop = ctx + "business/bizShopInfo";
+    var statusMap = [[${@custom.smsFlashStatusPlus()}]];
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "秒杀活动",
+            sortName: "createTime",
+            sortOrder: "desc",
+            columns: [
+            //     {
+            //     checkbox: true
+            // },
+                {
+                    field: 'id',
+                    title: '主键',
+                    visible: false
+                },
+                {
+                    field: 'shopId',
+                    title: '店铺ID',
+                    visible: false
+                },
+                {
+                    field: 'title',
+                    title: '活动名称'
+                },
+                {
+                    field: 'startDate',
+                    title: '开始日期'
+                },
+                {
+                    field: 'endDate',
+                    title: '结束日期'
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    formatter: function (value, row, index) {
+                        if (statusMap[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", statusMap[value].style, statusMap[value].desc);
+                        }
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间'
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if (row.btns && row.btns.length > 0) {
+                            var btns = row.btns;
+                            for (var i in btns) {
+                                actions.push(buildBtn(btns[i], row.id, row.title));
+                            }
+                        }
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+
+    /**
+     * 操作按钮
+     */
+    var OPT_BTNS = {
+        "btn-product": '<a class="btn btn-primary btn-xs ' + settingFlag + '" href="javascript:void(0)" onclick="productSetting(\'{id}\', \'{title}\')"><i class="fa fa-plus"></i>设置商品</a> ',
+        "btn-browse": '<a class="btn btn-success btn-xs ' + browseFlag + '" href="javascript:void(0)" onclick="productBrowse(\'{id}\', \'{title}\')"><i class="fa fa-plus"></i>查看商品</a> ',
+        "btn-putaway": '<a class="btn btn-info btn-xs ' + putawayFlag + '" href="javascript:void(0)" onclick="putaway(\'{id}\', \'{title}\')"><i class="fa fa-edit"></i>开启活动</a> ',
+        "btn-soldout": '<a class="btn btn-warning btn-xs ' + soldoutFlag + '" href="javascript:void(0)" onclick="soldout(\'{id}\', \'{title}\')"><i class="fa fa-remove"></i>结束活动</a> ',
+        "btn-eidt": '<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="promotionEdit(\'{id}\')"><i class="fa fa-edit"></i>编辑活动</a> ',
+        "btn-delete": '<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'{id}\')"><i class="fa fa-remove"></i>删除活动</a>'
+    };
+
+    /**
+     * 构建按钮
+     */
+    function buildBtn(sign, id, title, shopId) {
+        return OPT_BTNS[sign].replace(/{id}/g, id).replace(/{title}/, title);
+    }
+
+    /**
+     * 新建秒杀活动
+     */
+    function promotionAdd() {
+        var width = $(window).width() > 800 ? 800 : "",
+            height = $(window).height() > 500 ? 500 : "";
+        $.modal.open("添加秒杀活动", prefix + "/add", width, height);
+    }
+
+    /**
+     * 编辑秒杀活动
+     */
+    function promotionEdit(id) {
+        var width = $(window).width() > 800 ? 800 : "",
+            height = $(window).height() > 500 ? 500 : "";
+        $.modal.open("修改秒杀活动", prefix + "/edit/" + id, width, height);
+    }
+
+    /**
+     * 秒杀活动开启
+     */
+    function putaway(id, title) {
+        $.modal.confirm("确认开启秒杀活动：" + title, function(){
+            $.operate.post(prefix + "/putaway", {"id": id});
+        });
+    }
+
+    /**
+     * 秒杀活动结束
+     */
+    function soldout(id, title) {
+        $.modal.confirm("确认结束秒杀活动：" + title, function(){
+            $.operate.post(prefix + "/soldout", {"id": id});
+        });
+    }
+
+    /**
+     * 设置活动中商品
+     * @param id
+     * @param title
+     */
+    function productSetting(id, title) {
+        var options = {
+            url: $.common.sprintf( prefix + "/setting/%s", id),
+            title: "设置活动 <b>[" + title + "]</b> 商品",
+            width: $(window).width(),
+            height: $(window).height(),
+            btn: false,
+        }
+        $.modal.openOptions(options);
+    }
+
+    /**
+     * 查看活动中商品
+     * @param id
+     * @param title
+     */
+    function productBrowse(id, title){
+        var options = {
+            url: $.common.sprintf( prefix + "/browse/%s", id),
+            title: "查看活动 <b>[" + title + "]</b> 商品",
+            width: $(window).width(),
+            height: $(window).height(),
+            btn: false,
+        }
+        $.modal.openOptions(options);
+    }
+
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='shopId']").val(shop.id);
+            $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+
+    function promotionReset() {
+        $("input[name='shopId']").val("");
+        $.form.reset();
+    }
+
+</script>
+</body>
+</html>

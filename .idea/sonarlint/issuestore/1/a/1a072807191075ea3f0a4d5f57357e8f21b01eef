@@ -1,0 +1,51 @@
+
+B
+java:S2629º"$Invoke method(s) only conditionally.(Æ¡Ò¨8Àá—‚å.
+V	java:S125z"<This block of commented-out lines of code should be removed.(‹œµºüÿÿÿÿ
+W	java:S125ˆ"<This block of commented-out lines of code should be removed.(¤ó«¡ùÿÿÿÿ
+m
+java:S1192K"WDefine a constant instead of duplicating this literal "ä¼šå‘˜ç”¨æˆ·ä¿¡æ¯: {}" 6 times.(ß·ë·
+A
+java:S2629c"$Invoke method(s) only conditionally.(Æ¡Ò¨8Àá—‚å.
+F
+java:S2629s"$Invoke method(s) only conditionally.(Ú§¾éüÿÿÿÿ8Àá—‚å.
+A
+java:S2629"$Invoke method(s) only conditionally.(äÆ§8Àá—‚å.
+Y
+java:S2230?"CMake this method "public" or remove the "@Transactional" annotation(´û¤Ð
+i
+java:S1128"SRemove this unused import 'com.fante.project.business.bizShopInfo.utils.ShopRedis'.(°³áß
+Y
+java:S2230Y"CMake this method "public" or remove the "@Transactional" annotation(ÜûÞ·
+^
+java:S2230Q"CMake this method "public" or remove the "@Transactional" annotation(­ÖÒ°øÿÿÿÿ
+B
+java:S2629Ÿ"$Invoke method(s) only conditionally.(Æ¡Ò¨8Àá—‚å.
+x
+java:S1192b"]Define a constant instead of duplicating this literal "é¦–æ¬¡å…³æ³¨: æ–°å¢žç”¨æˆ·{}" 3 times.(ÔŸ®ûÿÿÿÿ
+_
+java:S2230È"CMake this method "public" or remove the "@Transactional" annotation(Óúˆ§ýÿÿÿÿ
+~
+java:S3457c"aNo need to call "toString()" method as formatting and string conversion is done by the Formatter.(Æ¡Ò¨8Àá—‚å.
+f	java:S117q"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ªãë©
+\
+java:S2259s"AA "NullPointerException" could be thrown; "rsp" is nullable here.(Ú§¾éüÿÿÿÿ
+^
+java:S2230n"CMake this method "public" or remove the "@Transactional" annotation(íÜ»¿ùÿÿÿÿ
+_
+java:S2230µ"CMake this method "public" or remove the "@Transactional" annotation(¯ÿ¨°øÿÿÿÿ
+^
+java:S2230I"CMake this method "public" or remove the "@Transactional" annotation(–“ˆúÿÿÿÿ
+
+java:S3457º"aNo need to call "toString()" method as formatting and string conversion is done by the Formatter.(Æ¡Ò¨8Àá—‚å.
+I
+java:S1172Â"-Remove this unused method parameter "member".(Š¤í“üÿÿÿÿ
+R	java:S125î"<This block of commented-out lines of code should be removed.(ÖèÏ¯
+F
+java:S2629C"$Invoke method(s) only conditionally.(£ù…¥ùÿÿÿÿ8Àá—‚å.
+~
+java:S3457"aNo need to call "toString()" method as formatting and string conversion is done by the Formatter.(äÆ§8Àá—‚å.
+C
+java:S1170("!Make this final field static too.(ß¦å°ÿÿÿÿÿ8é€Ù‰å.
+
+java:S3457Ÿ"aNo need to call "toString()" method as formatting and string conversion is done by the Formatter.(Æ¡Ò¨8Àá—‚å.

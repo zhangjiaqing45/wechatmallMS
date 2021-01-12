@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改订单中所包含的商品')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-omsOrderItem-edit" th:object="${omsOrderItem}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">订单id：</label>
+                <div class="col-sm-8">
+                    <input name="orderId" th:field="*{orderId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">订单号：</label>
+                <div class="col-sm-8">
+                    <input name="orderSn" th:field="*{orderSn}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品id：</label>
+                <div class="col-sm-8">
+                    <input name="productId" th:field="*{productId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">null：</label>
+                <div class="col-sm-8">
+                    <input name="skuId" th:field="*{skuId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">优惠券id：</label>
+                <div class="col-sm-8">
+                    <input name="couponId" th:field="*{couponId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label  ">商品主图：</label>
+                <div class="col-sm-8">
+                    <textarea name="productPic" class="form-control">[[*{productPic}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品名称：</label>
+                <div class="col-sm-8">
+                    <input name="productName" th:field="*{productName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label  ">规格属性：</label>
+                <div class="col-sm-8">
+                    <textarea name="productSpData" class="form-control">[[*{productSpData}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品品牌：</label>
+                <div class="col-sm-8">
+                    <input name="productBrand" th:field="*{productBrand}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品货号：</label>
+                <div class="col-sm-8">
+                    <input name="productSn" th:field="*{productSn}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">支付价格：</label>
+                <div class="col-sm-8">
+                    <input name="payPrice" th:field="*{payPrice}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">销售价格：</label>
+                <div class="col-sm-8">
+                    <input name="productPrice" th:field="*{productPrice}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">运费总金额：</label>
+                <div class="col-sm-8">
+                    <input name="freightPrice" th:field="*{freightPrice}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">优惠价格：</label>
+                <div class="col-sm-8">
+                    <input name="couponPrice" th:field="*{couponPrice}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">购买数量：</label>
+                <div class="col-sm-8">
+                    <input name="productQuantity" th:field="*{productQuantity}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品sku编号：</label>
+                <div class="col-sm-8">
+                    <input name="productSkuId" th:field="*{productSkuId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品sku条码：</label>
+                <div class="col-sm-8">
+                    <input name="productSkuCode" th:field="*{productSkuCode}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品分类id：</label>
+                <div class="col-sm-8">
+                    <input name="productCategoryId" th:field="*{productCategoryId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品促销信息：</label>
+                <div class="col-sm-8">
+                    <input name="promotionInfo" th:field="*{promotionInfo}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">原始价格(团购前/秒杀前)价格：</label>
+                <div class="col-sm-8">
+                    <input name="initPrice" th:field="*{initPrice}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品赠送积分：</label>
+                <div class="col-sm-8">
+                    <input name="giftIntegration" th:field="*{giftIntegration}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">商品赠送成长值：</label>
+                <div class="col-sm-8">
+                    <input name="giftGrowth" th:field="*{giftGrowth}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  ">评论状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box">
+                        <input type="radio" name="status" value="">
+                        <label th:for="status" th:text="未知"></label>
+                    </div>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/omsOrderItem";
+        $("#form-omsOrderItem-edit").validate({
+            ignore:[],
+                rules: {
+                    orderId:{
+                        maxlength: 20,
+                    },
+                    orderSn:{
+                        maxlength: 64,
+                    },
+                    productId:{
+                        maxlength: 20,
+                    },
+                    skuId:{
+                        maxlength: 20,
+                    },
+                    couponId:{
+                        maxlength: 20,
+                    },
+                    productPic:{
+                        maxlength: 500,
+                    },
+                    productName:{
+                        maxlength: 200,
+                    },
+                    productSpData:{
+                        maxlength: 500,
+                    },
+                    productBrand:{
+                        maxlength: 200,
+                    },
+                    productSn:{
+                        maxlength: 64,
+                    },
+                    payPrice:{
+                        maxlength: 10,2,
+                    },
+                    productPrice:{
+                        maxlength: 10,2,
+                    },
+                    freightPrice:{
+                        maxlength: 10,2,
+                    },
+                    couponPrice:{
+                        maxlength: 10,2,
+                    },
+                    productQuantity:{
+                        maxlength: 11,
+                    },
+                    productSkuId:{
+                        maxlength: 20,
+                    },
+                    productSkuCode:{
+                        maxlength: 50,
+                    },
+                    productCategoryId:{
+                        maxlength: 20,
+                    },
+                    promotionInfo:{
+                        maxlength: 200,
+                    },
+                    initPrice:{
+                        maxlength: 10,2,
+                    },
+                    giftIntegration:{
+                        maxlength: 11,
+                    },
+                    giftGrowth:{
+                        maxlength: 11,
+                    },
+                    status:{
+                        maxlength: 1,
+                    },
+                    createBy:{
+                        maxlength: 50,
+                    },
+                    createTime:{
+                    },
+                    updateBy:{
+                        maxlength: 50,
+                    },
+                    updateTime:{
+                    },
+                    remark: {
+                        maxlength: 20
+                    },
+                    delFlag:{
+                        maxlength: 1,
+                    },
+                },
+                messages: {
+                    orderId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    orderSn:{
+                        maxlength: "最多输入64 个字符.",
+                    },
+                    productId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    skuId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    couponId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    productPic:{
+                        maxlength: "最多输入500 个字符.",
+                    },
+                    productName:{
+                        maxlength: "最多输入200 个字符.",
+                    },
+                    productSpData:{
+                        maxlength: "最多输入500 个字符.",
+                    },
+                    productBrand:{
+                        maxlength: "最多输入200 个字符.",
+                    },
+                    productSn:{
+                        maxlength: "最多输入64 个字符.",
+                    },
+                    payPrice:{
+                        maxlength: "最多输入10,2 个字符.",
+                    },
+                    productPrice:{
+                        maxlength: "最多输入10,2 个字符.",
+                    },
+                    freightPrice:{
+                        maxlength: "最多输入10,2 个字符.",
+                    },
+                    couponPrice:{
+                        maxlength: "最多输入10,2 个字符.",
+                    },
+                    productQuantity:{
+                        maxlength: "最多输入11 个字符.",
+                    },
+                    productSkuId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    productSkuCode:{
+                        maxlength: "最多输入50 个字符.",
+                    },
+                    productCategoryId:{
+                        maxlength: "最多输入20 个字符.",
+                    },
+                    promotionInfo:{
+                        maxlength: "最多输入200 个字符.",
+                    },
+                    initPrice:{
+                        maxlength: "最多输入10,2 个字符.",
+                    },
+                    giftIntegration:{
+                        maxlength: "最多输入11 个字符.",
+                    },
+                    giftGrowth:{
+                        maxlength: "最多输入11 个字符.",
+                    },
+                    status:{
+                        maxlength: "最多输入1 个字符.",
+                    },
+                    createBy:{
+                        maxlength: "最多输入50 个字符.",
+                    },
+                    createTime:{
+                    },
+                    updateBy:{
+                        maxlength: "最多输入50 个字符.",
+                    },
+                    updateTime:{
+                    },
+                    remark: {
+                        maxlength: "最多输入20个字符.",
+                    },
+                    delFlag:{
+                        maxlength: "最多输入1 个字符.",
+                    },
+        },
+        focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-omsOrderItem-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

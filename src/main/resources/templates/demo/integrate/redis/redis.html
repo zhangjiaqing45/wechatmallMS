@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <th:block th:include="include :: header('集成Redis')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content fadeInRight">
+    <div class="row">
+        <div class="col-sm-10">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <h3>Redis集成准备</h3>
+                    <div class="alert alert-warning">
+                        安装Reids，并启动服务
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-10">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>设置缓存</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" id="redis_demo_set">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="id" placeholder="请输入ID" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">姓名：</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="name" placeholder="请输入姓名" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">年龄：</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="age" placeholder="请输入年龄" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">过期时间（秒）：</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="time" placeholder="请输入过期时间（time小于等于0 将设置无限期）" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button type="button" class="btn btn-primary" id="form_submit_set">设置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>获取缓存</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" id="redis_demo_get">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="id" placeholder="请输入ID" class="form-control" >
+                            </div>
+                        </div>
+                        <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color="#6f5499" size="3" />
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">姓名：</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="name-get" placeholder="" readonly class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">年龄：</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="age-get" placeholder="" readonly class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button type="button" class="btn btn-primary" id="form_submit_get" >获取</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>获取缓存过期时间</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" id="redis_demo_ex">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="id" placeholder="请输入ID" class="form-control" >
+                            </div>
+                        </div>
+                        <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color="#6f5499" size="3" />
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">过期时间（秒）：</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="time-ex" placeholder="" readonly class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button type="button" class="btn btn-primary" id="form_submit_ex" >获取</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript">
+    var prefix = ctx + "demo/integrate/redis";
+    var icon = "<i class='fa fa-times-circle'></i> ";
+
+    $(function () {
+
+        $("#form_submit_set").click(function () {
+            if ($.validate.form("redis_demo_set")) {
+                $.operate.post(prefix + "/redisSet", $("#redis_demo_set").serialize());
+            }
+        });
+
+        $("#form_submit_get").click(function () {
+            $("#name-get").val("");
+            $("#age-get").val("");
+            if ($.validate.form("redis_demo_get")) {
+                $.operate.post(prefix + "/redisGet", $("#redis_demo_get").serialize(), function(res) {
+                    // console.log(res);
+                    if (res.code == web_status.SUCCESS && res.user) {
+                        var name = res.user.name ? res.user.name : "";
+                        var age = res.user.age ? res.user.age : "";
+                        $("#name-get").val(name);
+                        $("#age-get").val(age);
+                    }
+                });
+            }
+        });
+
+        $("#form_submit_ex").click(function () {
+            $("#time-ex").val("");
+            if ($.validate.form("redis_demo_ex")) {
+                $.operate.post(prefix + "/getRedisExpire", $("#redis_demo_ex").serialize(), function(res) {
+                    console.log(res);
+                    if (res.code == web_status.SUCCESS && res.ex) {
+                        if (res.ex > 0) {
+                            $("#time-ex").val(res.ex + " 秒");
+                        } else if (res.ex == -1) {
+                            $("#time-ex").val("无限期");
+                        } else if (res.ex == -2) {
+                            $("#time-ex").val("键值不存在");
+                        }
+                    }
+                });
+            }
+        });
+        
+    });
+
+    $("#redis_demo_set").validate({
+        rules: {
+            id: {
+                required: true,
+            },
+            name: {
+                required: true,
+            },
+            age: {
+                required: true,
+                digits: true,
+            },
+            time: {
+                required : true,
+                number:true,
+            }
+        },
+        messages : {
+            id: {
+                required: icon + "请填写ID",
+            },
+            name: {
+                required: icon + "请填写姓名",
+            },
+            age: {
+                required: icon + "请填写年龄",
+                digits: icon + "请输入正确的年龄",
+            },
+            time: {
+                required : icon + "请填写过期时间",
+                number: icon + "请输入正确的过期时间",
+            }
+        }
+    });
+
+    $("#redis_demo_get").validate({
+        rules: {
+            id: {
+                required: true,
+            },
+        },
+        messages : {
+            id: {
+                required: icon + "请填写ID",
+            },
+        }
+    });
+
+    $("#redis_demo_ex").validate({
+        rules: {
+            id: {
+                required: true,
+            },
+        },
+        messages : {
+            id: {
+                required: icon + "请填写ID",
+            },
+        }
+    });
+</script>
+</body>
+</html>

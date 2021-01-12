@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsOrder.mapper.OmsOrderMapper">
+    <resultMap id="orderDetailResultMap" type="com.fante.project.business.omsOrder.domain.OmsOrderDetail" extends="OmsOrderResult">
+        <collection property="orderItemList" resultMap="com.fante.project.business.omsOrderItem.mapper.OmsOrderItemMapper.OmsOrderItemResult" columnPrefix="ooi_"/>
+        <collection property="orderHistoryList" resultMap="com.fante.project.business.omsOrderOperateHistory.mapper.OmsOrderOperateHistoryMapper.OmsOrderOperateHistoryResult" columnPrefix="ooh_"/>
+    </resultMap>
+    <resultMap id="memberOrderDetailResultMap" type="com.fante.project.api.omsOrderProcess.domain.OmsMemberOrderDetail" extends="OmsOrderResult">
+        <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
+        <collection property="itemList" resultMap="com.fante.project.business.omsOrderItem.mapper.OmsOrderItemMapper.OmsOrderItemResult" columnPrefix="ooi_"/>
+    </resultMap>
+    <!--orderDetailResultMap中的参数1-->
+    <sql id="orderDetailResultMap_oo_param">
+            oo.id AS id,
+            oo.delivery_sn AS delivery_sn,
+            oo.shop_id AS shop_id,
+            oo.pay_order_id AS pay_order_id,
+            oo.order_sn AS order_sn,
+            oo.member_id AS member_id,
+            oo.pay_amount AS pay_amount,
+            oo.product_total_amount AS product_total_amount,
+            oo.freight_amount AS freight_amount,
+            oo.coupon_amount AS coupon_amount,
+            oo.coupon_type AS coupon_type,
+            oo.coupon_data AS coupon_data,
+            oo.order_type AS order_type,
+            oo.game_id AS game_id,
+            oo.game_info AS game_info,
+            oo.bill_type AS bill_type,
+            oo.bill_header AS bill_header,
+            oo.bill_content AS bill_content,
+            oo.bill_receiver_phone AS bill_receiver_phone,
+            oo.bill_receiver_email AS bill_receiver_email,
+            oo.receiver_name AS receiver_name,
+            oo.receiver_phone AS receiver_phone,
+            oo.receiver_post_code AS receiver_post_code,
+            oo.receiver_province AS receiver_province,
+            oo.receiver_city AS receiver_city,
+            oo.receiver_region AS receiver_region,
+            oo.receiver_detail_address AS receiver_detail_address,
+            oo.note AS note,
+            oo.payment_type AS payment_type,
+            oo.STATUS AS status,
+            oo.confirm_status AS confirm_status,
+            oo.write_off_status AS write_off_status,
+            oo.create_time AS create_time,
+            oo.payment_time AS payment_time,
+            oo.delivery_time AS delivery_time,
+            oo.receive_time AS receive_time,
+            oo.auto_confirm_day AS auto_confirm_day,
+            oo.comment_time AS comment_time,
+            oo.create_by AS create_by,
+            oo.update_by AS update_by,
+            oo.update_time AS update_time,
+            oo.remark AS remark,
+            oo.integration AS integration,
+            oo.growth AS growth
+    </sql>
+    <!--orderDetailResultMap中orderitem参数-->
+    <sql id="orderDetailResultMap_ooi_param">
+            ooi.id AS ooi_id,
+            ooi.order_id AS ooi_order_id,
+            ooi.order_sn AS ooi_order_sn,
+            ooi.product_id AS ooi_product_id,
+            ooi.game_sku_id AS ooi_game_sku_id,
+            ooi.product_pic AS ooi_product_pic,
+            ooi.product_name AS ooi_product_name,
+            ooi.product_sp_data AS ooi_product_sp_data,
+            ooi.product_brand AS ooi_product_brand,
+            ooi.product_sn AS ooi_product_sn,
+            ooi.pay_price AS ooi_pay_price,
+            ooi.product_price AS ooi_product_price,
+            ooi.freight_price AS ooi_freight_price,
+            ooi.coupon_price AS ooi_coupon_price,
+            ooi.product_quantity AS ooi_product_quantity,
+            ooi.product_sku_id AS ooi_product_sku_id,
+            ooi.product_sku_code AS ooi_product_sku_code,
+            ooi.product_category_id AS ooi_product_category_id,
+            ooi.promotion_info AS ooi_promotion_info,
+            ooi.init_price AS ooi_init_price,
+            ooi.gift_integration AS ooi_gift_integration,
+            ooi.gift_growth AS ooi_gift_growth,
+            ooi.STATUS AS ooi_status,
+            ooi.return_status AS ooi_return_status,
+            ooi.create_by AS ooi_create_by,
+            ooi.create_time AS ooi_create_time,
+            ooi.update_by AS ooi_update_by,
+            ooi.update_time AS ooi_update_time,
+            ooi.remark AS ooi_remark
+    </sql>
+
+
+    <select id="selectOmsOrderDetailById" resultMap="orderDetailResultMap">
+        SELECT
+            <include refid="orderDetailResultMap_oo_param"/>,
+            <include refid="orderDetailResultMap_ooi_param"/>,
+            ooh.id AS ooh_id,
+            ooh.order_id AS ooh_order_id,
+            ooh.pay_status AS ooh_pay_status,
+            ooh.send_status AS ooh_send_status,
+            ooh.order_status AS ooh_order_status,
+            ooh.remark AS ooh_remark,
+            ooh.create_time AS ooh_create_time,
+            ooh.create_by AS ooh_create_by,
+            ooh.update_time AS ooh_update_time,
+            ooh.update_by AS ooh_update_by
+        FROM
+            oms_order oo
+            LEFT JOIN oms_order_item ooi ON ooi.order_id = oo.id
+            LEFT JOIN oms_order_operate_history ooh ON oo.id = ooh.order_id
+        WHERE
+            oo.id = #{id}
+    </select>
+
+
+    <select id="getOmsOrderDetailById" resultMap="orderDetailResultMap">
+        SELECT
+            <include refid="orderDetailResultMap_oo_param"/>
+            ,
+            <include refid="orderDetailResultMap_ooi_param"/>
+        FROM
+            oms_order oo
+            LEFT JOIN oms_order_item ooi ON ooi.order_id = oo.id
+        WHERE
+            oo.id = #{id}
+    </select>
+    <select id="selectOrderSendDetail" resultMap="orderDetailResultMap">
+        SELECT
+        <include refid="orderDetailResultMap_oo_param"/>
+        FROM
+            oms_order oo
+        WHERE
+            oo.id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND oo.status = #{status}
+        AND oo.del_flag = '0'
+    </select>
+    <update id="batchRemarks">
+        update oms_order set remark = #{remark}
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="batchSendProducts">
+        UPDATE oms_order
+        SET
+        delivery_sn = CASE id
+        <foreach collection="list" item="item">
+            WHEN #{item.id} THEN #{item.deliverySn}
+        </foreach>
+        END,
+        delivery_company = CASE id
+        <foreach collection="list" item="item">
+            WHEN #{item.id} THEN #{item.deliveryCompany}
+        </foreach>
+        END,
+        delivery_time = CASE id
+        <foreach collection="list" item="item">
+            WHEN #{item.id} THEN now()
+        </foreach>
+        END,
+        `status` = CASE id
+        <foreach collection="list" item="item">
+            WHEN #{item.id} THEN '2'
+        </foreach>
+        END
+        WHERE
+        id IN
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+        AND `status` = '1'
+        AND del_flag = '0'
+    </update>
+    <select id="selectOrderSendFailure" resultType="java.lang.Long">
+        select
+            id
+        FROM
+            oms_order
+        WHERE
+            id in
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        AND status &lt; '2'
+        AND del_flag = '0'
+    </select>
+    <!--后台取消订单-->
+    <update id="cancleOmsOrderById">
+        UPDATE oms_order
+        SET
+        `status` = '6',
+         remark = #{remark}
+        WHERE
+        id = #{id}
+        AND `status` = '1'
+        AND del_flag = '0'
+    </update>
+    <!--前台手动取消或超时订单自动取消-->
+    <update id="cancleOrderById">
+        UPDATE oms_order
+        SET
+        `status` = '6'
+        WHERE
+        id = #{id}
+        AND `status` = '0'
+        AND del_flag = '0'
+    </update>
+    <!--查询7日内未发货订单-->
+    <select id="countSevenDayNotSend" resultType="int">
+        SELECT
+        count(*)
+        FROM
+        oms_order
+        WHERE
+        shop_id = #{shopId}
+        AND del_flag = '0'
+        AND create_time &gt; DATE_SUB( NOW(), INTERVAL 7 DAY )
+        AND create_time &lt; DATE_SUB( NOW(), INTERVAL 1 DAY )
+        AND `status` = 1
+    </select>
+    <!--查询超时订单-->
+    <select id="getTimeOutOrders" resultMap="orderDetailResultMap">
+        SELECT
+            oo.id AS id,
+            oo.order_type AS order_type,
+            ooi.id AS ooi_id,
+            ooi.order_id AS ooi_order_id,
+            ooi.game_sku_id AS ooi_game_sku_id,
+            ooi.product_sku_id AS ooi_product_sku_id,
+            ooi.product_quantity AS ooi_product_quantity
+        FROM
+            oms_order oo
+            LEFT JOIN oms_order_item ooi ON oo.id = ooi.order_id
+        WHERE
+            oo.status = '0'
+            AND (
+                case when oo.order_type ='1' then date_add(NOW(), INTERVAL -#{generalTimes} MINUTE) &gt; oo.create_time
+                when oo.order_type ='2' then date_add(NOW(), INTERVAL -#{groupTimes} MINUTE) &gt; oo.create_time
+                when oo.order_type ='3' then date_add(NOW(), INTERVAL -#{seckillTimes} MINUTE) &gt; oo.create_time
+				else false end)
+    </select>
+    <select id="selectOrderDetailByPayOrderSn" resultMap="orderDetailResultMap">
+        select
+        <include refid="orderDetailResultMap_oo_param"/>
+        ,
+        <include refid="orderDetailResultMap_ooi_param"/>
+        from
+            oms_order oo
+            LEFT JOIN oms_order_item ooi ON oo.id = ooi.order_id
+            INNER join oms_pay_order po ON po.id = oo.pay_order_id
+        where
+            po.pay_order_sn = #{payOrderSn}
+            AND oo.status = '0'
+            AND oo.del_flag = '0'
+    </select>
+    <!--修改状态:支付订单成功-->
+    <update id="paySuccess">
+        update oms_order set status = '1',write_off_status = '0',payment_time = now(),pay_status = '1'
+        where id = #{id}
+    </update>
+    <!--修改订单状态:等待团购组团-->
+    <update id="paySuccessForGroup">
+        update oms_order set status = '7',payment_time = now(),pay_status = '1'
+        where id = #{id}
+    </update>
+    <!--团购成功订单改为待发货-->
+    <update id="setStatusOfgroupSuccess">
+        update oms_order set status = '1',payment_time = now(),pay_status = '1'
+        where order_sn in (
+            select sgmr.order_sn
+            from
+                sms_group_member_record sgmr
+            where sgmr.group_join_record_id  = #{recordId}
+        )
+    </update>
+    <!--团购失败订单改为无效-->
+    <update id="setStatusOfgroupFailure">
+        update oms_order set status = '6',update_time = now(),pay_status = '2'
+        where order_sn in (
+            select sgmr.order_sn
+            from
+                sms_group_member_record sgmr
+            where sgmr.group_join_record_id  = #{recordId}
+        )
+    </update>
+    <!--查询积分订单-->
+    <select id="selectIntegralOrderList" resultType="com.fante.project.api.omsIntegral.domain.OmsIntegralOrder">
+        SELECT
+            oo.id AS id,
+            oo.shop_id AS shop_id,
+            oo.pay_order_id AS pay_order_id,
+            oo.order_sn AS order_sn,
+            oo.member_id AS member_id,
+            oo.pay_amount AS pay_amount,
+            oo.product_total_amount AS product_total_amount,
+            oo.freight_amount AS freight_amount,
+            oo.coupon_amount AS coupon_amount,
+            oo.coupon_type AS coupon_type,
+            oo.coupon_data AS coupon_data,
+            oo.order_type AS order_type,
+            oo.receiver_name AS receiver_name,
+            oo.receiver_phone AS receiver_phone,
+            oo.receiver_post_code AS receiver_post_code,
+            oo.receiver_province AS receiver_province,
+            oo.receiver_city AS receiver_city,
+            oo.receiver_region AS receiver_region,
+            oo.receiver_detail_address AS receiver_detail_address,
+            oo.note AS note,
+            oo.STATUS AS status,
+            oo.confirm_status AS confirm_status,
+            oo.create_time AS create_time,
+            oo.payment_time AS payment_time,
+            oo.delivery_time AS delivery_time,
+            oo.receive_time AS receive_time,
+            oo.auto_confirm_day AS auto_confirm_day,
+            oo.comment_time AS comment_time,
+            oo.create_by AS create_by,
+            oo.update_by AS update_by,
+            oo.update_time AS update_time,
+            oo.remark AS remark,
+            ooi.product_quantity AS quantity,
+            ooi.product_price AS single_price,
+            ooi.init_price AS single_original_price,
+            ooi.product_name AS product_name,
+            ooi.product_brand AS product_brand,
+            ooi.product_pic AS product_pic,
+            ooi.product_id AS product_id,
+            ooi.product_sn AS product_sn
+        FROM
+             oms_order oo left join oms_order_item ooi on oo.id = ooi.order_id
+        WHERE
+            <if test="id != null  and id != ''"> oo.id = #{id} and</if>
+            oo.order_type = '4'
+            and oo.del_flag = '0'
+            and oo.member_id = #{memberId}
+            <if test="status != null  and status != ''"> and  oo.status = #{orderStatus}</if>
+            order by oo.id desc
+    </select>
+
+    <!--(app)查询订单列表 1 -->
+    <select id="selectOmsOrderListByStatusBase" resultType="java.lang.Long">
+        SELECT
+            oo.id
+        FROM
+        oms_order oo
+        <where>
+            oo.del_flag = '0'
+            <if test="id != null ">
+                AND oo.id = #{id}
+            </if>
+            <if test="memberId != null ">
+                AND oo.member_id  = #{memberId}
+            </if>
+            <if test="status !='' and status != null ">
+                AND oo.`status` = #{status}
+            </if>
+        </where>
+        GROUP BY oo.id
+    </select>
+    <!--(app)查询订单列表 2 -->
+    <select id="selectOmsOrderListByStatus" resultMap="memberOrderDetailResultMap">
+         SELECT
+        <include refid="orderDetailResultMap_oo_param"/>
+        ,
+        <include refid="orderDetailResultMap_ooi_param"/>
+        ,
+        shop.company_name AS shop_name
+        FROM
+            oms_order oo
+            LEFT JOIN oms_order_item ooi ON ooi.order_id = oo.id
+            LEFT JOIN biz_shop_info shop ON Shop.id = oo.shop_id
+        where
+        oo.id in
+        <foreach collection="ids" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+
+        order by oo.id desc
+    </select>
+    <!--(app)查询订单列表 3 -->
+    <select id="getOmsOrderListByStatus" resultMap="memberOrderDetailResultMap">
+         SELECT
+        <include refid="orderDetailResultMap_oo_param"/>
+        ,
+        <include refid="orderDetailResultMap_ooi_param"/>
+        ,
+        shop.company_name AS shop_name
+        FROM
+            oms_order oo
+            LEFT JOIN oms_order_item ooi ON ooi.order_id = oo.id
+            LEFT JOIN biz_shop_info shop ON Shop.id = oo.shop_id
+        <where>
+            oo.del_flag = '0'
+            <if test="id != null ">
+                AND oo.id = #{id}
+            </if>
+            <if test="memberId != null ">
+                AND oo.member_id  = #{memberId}
+            </if>
+            <if test="status !='' and status != null ">
+                AND oo.`status` = #{status}
+            </if>
+        </where>
+    </select>
+    <!--更新订单评论时间-->
+    <update id="updateOmsOrderCommentTime">
+        update oms_order set comment_time = now() where
+        id = (
+            select id from oms_order_item where id = #{orderItemId}
+        )
+    </update>
+    <!--查询所有可自动确认订单的订单-->
+    <select id="searchAllCanReceiveOrders" resultMap="OmsOrderResult">
+        <include refid="selectOmsOrderVo"/>
+        where
+        DATE_ADD( IFNULL( delivery_time, NOW()), INTERVAL #{receiveTime} DAY ) &lt; NOW()
+        and `status` = '2'
+    </select>
+    <!--查询所有可用自动关闭的订单-->
+    <select id="searchAllCanCloseOrders" resultMap="OmsOrderResult">
+         <include refid="selectOmsOrderVo"/>
+        WHERE
+        DATE_ADD( IFNULL( receive_time, NOW()), INTERVAL #{autoCloseOrderTime} MINUTE ) &lt; NOW()
+        and `status` = '3'
+    </select>
+    <!--批量关闭订单-->
+    <update id="batchCloseOrder">
+        update oms_order set `status` = CASE id
+        <foreach collection="orderList" item="item">
+            WHEN #{item.id} THEN '4'
+        </foreach>
+        END
+        WHERE
+        id IN
+        <foreach collection="orderList" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </update>
+    <!--关闭订单-->
+    <update id="closeOrder">
+        update oms_order set `status` = '4'
+        WHERE
+        id = #{id}
+        and `status` = '3'
+    </update>
+    <!--通过recordId查询所有到订单详情信息-->
+    <select id="selectDetailForAccountRecord" resultMap="orderDetailResultMap">
+        SELECT
+        <include refid="orderDetailResultMap_oo_param"/>
+        ,
+        <include refid="orderDetailResultMap_ooi_param"/>
+        FROM
+        oms_order oo
+        LEFT JOIN oms_order_item ooi ON ooi.order_id = oo.id
+        LEFT JOIN  sms_group_member_record sgmr ON sgmr.order_sn = oo.order_sn
+        WHERE
+        sgmr.group_join_record_id = #{recordId}
+    </select>
+    <!--用户确认收货-->
+    <update id="memberConfirmReceiveOrder">
+         update oms_order set
+            status = #{status}, receive_time = now()
+         where
+            id = #{id}
+            and member_id =#{memberId}
+    </update>
+    <!--自动批量确认收货-->
+    <update id="autoConfirmReceiveOrder">
+        update oms_order set
+        `status` = CASE id
+        <foreach collection="ids" item="id">
+            WHEN #{id} THEN '3'
+        </foreach>
+        END,
+        `receive_time` = CASE id
+        <foreach collection="ids" item="id">
+            WHEN #{id} THEN now()
+        </foreach>
+        END
+        WHERE
+        id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
+
+    <select id="selectOmsOrderByOrderSn" parameterType="String" resultMap="OmsOrderResult">
+        <include refid="selectOmsOrderVo"/>
+        where order_sn = #{orderSn}
+        and del_flag = '0'
+        limit 1
+    </select>
+</mapper>

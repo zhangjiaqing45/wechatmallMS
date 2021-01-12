@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.bizShopWriteExport.mapper.BizShopWriteExportMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SysUserResultExt" type="扩展类全包名" extends="SysUserResult">
+
+    </resultMap>
+     -->
+
+    <sql id="selectWriteJoinListVo">
+        select
+	        A.deptName,
+			A.login_name,
+			A.user_name,
+			A.phonenumber,
+			A.region,
+			count( distinct p.id) as pmscount,
+			ifnull( sc.smscount , 0 ) as smscount,
+			A.create_time
+				from (
+								select u.user_id, u.dept_id, s.company_name as deptName,u.login_name, u.user_name, u.user_type,
+							 u.email, u.phonenumber, u.sex, u.avatar, u.status,
+							 u.create_by,  u.update_by, u.update_time, u.remark,
+							 r.role_id, r.role_name,s.district as region,s.id as sid,s.create_time
+				from sys_user u
+								 left join biz_shop_info s on s.id=u.dept_id
+								 left join sys_user_role ur on u.user_id=ur.user_id
+								 left join sys_role r on r.role_id=ur.role_id
+
+				 WHERE
+								u.del_flag = '0'
+					) A
+		left join pms_product  p on  p.shop_id=A.sid  and p.del_flag='0' and p.publish_status='1'
+		left join
+		(select shop_id,sum(use_count) as smscount from sms_coupon where status='1'  and del_flag='0' group by shop_id)  sc on sc.shop_id=A.sid
+    </sql>
+
+    <select id="selectShopWriteJoinList"
+            parameterType="com.fante.project.business.bizShopWriteExport.domain.BizShopWriteDTO"
+            resultType="com.fante.project.business.bizShopWriteExport.domain.BizShopWriteDTO">
+		<include refid="selectWriteJoinListVo"></include>
+
+		<where>
+			 1=1
+
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				AND  replace(left(p.create_time,10),'-','')  &gt;= #{beginTime}
+			</if>
+
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				AND  replace(left(p.create_time,10),'-','') &lt;=  #{endTime}
+			</if>
+
+			group by
+			A.deptName,
+			A.login_name,
+			A.user_name,
+			A.phonenumber,
+			A.region,
+			sc.smscount,
+			A.create_time
+		</where>
+
+
+
+
+	</select>
+
+
+
+</mapper>

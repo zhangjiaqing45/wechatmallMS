@@ -1,0 +1,15 @@
+
+€
+java:S1192k"eDefine a constant instead of duplicating this literal "æœªæ‰¾åˆ°é€€æ¬¾çš„åº—é“ºè®¢å•ä¿¡æ¯" 3 times.(ü¡Éœúÿÿÿÿ
+{
+java:S1192o"eDefine a constant instead of duplicating this literal "æœªæ‰¾åˆ°é€€æ¬¾çš„æ”¯ä»˜è®¢å•ä¿¡æ¯" 3 times.(©ÇÕÁ
+z
+java:S1192g"_Define a constant instead of duplicating this literal "æœªæ‰¾åˆ°é€€æ¬¾ç”³è¯·äººä¿¡æ¯" 3 times.(¥ãŠÌşÿÿÿÿ
+r
+java:S1488°"[Immediately return this expression instead of assigning it to the temporary variable "rsp".(ªºĞ
+h
+java:S3252Ä"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(ı¥Œ¶ùÿÿÿÿ
+h
+java:S3252Å"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(Òòâÿÿÿÿÿ
+K
+java:S1874Ş"5Remove this use of "ROUND_HALF_UP"; it is deprecated.(“÷ÃN

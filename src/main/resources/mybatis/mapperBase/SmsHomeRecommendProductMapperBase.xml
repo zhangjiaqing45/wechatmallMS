@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsHomeRecommendProduct.mapper.SmsHomeRecommendProductMapper">
+    
+    <resultMap type="SmsHomeRecommendProduct" id="SmsHomeRecommendProductResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="sort"    column="sort"    />
+        <result property="status"    column="status"    />
+        <result property="type"    column="type"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectSmsHomeRecommendProductVo">
+        select id, product_id, product_name, sort, status, type, create_by, create_time, update_by, update_time, remark, del_flag from sms_home_recommend_product
+    </sql>
+
+    <select id="selectSmsHomeRecommendProductList" parameterType="SmsHomeRecommendProduct" resultMap="SmsHomeRecommendProductResult">
+        <include refid="selectSmsHomeRecommendProductVo"/>
+        <where>
+           <!-- del_flag = '0' -->
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+        </where>
+    </select>
+    
+    <select id="selectSmsHomeRecommendProductById" parameterType="Long" resultMap="SmsHomeRecommendProductResult">
+        <include refid="selectSmsHomeRecommendProductVo"/>
+        where id = #{id}
+        <!-- and del_flag = '0' -->
+    </select>
+        
+    <insert id="insertSmsHomeRecommendProduct" parameterType="SmsHomeRecommendProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_home_recommend_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null ">product_id,</if>
+            <if test="productName != null  and productName != ''">product_name,</if>
+            <if test="sort != null ">sort,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="type != null  and type != ''">type,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null ">#{productId},</if>
+            <if test="productName != null  and productName != ''">#{productName},</if>
+            <if test="sort != null ">#{sort},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="type != null  and type != ''">#{type},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSmsHomeRecommendProduct" parameterType="SmsHomeRecommendProduct">
+        update sms_home_recommend_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null ">product_id = #{productId},</if>
+            <if test="productName != null  and productName != ''">product_name = #{productName},</if>
+            <if test="sort != null ">sort = #{sort},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="type != null  and type != ''">type = #{type},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsHomeRecommendProductById" parameterType="Long">
+        <!-- update sms_home_recommend_product set del_flag = '1' where id = #{id} -->
+        delete from sms_home_recommend_product where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsHomeRecommendProductByIds" parameterType="String">
+        <!-- update sms_home_recommend_product set del_flag = '1' where id in -->
+        delete from sms_home_recommend_product where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsHomeRecommendProduct.mapper.SmsHomeRecommendProductMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SmsHomeRecommendProductResultExt" type="扩展类全包名" extends="SmsHomeRecommendProductResult">
+
+    </resultMap>
+     -->
+
+    <sql id="selectJoinListVo">
+        select
+               r.id, r.product_id, p.product_sn, p.shop_id, p.product_category_name, p.brand_name, p.name as productName, p.publish_status,
+               r.sort, r.status, r.type, r.create_by, r.create_time, r.update_by, r.update_time, r.remark, r.del_flag
+        from sms_home_recommend_product r
+                 inner join pms_product p on r.product_id=p.id
+    </sql>
+
+    <sql id="selectJoinListAppVo">
+        select
+               r.id, r.product_id, p.product_sn, p.shop_id, p.product_category_name, p.brand_name, p.name as productName, p.publish_status,
+               r.sort, r.status, r.type, p.pic, p.price, p.original_price, p.sale
+        from sms_home_recommend_product r
+                 inner join pms_product p on r.product_id=p.id
+    </sql>
+
+    <!-- ************************************************************修改sql*方法**add************************************************************************ -->
+
+    <sql id="selectJoinListAppVoChange">
+            SELECT
+                  A.id, A.product_id, A.product_sn, A.shop_id, A.product_category_name, A.brand_name, A.productName,
+                  A.publish_status, A.sort, A.status, A.type, A.pic, A.price, A.original_price,A.inId,sale AS sale
+                  /*sc.smscount AS sale*/
+
+            FROM(
+                        select
+                             r.id, r.product_id, p.product_sn, p.shop_id, p.product_category_name, p.brand_name, p.name as productName,
+                             p.publish_status, r.sort, r.status, r.type, p.pic, p.price, p.original_price, p.sale,s.id as inId
+                         from
+                           pms_product p
+                         inner join sms_home_recommend_product r  on  r.product_id=p.id
+                         LEFT JOIN biz_shop_info s ON s.id = p.shop_id
+            )  A
+
+            LEFT JOIN
+                    (select shop_id,sum(use_count) as smscount from sms_coupon where status='1'  and del_flag='0' group by shop_id)  sc  on sc.shop_id=A.inId
+    </sql>
+
+
+    <!--最初原方法-->
+ <!--   <select id="selectRecommendProductWithType"
+            parameterType="com.fante.project.api.appView.domain.CmsRecommendReq"
+            resultType="com.fante.project.business.smsHomeRecommendProduct.domain.SmsHomeRecommendProductDTO">
+        <include refid="selectJoinListAppVo" />
+        <where>
+            <if test="type != null and type != '' "> and r.type = #{type}</if>
+            <if test="status != null and status != '' "> and r.status = #{status}</if>
+            <if test="publishStatus != null and publishStatus!=''"> and p.publish_status = #{publishStatus}</if>
+        </where>
+        order by r.sort
+        <if test="showNum != null and showNum > 0">
+            limit #{showNum}
+        </if>
+    </select>-->
+
+<!-- 改动后的方法 -->
+    <select id="selectRecommendProductWithType"
+            parameterType="com.fante.project.api.appView.domain.CmsRecommendReq"
+            resultType="com.fante.project.business.smsHomeRecommendProduct.domain.SmsHomeRecommendProductDTO">
+
+        <include refid="selectJoinListAppVoChange" />
+
+        <where>
+            <if test="type != null and type != '' "> and A.type = #{type}</if>
+            <if test="status != null and status != '' "> and A.status = #{status}</if>
+            <if test="publishStatus != null and publishStatus!=''"> and A.publish_status = #{publishStatus}</if>
+        </where>
+        order by A.sort
+        <if test="showNum != null and showNum > 0">
+            limit #{showNum}
+        </if>
+    </select>
+
+
+    <!-- ************************************************************修改sql*方法**ent************************************************************************ -->
+
+
+
+    <select id="selectJoinList"
+            parameterType="com.fante.project.business.smsHomeRecommendProduct.domain.SmsHomeRecommendProductDTO"
+            resultType="com.fante.project.business.smsHomeRecommendProduct.domain.SmsHomeRecommendProductDTO">
+        <include refid="selectJoinListVo" />
+        <where>
+            <if test="productSn != null  and productSn != ''"> and p.product_sn like concat('%', #{productSn}, '%') </if>
+            <if test="shopId != null "> and p.shop_id = #{shopId}</if>
+            <if test="productName != null and productName != ''"> and p.name like concat('%', #{productName}, '%')</if>
+            <if test="publishStatus != null and publishStatus!=''"> and p.publish_status = #{publishStatus}</if>
+            <if test="status != null and status != '' "> and r.status = #{status}</if>
+            <if test="type != null and type != '' "> and r.type = #{type}</if>
+        </where>
+    </select>
+
+    <select id="selectAppJoinList"
+            parameterType="com.fante.project.api.appView.domain.CmsRecommendReq"
+            resultType="com.fante.project.business.smsHomeRecommendProduct.domain.SmsHomeRecommendProductDTO">
+        <include refid="selectJoinListAppVo" />
+        <where>
+            <if test="productName != null and productName != ''"> and p.name like concat('%', #{productName}, '%')</if>
+            <if test="publishStatus != null and publishStatus!=''"> and p.publish_status = #{publishStatus}</if>
+            <if test="status != null and status != '' "> and r.status = #{status}</if>
+            <if test="type != null and type != '' "> and r.type = #{type}</if>
+            <if test="shopId != null "> and p.shop_id = #{shopId}</if>
+        </where>
+    </select>
+
+    <select id="checkProductUnique" resultType="int">
+        select count(*) from sms_home_recommend_product
+        <where>
+            type = #{type}
+            and product_id in
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <insert id="batchInsertSmsHomeRecommendProduct" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_home_recommend_product
+            (product_id,
+            product_name,
+            type,
+            create_by,
+            create_time)
+            values
+            <foreach collection="list" item="item" index="index" separator=",">
+                (#{item.productId},
+                #{item.productName},
+                #{item.type},
+                #{item.createBy},
+                #{item.createTime})
+            </foreach>
+    </insert>
+
+    <delete id="deleteSmsHomeRecommendProductByProductId" parameterType="Long">
+        <!-- update sms_home_recommend_product set del_flag = '1' where id = #{id} -->
+        delete from sms_home_recommend_product where product_id = #{id}
+    </delete>
+
+    <select id="recommendSelect"
+            parameterType="com.fante.project.business.smsHomeRecommendProduct.domain.SmsHomeRecommendSelectDTO"
+            resultType="com.fante.project.business.smsHomeRecommendProduct.domain.SmsHomeRecommendSelectDTO">
+        select p.id, p.product_sn, p.shop_id, p.brand_id, p.product_category_id,
+               p.product_category_name, p.brand_name, p.publish_status, p.verify_status, p.name
+        from pms_product p
+        <where>
+            p.del_flag = '0'
+            and not exists (
+            select r.product_id from sms_home_recommend_product r
+            <where>
+                r.product_id=p.id
+                <if test="recommendType != null and recommendType != ''"> and r.type = #{recommendType}</if>
+            </where>
+            )
+            <if test="productSn != null  and productSn != ''"> and p.product_sn like concat('%', #{productSn}, '%') </if>
+            <if test="shopId != null "> and p.shop_id = #{shopId}</if>
+            <if test="name != null and name != ''"> and p.name like concat('%', #{name}, '%')</if>
+            <if test="publishStatus != null and publishStatus!=''"> and p.publish_status = #{publishStatus}</if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsOrderItem.mapper.OmsOrderItemMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="OmsOrderItemResultExt" type="扩展类全包名" extends="OmsOrderItemResult">
+
+    </resultMap>
+     -->
+    <insert id="batchInsert">
+        insert into oms_order_item (
+            order_id,
+            order_sn,
+            product_id,
+            game_sku_id,
+            product_pic,
+            product_name,
+            product_sp_data,
+            product_brand,
+            product_sn,
+            pay_price,
+            product_price,
+            freight_price,
+            coupon_price,
+            product_quantity,
+            product_sku_id,
+            product_sku_code,
+            product_category_id,
+            promotion_info,
+            init_price,
+            gift_integration,
+            gift_growth,
+            create_time
+        ) VALUES
+        <foreach collection="list" separator="," item="item" index="index">
+            (
+            #{item.orderId},
+            #{item.orderSn},
+            #{item.productId},
+            #{item.gameSkuId},
+            #{item.productPic},
+            #{item.productName},
+            #{item.productSpData},
+            #{item.productBrand},
+            #{item.productSn},
+            #{item.payPrice},
+            #{item.productPrice},
+            #{item.freightPrice},
+            #{item.couponPrice},
+            #{item.productQuantity},
+            #{item.productSkuId},
+            #{item.productSkuCode},
+            #{item.productCategoryId},
+            #{item.promotionInfo},
+            #{item.initPrice},
+            #{item.giftIntegration},
+            #{item.giftGrowth},
+            #{item.createTime}
+            )
+        </foreach>
+    </insert>
+    <!--(app) 查询订单详情 和 订单信息-->
+    <select id="getOrderDetailForReturnByOrderItemId" resultMap="com.fante.project.business.omsOrder.mapper.OmsOrderMapper.memberOrderDetailResultMap">
+        SELECT
+            oo.id AS id,
+            oo.shop_id AS shop_id,
+            oo.pay_order_id AS pay_order_id,
+            oo.order_sn AS order_sn,
+            oo.member_id AS member_id,
+            oo.pay_amount AS pay_amount,
+            oo.product_total_amount AS product_total_amount,
+            oo.freight_amount AS freight_amount,
+            oo.coupon_amount AS coupon_amount,
+            oo.coupon_type AS coupon_type,
+            oo.coupon_data AS coupon_data,
+            oo.order_type AS order_type,
+            oo.game_id AS game_id,
+            oo.game_info AS game_info,
+            oo.bill_type AS bill_type,
+            oo.bill_header AS bill_header,
+            oo.bill_content AS bill_content,
+            oo.bill_receiver_phone AS bill_receiver_phone,
+            oo.bill_receiver_email AS bill_receiver_email,
+            oo.receiver_name AS receiver_name,
+            oo.receiver_phone AS receiver_phone,
+            oo.receiver_post_code AS receiver_post_code,
+            oo.receiver_province AS receiver_province,
+            oo.receiver_city AS receiver_city,
+            oo.receiver_region AS receiver_region,
+            oo.receiver_detail_address AS receiver_detail_address,
+            oo.note AS note,
+            oo.STATUS AS STATUS,
+            oo.confirm_status AS confirm_status,
+            oo.create_time AS create_time,
+            oo.payment_time AS payment_time,
+            oo.delivery_time AS delivery_time,
+            oo.receive_time AS receive_time,
+            oo.auto_confirm_day AS auto_confirm_day,
+            oo.comment_time AS comment_time,
+            oo.create_by AS create_by,
+            oo.update_by AS update_by,
+            oo.update_time AS update_time,
+            oo.remark AS remark,
+            oo.integration AS integration,
+            oo.growth AS growth,
+            ooi.id AS ooi_id,
+            ooi.order_id AS ooi_order_id,
+            ooi.order_sn AS ooi_order_sn,
+            ooi.product_id AS ooi_product_id,
+            ooi.game_sku_id AS ooi_game_sku_id,
+            ooi.product_pic AS ooi_product_pic,
+            ooi.product_name AS ooi_product_name,
+            ooi.product_sp_data AS ooi_product_sp_data,
+            ooi.product_brand AS ooi_product_brand,
+            ooi.product_sn AS ooi_product_sn,
+            ooi.pay_price AS ooi_pay_price,
+            ooi.product_price AS ooi_product_price,
+            ooi.freight_price AS ooi_freight_price,
+            ooi.coupon_price AS ooi_coupon_price,
+            ooi.product_quantity AS ooi_product_quantity,
+            ooi.product_sku_id AS ooi_product_sku_id,
+            ooi.product_sku_code AS ooi_product_sku_code,
+            ooi.product_category_id AS ooi_product_category_id,
+            ooi.promotion_info AS ooi_promotion_info,
+            ooi.init_price AS ooi_init_price,
+            ooi.gift_integration AS ooi_gift_integration,
+            ooi.gift_growth AS ooi_gift_growth,
+            ooi.STATUS AS ooi_status,
+            ooi.create_by AS ooi_create_by,
+            ooi.create_time AS ooi_create_time,
+            ooi.update_by AS ooi_update_by,
+            ooi.update_time AS ooi_update_time,
+            ooi.remark AS ooi_remark
+        FROM
+            oms_order_item ooi
+            LEFT JOIN oms_order oo ON oo.id = ooi.order_id
+        WHERE
+            ooi.id = #{orderItemId}
+            AND oo.member_id = #{memberId}
+    </select>
+</mapper>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.cmsAppNav.mapper.CmsAppNavMapper">
+    
+    <resultMap type="CmsAppNav" id="CmsAppNavResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="icon"    column="icon"    />
+        <result property="linkType"    column="link_type"    />
+        <result property="linkUrl"    column="link_url"    />
+        <result property="navShow"    column="nav_show"    />
+        <result property="sort"    column="sort"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectCmsAppNavVo">
+        select id, title, icon, link_type, link_url, nav_show, sort, status, create_by, create_time, update_by, update_time, remark, del_flag from cms_app_nav
+    </sql>
+
+    <select id="selectCmsAppNavList" parameterType="CmsAppNav" resultMap="CmsAppNavResult">
+        <include refid="selectCmsAppNavVo"/>
+        <where>
+           del_flag = '0'
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="icon != null  and icon != ''"> and icon = #{icon}</if>
+            <if test="linkType != null "> and link_type = #{linkType}</if>
+            <if test="linkUrl != null  and linkUrl != ''"> and link_url = #{linkUrl}</if>
+            <if test="navShow != null  and navShow != ''"> and nav_show = #{navShow}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="countCmsAppNav" parameterType="CmsAppNav" resultType="int">
+        select count(*) from cms_app_nav
+        <where>
+            del_flag = '0'
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="icon != null  and icon != ''"> and icon = #{icon}</if>
+            <if test="linkType != null "> and link_type = #{linkType}</if>
+            <if test="linkUrl != null  and linkUrl != ''"> and link_url = #{linkUrl}</if>
+            <if test="navShow != null  and navShow != ''"> and nav_show = #{navShow}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="checkCmsAppNavUnique" parameterType="CmsAppNav" resultType="int">
+        select count(*) from cms_app_nav
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="icon != null  and icon != ''"> and icon = #{icon}</if>
+            <if test="linkType != null "> and link_type = #{linkType}</if>
+            <if test="linkUrl != null  and linkUrl != ''"> and link_url = #{linkUrl}</if>
+            <if test="navShow != null  and navShow != ''"> and nav_show = #{navShow}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectCmsAppNavById" parameterType="Long" resultMap="CmsAppNavResult">
+        <include refid="selectCmsAppNavVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertCmsAppNav" parameterType="CmsAppNav" useGeneratedKeys="true" keyProperty="id">
+        insert into cms_app_nav
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null  and title != ''">title,</if>
+            <if test="icon != null  and icon != ''">icon,</if>
+            <if test="linkType != null ">link_type,</if>
+            <if test="linkUrl != null  and linkUrl != ''">link_url,</if>
+            <if test="navShow != null  and navShow != ''">nav_show,</if>
+            <if test="sort != null ">sort,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null  and title != ''">#{title},</if>
+            <if test="icon != null  and icon != ''">#{icon},</if>
+            <if test="linkType != null ">#{linkType},</if>
+            <if test="linkUrl != null  and linkUrl != ''">#{linkUrl},</if>
+            <if test="navShow != null  and navShow != ''">#{navShow},</if>
+            <if test="sort != null ">#{sort},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCmsAppNav" parameterType="CmsAppNav">
+        update cms_app_nav
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null  and title != ''">title = #{title},</if>
+            <if test="icon != null  and icon != ''">icon = #{icon},</if>
+            <if test="linkType != null ">link_type = #{linkType},</if>
+            <if test="linkUrl != null  and linkUrl != ''">link_url = #{linkUrl},</if>
+            <if test="navShow != null  and navShow != ''">nav_show = #{navShow},</if>
+            <if test="sort != null ">sort = #{sort},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCmsAppNavById" parameterType="Long">
+        <!-- update cms_app_nav set del_flag = '1' where id = #{id} -->
+        delete from cms_app_nav where id = #{id}
+    </delete>
+
+    <delete id="deleteCmsAppNavByIds" parameterType="String">
+        update cms_app_nav set del_flag = '1' where id in
+        <!-- delete from cms_app_nav where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

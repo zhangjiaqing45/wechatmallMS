@@ -1,0 +1,8 @@
+
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(›öÀ©
+ƒ
+java:S13195"mThe return type of this method should be an interface such as "Map" rather than the implementation "HashMap".(ù¸ïŸ
+s
+java:S1128"]Remove this unused import 'com.fante.project.api.omsOrderProcess.domain.OmsCreateOrderParam'.(ÖÉÂğ
+‚
+java:S1128"gRemove this unused import 'com.fante.project.api.omsOrderProcess.domain.UmsMemberReceiveAddressResult'.(¸•€êúÿÿÿÿ

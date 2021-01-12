@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsProduct.mapper.PmsProductMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="PmsProductResultExt" type="扩展类全包名" extends="PmsProductResult">
+
+    </resultMap>
+     -->
+    <resultMap id="productDetailResultMap" type="com.fante.project.business.pmsProduct.domain.PmsProductResult" extends="PmsProductResult">
+        <result column="shopName" jdbcType="VARCHAR" property="shopName" />
+        <collection property="skuList" resultMap="com.fante.project.business.pmsSkuStock.mapper.PmsSkuStockMapper.PmsSkuStockResult" columnPrefix="sku_"/>
+        <collection property="smsHomeRecommendProductList" resultMap="com.fante.project.business.smsHomeRecommendProduct.mapper.SmsHomeRecommendProductMapper.SmsHomeRecommendProductResult" columnPrefix="rec_"/>
+    </resultMap>
+
+    <!-- ******************************************新添加项****add********************************************  -->
+    <sql id="pmsProductFieldID">
+          A.id, A.product_sn, A.shop_id, A.brand_id, A.product_category_id, A.feight_template_id, A.product_attribute_category_id,
+          A.product_category_name, A.brand_name, A.`name`, A.publish_status, A.verify_status, A.price, A.original_price, A.sale,
+          A.stock, A.pic, A.video, A.album_pics, A.param_data, A.sub_title, A.description, A.detail_title, A.detail_desc,A.detail_video, A.detail_html,
+          A.sort, A.create_by, A.create_time, A.update_by, A.update_time, A.audit_msg, A.remark, A.unit, A.weight, A.platform_category,
+          A.gift_growth, A.gift_point, A.use_point_limit, A.service_ids,A.company_name,A.inId
+    </sql>
+
+
+
+    <sql id="pmsProductFieldQuery">
+         A.id, A.product_sn, A.shop_id, A.brand_id, A.product_category_id, A.feight_template_id, A.product_attribute_category_id,
+        A.product_category_name, A.brand_name, A.`name`, A.publish_status, A.verify_status, A.price, A.original_price, A.sale,
+        A.stock, A.pic, A.video, A.album_pics, A.param_data, A.sub_title, A.description, A.detail_title, A.detail_desc,A.detail_video, A.detail_html,
+        A.sort, A.create_by, A.create_time, A.update_by, A.update_time, A.audit_msg, A.remark, A.unit, A.weight, A.platform_category,
+        A.gift_growth, A.gift_point, A.use_point_limit, A.service_ids, A.payment_type, A.deposit,A.sku_id,A.sku_product_id,A.sku_shop_id,
+        A.sku_sku_code,A.sku_price,A.sku_stock,A.sku_low_stock,A.sku_pic,A.sku_sale,A.sku_promotion_price,
+        A.sku_lock_stock,A.sku_sp_data,A.sku_status,A.sku_create_by,A.sku_create_time,A.sku_update_by,A.sku_update_time,A.sku_remark,
+        A.sku_del_flag,A.sku_param_data,A.company_name,A.longitude,A.service_tel,A.latitude,A.biz_id
+    </sql>
+
+    <!-- ******************************************新添加项****ent********************************************  -->
+
+    <sql id="pmsProductField">
+        p.id, p.product_sn, p.shop_id, p.brand_id, p.product_category_id, p.feight_template_id, p.product_attribute_category_id,
+        p.product_category_name, p.brand_name, p.`name`, p.publish_status, p.verify_status, p.price, p.original_price, p.sale,
+        p.stock, p.pic, p.video, p.album_pics, p.param_data, p.sub_title, p.description, p.detail_title, p.detail_desc,p.detail_video, p.detail_html,
+        p.sort, p.create_by, p.create_time, p.update_by, p.update_time, p.audit_msg, p.remark, p.unit, p.weight, p.platform_category,
+        p.gift_growth, p.gift_point, p.use_point_limit, p.service_ids, p.payment_type, p.deposit
+    </sql>
+    <sql id="pmsProductSkuField">
+        sku.id AS sku_id,
+        sku.product_id AS sku_product_id,
+        sku.shop_id AS sku_shop_id,
+        sku.sku_code AS sku_sku_code,
+        sku.price AS sku_price,
+        sku.stock AS sku_stock,
+        sku.low_stock AS sku_low_stock,
+        sku.pic AS sku_pic,
+        sku.sale AS sku_sale,
+        sku.promotion_price AS sku_promotion_price,
+        sku.lock_stock AS sku_lock_stock,
+        sku.sp_data AS sku_sp_data,
+        sku.STATUS AS sku_status,
+        sku.create_by AS sku_create_by,
+        sku.create_time AS sku_create_time,
+        sku.update_by AS sku_update_by,
+        sku.update_time AS sku_update_time,
+        sku.remark AS sku_remark,
+        sku.del_flag AS sku_del_flag,
+        sku.param_data AS sku_param_data
+    </sql>
+
+    <select id="selectPmsProductShowList" parameterType="PmsProduct" resultType="com.fante.project.business.pmsProduct.domain.PmsProductResult">
+        select  p.id, p.product_sn, p.shop_id, p.brand_id, p.product_category_id, p.feight_template_id,
+                p.product_attribute_category_id, p.product_category_name, p.brand_name, p.`name`,
+                p.del_flag, p.publish_status, p.verify_status, p.price, p.original_price, p.sale, p.stock,
+                p.pic, p.video, p.album_pics, p.param_data, p.keywords, p.sub_title, p.description, p.detail_title,
+                p.detail_desc,p.detail_video, p.detail_html, p.sort, p.create_by, p.create_time, p.update_by, p.update_time,
+                p.audit_msg, p.remark, p.unit, p.weight, p.platform_category, p.gift_growth, p.gift_point,
+                p.use_point_limit, p.service_ids, p.payment_type, p.deposit,
+                s.company_name as shopName
+        from    pms_product p
+        left join    biz_shop_info s
+        on      s.id = p.shop_id
+        <where>
+            p.del_flag = '0'
+            <if test="id != null"> and p.id = #{id}</if>
+            <if test="productSn != null  and productSn != ''"> and p.product_sn like concat('%', #{productSn}, '%')</if>
+            <if test="shopId != null "> and p.shop_id = #{shopId}</if>
+            <if test="searchValue != null and searchValue !='' "> and s.company_name like concat('%', #{searchValue}, '%')</if>
+            <if test="brandId != null "> and p.brand_id = #{brandId}</if>
+            <if test="productCategoryId != null "> and p.product_category_id = #{productCategoryId}</if>
+            <if test="feightTemplateId != null "> and p.feight_template_id = #{feightTemplateId}</if>
+            <if test="productAttributeCategoryId != null "> and p.product_attribute_category_id = #{productAttributeCategoryId}</if>
+            <if test="productCategoryName != null  and productCategoryName != ''"> and p.product_category_name like concat('%', #{productCategoryName}, '%')</if>
+            <if test="brandName != null  and brandName != ''"> and p.brand_name like concat('%', #{brandName}, '%')</if>
+            <if test="name != null  and name != ''"> and p.name like concat('%', #{name}, '%')</if>
+            <if test="publishStatus != null and publishStatus!=''"> and p.publish_status = #{publishStatus}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''"> and p.verify_status = #{verifyStatus}</if>
+            <if test="sale != null "> and p.sale = #{sale}</if>
+            <if test="stock != null "> and p.stock = #{stock}</if>
+            <if test="paramData != null  and paramData != ''"> and p.param_data = #{paramData}</if>
+            <if test="keywords != null  and keywords != ''"> and p.keywords = #{keywords}</if>
+            <if test="sort != null "> and p.sort = #{sort}</if>
+            <if test="auditMsg != null  and auditMsg != ''"> and p.audit_msg = #{auditMsg}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(p.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(p.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPmsProductAuditById" resultMap="productDetailResultMap">
+        SELECT
+            p.id,
+            p.product_sn,
+            p.shop_id,
+            p.brand_id,
+            p.product_category_id,
+            p.feight_template_id,
+            p.product_attribute_category_id,
+            p.product_category_name,
+            p.brand_name,
+            p.`name`,
+            p.del_flag,
+            p.publish_status,
+            p.verify_status,
+            p.price,
+            p.original_price,
+            p.sale,
+            p.stock,
+            p.pic,
+            p.video,
+            p.album_pics,
+            p.param_data,
+            p.keywords,
+            p.sub_title,
+            p.description,
+            p.detail_title,
+            p.detail_desc,
+            p.detail_video,
+            p.detail_html,
+            p.sort,
+            p.create_by,
+            p.create_time,
+            p.update_by,
+            p.update_time,
+            p.audit_msg,
+            p.remark,
+            p.unit,
+            p.weight,
+            p.platform_category,
+            p.gift_growth,
+            p.gift_point,
+            p.use_point_limit,
+            p.service_ids,
+            p.payment_type,
+            p.deposit,
+            s.company_name AS shopName,
+            sku.id AS sku_id,
+            sku.product_id AS sku_product_id,
+            sku.shop_id AS sku_shop_id,
+            sku.sku_code AS sku_sku_code,
+            sku.price AS sku_price,
+            sku.stock AS sku_stock,
+            sku.low_stock AS sku_low_stock,
+            sku.pic AS sku_pic,
+            sku.sale AS sku_sale,
+            sku.promotion_price AS sku_promotion_price,
+            sku.lock_stock AS sku_lock_stock,
+            sku.sp_data AS sku_sp_data,
+            sku.STATUS AS sku_status,
+            sku.create_by AS sku_create_by,
+            sku.create_time AS sku_create_time,
+            sku.update_by AS sku_update_by,
+            sku.update_time AS sku_update_time,
+            sku.remark AS sku_remark,
+            sku.del_flag AS sku_del_flag,
+            sku.param_data AS sku_param_data,
+            r.id AS rec_id,
+            r.product_id AS rec_product_id,
+            r.product_name AS rec_product_name,
+            r.sort AS rec_sort,
+            r.STATUS AS rec_status,
+            r.type AS rec_type,
+            r.create_by AS rec_create_by,
+            r.create_time AS rec_create_time,
+            r.update_by AS rec_update_by,
+            r.update_time AS rec_update_time,
+            r.remark AS rec_remark,
+            r.del_flag AS rec_del_flag
+        FROM
+            pms_product p
+            LEFT JOIN biz_shop_info s ON s.id = p.shop_id AND p.del_flag = '0' AND s.del_flag = '0'
+            LEFT JOIN pms_sku_stock sku ON sku.product_id = p.id AND sku.del_flag = '0'
+            LEFT JOIN sms_home_recommend_product r ON r.product_id = p.id
+        WHERE
+            p.id = #{id}
+    </select>
+
+    <select id="countProductsWithInShop" resultType="int">
+        select count(*) from pms_product
+        <where>
+            del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            and id in
+            <foreach item="id" collection="pids" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="getPmsProductList" parameterType="PmsProduct" resultMap="PmsProductResult">
+        <include refid="selectPmsProductVo"/>
+        <where>
+            del_flag = '0'
+            <if test="productSn != null  and productSn != ''"> and product_sn  like concat('%', #{productSn}, '%')</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="brandId != null "> and brand_id = #{brandId}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="feightTemplateId != null "> and feight_template_id = #{feightTemplateId}</if>
+            <if test="productAttributeCategoryId != null "> and product_attribute_category_id = #{productAttributeCategoryId}</if>
+            <if test="productCategoryName != null  and productCategoryName != ''"> and product_category_name like concat('%', #{productCategoryName}, '%')</if>
+            <if test="brandName != null  and brandName != ''"> and brand_name like concat('%', #{brandName}, '%')</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="publishStatus != null  and publishStatus != ''"> and publish_status = #{publishStatus}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''"> and verify_status = #{verifyStatus}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="originalPrice != null "> and original_price = #{originalPrice}</if>
+            <if test="sale != null "> and sale = #{sale}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="video != null  and video != ''"> and video = #{video}</if>
+            <if test="albumPics != null  and albumPics != ''"> and album_pics = #{albumPics}</if>
+            <if test="paramData != null  and paramData != ''"> and param_data = #{paramData}</if>
+            <if test="keywords != null  and keywords != ''"> and keywords = #{keywords}</if>
+            <if test="subTitle != null  and subTitle != ''"> and sub_title = #{subTitle}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="detailTitle != null  and detailTitle != ''"> and detail_title = #{detailTitle}</if>
+            <if test="detailDesc != null  and detailDesc != ''"> and detail_desc = #{detailDesc}</if>
+            <if test="detailVideo != null  and detailVideo != ''"> and detail_video = #{detailVideo}</if>
+            <if test="detailHtml != null  and detailHtml != ''"> and detail_html = #{detailHtml}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="auditMsg != null  and auditMsg != ''"> and audit_msg = #{auditMsg}</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="weight != null "> and weight = #{weight}</if>
+            <if test="platformCategory != null "> and platform_category = #{platformCategory}</if>
+            <if test="giftGrowth != null "> and gift_growth = #{giftGrowth}</if>
+            <if test="giftPoint != null "> and gift_point = #{giftPoint}</if>
+            <if test="usePointLimit != null "> and use_point_limit = #{usePointLimit}</if>
+            <if test="serviceIds != null  and serviceIds != ''"> and service_ids = #{serviceIds}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPmsProductByIds"  resultMap="PmsProductResult">
+        <include refid="selectPmsProductVo"/>
+        <where>
+            del_flag = '0'
+            and publish_status = '1'
+            and id in
+            <foreach item="id" collection="ids" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+    <resultMap id="productDetailPageInfoMap" type="com.fante.project.api.appView.domain.PmsProductDetailPageInfo" extends="PmsProductResult">
+        <result column="company_name" jdbcType="VARCHAR" property="shopName" />
+        <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+        <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+        <result column="service_tel" jdbcType="VARCHAR" property="servicePhone" />
+        <result column="smscount" jdbcType="VARCHAR" property="smscount" />
+        <collection property="skuList" resultMap="com.fante.project.business.pmsSkuStock.mapper.PmsSkuStockMapper.PmsSkuStockResult" columnPrefix="sku_"/>
+    </resultMap>
+    <!--(app)根据商品分类,商品名称获取商品-->
+    <select id="getProductList" resultMap="productDetailPageInfoMap">
+        SELECT
+        <include refid="pmsProductFieldID"/>,sc.smscount
+        FROM(
+                    SELECT <include refid="pmsProductField"/>,s.company_name,s.id as inId
+                from pms_product p
+                LEFT JOIN biz_shop_info s ON s.id = p.shop_id
+                <where>
+                    p.del_flag = '0'
+
+                    <if test="publishStatus !=null and publishStatus!=''">
+                        and p.publish_status = #{publishStatus}
+                    </if>
+                    <if test="categoryId !=null">
+                        and p.product_category_id = #{categoryId}
+                    </if>
+                    <if test="shopId !=null">
+                        and p.shop_id = #{shopId}
+                    </if>
+                    <if test="name !=null and name!=''">
+                        and p.`name` like concat('%',#{name},'%')
+                    </if>
+                </where>
+         )  A
+        LEFT JOIN
+        (select shop_id,sum(use_count) as smscount from sms_coupon where status='1'  and del_flag='0' group by shop_id)  sc  on sc.shop_id=A.inId
+    </select>
+
+    <!--(app)根据id查询商品详情-->
+    <select id="getDetailById" resultMap="productDetailPageInfoMap">
+        SELECT
+        <include refid="pmsProductFieldQuery"/>,sc.smscount
+        FROM(
+                SELECT
+                    <include refid="pmsProductField"/>,
+                    <include refid="pmsProductSkuField"/>,
+                    shop.company_name,
+                    shop.longitude,
+                    shop.service_tel,
+                    shop.latitude,
+                    shop.id  AS biz_id
+                FROM
+                    pms_product p
+                    LEFT JOIN pms_sku_stock sku ON sku.product_id = p.id
+                    LEFT JOIN biz_shop_info shop ON shop.id = p.shop_id
+                WHERE
+                    p.id = #{id}
+                    <if test="publishStatus!=null and publishStatus!=''">
+
+                        AND p.publish_status = #{publishStatus}
+                    </if>
+        )  A
+        LEFT JOIN
+        (select shop_id,sum(use_count) as smscount from sms_coupon where status='1'  and del_flag='0' group by shop_id)  sc  on sc.shop_id = A.biz_id
+
+    </select>
+
+    <!--商品销量增加-->
+    <update id="addSale">
+        update pms_product SET
+        sale = CASE id
+        <foreach collection="list" item="item">
+            WHEN #{item.productId} THEN sale + #{item.productQuantity}
+        </foreach>
+        END
+        WHERE
+        id IN
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.productId}
+        </foreach>
+        AND del_flag = '0'
+    </update>
+
+</mapper>

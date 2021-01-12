@@ -1,0 +1,11 @@
+
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(‡Û’ôÿÿÿÿÿ
+V	java:S125I"<This block of commented-out lines of code should be removed.(ýÓøÿÿÿÿ
+b
+java:S3252ª"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(ˆÑÍM
+c
+java:S3252Ø"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(üžµ˜
+b
+java:S3252ö"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(®É€ë
+;
+java:S1068("'Remove this unused "log" private field.(ÔþR

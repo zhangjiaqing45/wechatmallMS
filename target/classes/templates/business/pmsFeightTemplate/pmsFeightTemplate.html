@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('运费模版列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li th:if="${isAdmin}">
+                                <p>店铺：</p>
+                                <input type="hidden" name="shopId"/>
+                                <input type="text" name="shop" readonly placeholder="请选择店铺" onclick="selectShop();" />
+                            </li>
+                            <li>
+                                <p>模板名称：</p>
+                                <input type="text" name="name"/>
+                            </li>
+                            <li>
+                                <p>模板状态：</p>
+                                <select name="status" th:with="type=${@dict.getType('biz_status')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="feightTplReset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="business:pmsFeightTemplate:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <!--<a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="business:pmsFeightTemplate:edit">-->
+                    <!--<i class="fa fa-edit"></i> 修改-->
+                <!--</a>-->
+                <!--<a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="business:pmsFeightTemplate:remove">-->
+                    <!--<i class="fa fa-remove"></i> 删除-->
+                <!--</a>-->
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:pmsFeightTemplate:export">-->
+                    <!--<i class="fa fa-download"></i> 导出-->
+                 <!--</a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('business:pmsFeightTemplate:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('business:pmsFeightTemplate:remove')}]];
+        // var statusDatas = [[${@dict.getType('biz_status')}]];
+        var prefix = ctx + "business/pmsFeightTemplate";
+        var prefixShop = ctx + "business/bizShopInfo";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "运费模版",
+                sortName: "createTime",
+                sortOrder: "desc",
+                columns: [
+                //     {
+                //     checkbox: true
+                // },
+                {
+                    field : 'id', 
+                    title : 'id',
+                    visible: false
+                },
+                {
+                    field : 'name', 
+                    title : '模板名称'
+                },
+                {
+                    field : 'shopId',
+                    title : '店铺ID',
+                    visible: false
+                },
+                // {
+                //     field : 'status',
+                //     title : '状态',
+                //     formatter: function(value, row, index) {
+                //         return $.table.selectDictLabel(statusDatas, value);
+                //     }
+                // },
+                {
+                    field : 'feightFee', 
+                    title : '付费区域运费',
+                    formatter: function (value, row, index) {
+                        return $.common.sprintf("<i class=\"fa fa-jpy\"> %s</i>", value);
+                    }
+                },
+                {
+                    field : 'freeDest',
+                    title : '包邮配送区域',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value, 20, "open");
+                    }
+                },
+                {
+                    field : 'tollDest', 
+                    title : '买家付运费区域',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value, 20, "open");
+                    }
+                },
+                {
+                    field : 'excludeDest', 
+                    title : '不配送区域',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value, 20, "open");
+                    }
+                },
+                {
+                    field : 'updateTime',
+                    title : '最近修改时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="templateUse(\'' + row.id + '\', \'' + row.name + '\')"><i class="fa fa-edit"></i>使用情况</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function feightTplReset() {
+            $("input[name='shopId']").val("");
+            $.form.reset();
+        }
+
+        /**
+         * 选择店铺
+         */
+        function selectShop(){
+            $.modal.open("选择店铺", prefixShop + "/select");
+        }
+
+        /**
+         * 选择店铺回调
+         * @param shop
+         */
+        function shopSelectCallback(shop) {
+            if (shop && shop.id) {
+                $("input[name='shopId']").val(shop.id);
+                $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+            } else {
+                $.modal.msgWarning("未选择店铺");
+            }
+        }
+
+        /**
+         * 模板使用情况
+         * @param id
+         * @param name
+         */
+        function templateUse(id, name) {
+            var options = {
+                url: prefix + "/templateUse/" + id,
+                title: "模板 <b>[" + name + "]</b> 使用情况",
+                width: $(window).width() > 800 ? 800 : "",
+                height: $(window).height() > 500 ? 500 : "",
+                btn: false,
+            }
+            $.modal.openOptions(options);
+        }
+
+    </script>
+</body>
+</html>

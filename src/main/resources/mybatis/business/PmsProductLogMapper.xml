@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsProductLog.mapper.PmsProductLogMapper">
+
+    <select id="getPmsProductLogList" parameterType="PmsProductLog" resultMap="PmsProductLogResult">
+        SELECT
+            log.id,
+            log.shop_id,
+            shop.company_name shop_name,
+            log.product_id,
+            log.product_name,
+            log.sku_id,
+            log.sku_sp_data,
+            log.product_type,
+            log.action,
+            log.old_value,
+            log.new_value,
+            log.description,
+            log.create_by,
+            log.create_time,
+            log.update_by,
+            log.update_time,
+            log.remark,
+            log.del_flag
+        FROM
+            pms_product_log log
+        LEFT JOIN biz_shop_info shop ON shop.id = log.shop_id
+        <where>
+            log.del_flag = '0'
+            <if test="shopId != null  and shopId != ''">and log.shop_id = #{shopId}</if>
+            <if test="shopName != null  and shopName != ''"> and shop.company_name like concat('%', #{shopName}, '%')</if>
+            <if test="productName != null  and productName != ''"> and log.product_name like concat('%', #{productName}, '%')</if>
+            <if test="skuSpData != null  and skuSpData != ''"> and log.sku_sp_data like concat('%', #{skuSpData}, '%')</if>
+            <if test="action != null  and action != ''"> and log.action = #{action}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(log.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(log.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+</mapper>

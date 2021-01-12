@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsCouponHistory.mapper.SmsCouponHistoryMapper">
+    
+    <resultMap type="SmsCouponHistory" id="SmsCouponHistoryResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="couponId"    column="coupon_id"    />
+        <result property="couponCode"    column="coupon_code"    />
+        <result property="getType"    column="get_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="useStatus"    column="use_status"    />
+        <result property="useTime"    column="use_time"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="orderSn"    column="order_sn"    />
+    </resultMap>
+
+    <sql id="selectSmsCouponHistoryVo">
+        select id, user_id, coupon_id, coupon_code, get_type, create_time, use_status, use_time, order_id, order_sn from sms_coupon_history
+    </sql>
+
+    <select id="selectSmsCouponHistoryList" parameterType="SmsCouponHistory" resultMap="SmsCouponHistoryResult">
+        <include refid="selectSmsCouponHistoryVo"/>
+        <where>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="couponId != null "> and coupon_id = #{couponId}</if>
+            <if test="couponCode != null  and couponCode != ''"> and coupon_code = #{couponCode}</if>
+            <if test="getType != null  and getType != ''"> and get_type = #{getType}</if>
+            <if test="useStatus != null  and useStatus != ''"> and use_status = #{useStatus}</if>
+            <if test="useTime != null "> and use_time = #{useTime}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+        </where>
+    </select>
+
+    <select id="countSmsCouponHistory" parameterType="SmsCouponHistory" resultType="int">
+        select count(*) from sms_coupon_history
+        <where>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="couponId != null "> and coupon_id = #{couponId}</if>
+            <if test="couponCode != null  and couponCode != ''"> and coupon_code = #{couponCode}</if>
+            <if test="getType != null  and getType != ''"> and get_type = #{getType}</if>
+            <if test="useStatus != null  and useStatus != ''"> and use_status = #{useStatus}</if>
+            <if test="useTime != null "> and use_time = #{useTime}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+        </where>
+    </select>
+
+    <select id="checkSmsCouponHistoryUnique" parameterType="SmsCouponHistory" resultType="int">
+        select count(*) from sms_coupon_history
+        <where>
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="couponId != null "> and coupon_id = #{couponId}</if>
+            <if test="couponCode != null  and couponCode != ''"> and coupon_code = #{couponCode}</if>
+            <if test="getType != null  and getType != ''"> and get_type = #{getType}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="useStatus != null  and useStatus != ''"> and use_status = #{useStatus}</if>
+            <if test="useTime != null "> and use_time = #{useTime}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+        </where>
+    </select>
+
+    <select id="selectSmsCouponHistoryById" parameterType="Long" resultMap="SmsCouponHistoryResult">
+        <include refid="selectSmsCouponHistoryVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSmsCouponHistory" parameterType="SmsCouponHistory" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_coupon_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="couponId != null ">coupon_id,</if>
+            <if test="couponCode != null  and couponCode != ''">coupon_code,</if>
+            <if test="getType != null  and getType != ''">get_type,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="useStatus != null  and useStatus != ''">use_status,</if>
+            <if test="useTime != null ">use_time,</if>
+            <if test="orderId != null ">order_id,</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="couponId != null ">#{couponId},</if>
+            <if test="couponCode != null  and couponCode != ''">#{couponCode},</if>
+            <if test="getType != null  and getType != ''">#{getType},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="useStatus != null  and useStatus != ''">#{useStatus},</if>
+            <if test="useTime != null ">#{useTime},</if>
+            <if test="orderId != null ">#{orderId},</if>
+            <if test="orderSn != null  and orderSn != ''">#{orderSn},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSmsCouponHistory" parameterType="SmsCouponHistory">
+        update sms_coupon_history
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="couponId != null ">coupon_id = #{couponId},</if>
+            <if test="couponCode != null  and couponCode != ''">coupon_code = #{couponCode},</if>
+            <if test="getType != null  and getType != ''">get_type = #{getType},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="useStatus != null  and useStatus != ''">use_status = #{useStatus},</if>
+            <if test="useTime != null ">use_time = #{useTime},</if>
+            <if test="orderId != null ">order_id = #{orderId},</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn = #{orderSn},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsCouponHistoryById" parameterType="Long">
+        delete from sms_coupon_history where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsCouponHistoryByIds" parameterType="String">
+        delete from sms_coupon_history where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectSmsCouponHistoryUserState" resultMap="SmsCouponHistoryResult">
+        SELECT
+            h.*
+        FROM
+            sms_coupon_history h
+        LEFT JOIN sms_coupon c ON h.coupon_id = c.id
+        WHERE
+            c.end_time &lt; now() AND h.use_status ='0'
+    </select>
+    
+</mapper>

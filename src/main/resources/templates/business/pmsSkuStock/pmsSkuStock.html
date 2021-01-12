@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('sku的缺货库存列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="productName"/>
+                        </li>
+                        <li>
+                            <p>sku编码：</p>
+                            <input type="text" name="skuCode"/>
+                        </li>
+                        <li>
+                            <p>缺货查询：</p>
+                            <select name="lowStock">
+                                <option value="">所有</option>
+                                <option value="1">缺货</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+<!--        <div class="btn-group-sm" id="toolbar" role="group">-->
+<!--            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:pmsSkuStock:export">-->
+<!--                <i class="fa fa-download"></i> 导出-->
+<!--            </a>-->
+<!--        </div>-->
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:pmsSkuStock:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:pmsSkuStock:remove')}]];
+    var prefix = ctx + "business/pmsSkuStock";
+    //上架状态
+    var publishStatusDatas = [[${@custom.allPublicStatusPlus()}]];
+
+    $(function() {
+        var options = {
+            url: prefix + "/stockoutList",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "sku的库存",
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            sortName: "productId",
+            sortOrder: "asc",
+            columns: [
+            {
+                title: '序号',
+                field: '',
+                align: 'center',
+                width:100,
+                formatter: function (value, row, index) {
+                    var pageSize = $('#bootstrap-table').bootstrapTable('getOptions').pageSize;     //通过table的#id 得到每页多少条
+                    var pageNumber = $('#bootstrap-table').bootstrapTable('getOptions').pageNumber; //通过table的#id 得到当前第几页
+                    return pageSize * (pageNumber - 1) + index + 1;    // 返回每条的序号： 每页条数 *（当前页 - 1 ）+ 序号
+                }
+            },
+            {
+                field : 'productName',
+                title : '商品名称',
+                align: 'center',
+                sortable: true,
+            },
+            {
+                field : 'spData',
+                title : '规格',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    var obj = jQuery.parseJSON(value);
+                    return  $.table.tooltip(Object.values(obj),10,'open')
+                }
+            },
+            {
+                field : 'pic',
+                title : '展示图片',
+                align: 'center',
+                formatter : function(value, row, index) {
+                    return $.table.imageView(respath+value);
+                }
+            },
+            {
+                field : 'skuCode',
+                title : 'sku编码',
+                align: 'center',
+            },
+            {
+                field : 'price',
+                title : '价格(元)',
+                align: 'center',
+                sortable: true,
+            },
+            {
+                field : 'stock',
+                title : '库存/预定/剩余',
+                align: 'center',
+                sortable: true,
+                formatter: function(value, row, index) {
+                    var realStock = row.stock-row.lockStock;
+                    return  (row.stock)+' / '+row.lockStock+' / '+realStock;
+                }
+            },
+            {
+                field : 'lowStock',
+                title : '预警库存',
+                align: 'center',
+            },
+            {
+                field : 'publishStatus',
+                title : '上架状态',
+                align: 'center',
+                sortable: true,
+                formatter: function(value, row, index) {
+                    if (publishStatusDatas[value]) {
+                        return $.common.sprintf("<span class='badge badge-%s'>%s</span>", publishStatusDatas[value].style, publishStatusDatas[value].desc);
+                    }
+                }
+            },
+
+            {
+                field : 'sale',
+                title : '销量',
+                align: 'center',
+                sortable: true,
+            },
+            {
+                title: '操作',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    var actions = [];
+                    actions.push('<a class="btn btn-info btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editSkuPrice(\'' + row.id + '\',\'' + row.publishStatus + '\',\'' + row.productId + '\')"><i class="fa fa-edit"></i>价格</a> ');
+                    actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editSkuStoct(\'' + row.id + '\',\'' + row.publishStatus + '\',\'' + row.productId + '\')"><i class="fa fa-edit"></i>库存</a> ');
+                    actions.push('<a class="btn btn-danger btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editSkuLowStoct(\'' + row.id + '\')"><i class="fa fa-edit"></i>预警</a> ');
+                    return actions.join('');
+                }
+            }]
+    };
+        $.table.init(options);
+    });
+    /**
+     * 调整sku价格
+     * @param id
+     */
+    function editSkuPrice(id,status,pid) {
+        $.modal.open("调整sku价格", prefix + "/edit/price/"+id, '300px', '200px');
+        /*if(status==1){
+            $.modal.confirm("下架商品后才可调整库存,是否需要下架商品?",function (){
+                $.operate.post(ctx + "business/pmsProduct/soldOut",{id:pid});
+            })
+        }else{
+            $.modal.open("调整sku价格", prefix + "/edit/price/"+id, '300px', '200px');
+        }*/
+    }
+
+    /**
+     * 调整库存
+     * @param id
+     */
+    function editSkuStoct(id,status,pid) {
+        $.modal.open("调整sku价格", prefix + "/edit/stock/"+id, '300px', '200px');
+        /*if(status==1){
+            $.modal.confirm("下架商品后才可调整库存,是否需要下架商品?",function (){
+                $.operate.post(ctx + "business/pmsProduct/soldOut",{id:pid});
+            })
+        }else{
+            $.modal.open("调整sku价格", prefix + "/edit/stock/"+id, '300px', '200px');
+        }*/
+    }
+    /**
+     * 调整预警值
+     * @param id
+     */
+    function editSkuLowStoct(id) {
+        $.modal.open("调整预警值", prefix + "/edit/lowStock/"+id, '300px', '200px');
+    }
+
+</script>
+</body>
+</html>

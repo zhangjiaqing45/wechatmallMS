@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.wxOffiaccountConfig.mapper.WxOffiaccountConfigMapper">
+    
+    <resultMap type="WxOffiaccountConfig" id="WxOffiaccountConfigResult">
+        <result property="id"    column="id"    />
+        <result property="appid"    column="appid"    />
+        <result property="secret"    column="secret"    />
+        <result property="originalid"    column="originalid"    />
+        <result property="encodingtype"    column="encodingtype"    />
+        <result property="encodingaeskey"    column="encodingaeskey"    />
+        <result property="oauthUrl"    column="oauth_url"    />
+        <result property="apiDomain"    column="api_domain"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectWxOffiaccountConfigVo">
+        select id, appid, secret, originalid, encodingtype, encodingaeskey, oauth_url, api_domain, create_by, create_time, update_by, update_time, remark, del_flag from wx_offiaccount_config
+    </sql>
+
+    <select id="selectWxOffiaccountConfigList" parameterType="WxOffiaccountConfig" resultMap="WxOffiaccountConfigResult">
+        <include refid="selectWxOffiaccountConfigVo"/>
+        <where>
+           del_flag = '0'
+            <if test="appid != null  and appid != ''"> and appid = #{appid}</if>
+            <if test="secret != null  and secret != ''"> and secret = #{secret}</if>
+            <if test="originalid != null  and originalid != ''"> and originalid = #{originalid}</if>
+            <if test="encodingtype != null "> and encodingtype = #{encodingtype}</if>
+            <if test="encodingaeskey != null  and encodingaeskey != ''"> and encodingaeskey = #{encodingaeskey}</if>
+            <if test="oauthUrl != null  and oauthUrl != ''"> and oauth_url = #{oauthUrl}</if>
+            <if test="apiDomain != null  and apiDomain != ''"> and api_domain = #{apiDomain}</if>
+        </where>
+    </select>
+
+    <select id="countWxOffiaccountConfig" parameterType="WxOffiaccountConfig" resultType="int">
+        select count(*) from wx_offiaccount_config
+        <where>
+            del_flag = '0'
+            <if test="appid != null  and appid != ''"> and appid = #{appid}</if>
+            <if test="secret != null  and secret != ''"> and secret = #{secret}</if>
+            <if test="originalid != null  and originalid != ''"> and originalid = #{originalid}</if>
+            <if test="encodingtype != null "> and encodingtype = #{encodingtype}</if>
+            <if test="encodingaeskey != null  and encodingaeskey != ''"> and encodingaeskey = #{encodingaeskey}</if>
+            <if test="oauthUrl != null  and oauthUrl != ''"> and oauth_url = #{oauthUrl}</if>
+            <if test="apiDomain != null  and apiDomain != ''"> and api_domain = #{apiDomain}</if>
+        </where>
+    </select>
+
+    <select id="checkWxOffiaccountConfigUnique" parameterType="WxOffiaccountConfig" resultType="int">
+        select count(*) from wx_offiaccount_config
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="appid != null  and appid != ''"> and appid = #{appid}</if>
+            <if test="secret != null  and secret != ''"> and secret = #{secret}</if>
+            <if test="originalid != null  and originalid != ''"> and originalid = #{originalid}</if>
+            <if test="encodingtype != null "> and encodingtype = #{encodingtype}</if>
+            <if test="encodingaeskey != null  and encodingaeskey != ''"> and encodingaeskey = #{encodingaeskey}</if>
+            <if test="oauthUrl != null  and oauthUrl != ''"> and oauth_url = #{oauthUrl}</if>
+            <if test="apiDomain != null  and apiDomain != ''"> and api_domain = #{apiDomain}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectWxOffiaccountConfigById" parameterType="Long" resultMap="WxOffiaccountConfigResult">
+        <include refid="selectWxOffiaccountConfigVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertWxOffiaccountConfig" parameterType="WxOffiaccountConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into wx_offiaccount_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appid != null  and appid != ''">appid,</if>
+            <if test="secret != null  and secret != ''">secret,</if>
+            <if test="originalid != null  and originalid != ''">originalid,</if>
+            <if test="encodingtype != null ">encodingtype,</if>
+            <if test="encodingaeskey != null  and encodingaeskey != ''">encodingaeskey,</if>
+            <if test="oauthUrl != null  and oauthUrl != ''">oauth_url,</if>
+            <if test="apiDomain != null  and apiDomain != ''">api_domain,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appid != null  and appid != ''">#{appid},</if>
+            <if test="secret != null  and secret != ''">#{secret},</if>
+            <if test="originalid != null  and originalid != ''">#{originalid},</if>
+            <if test="encodingtype != null ">#{encodingtype},</if>
+            <if test="encodingaeskey != null  and encodingaeskey != ''">#{encodingaeskey},</if>
+            <if test="oauthUrl != null  and oauthUrl != ''">#{oauthUrl},</if>
+            <if test="apiDomain != null  and apiDomain != ''">#{apiDomain},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWxOffiaccountConfig" parameterType="WxOffiaccountConfig">
+        update wx_offiaccount_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appid != null  and appid != ''">appid = #{appid},</if>
+            <if test="secret != null  and secret != ''">secret = #{secret},</if>
+            <if test="originalid != null  and originalid != ''">originalid = #{originalid},</if>
+            <if test="encodingtype != null ">encodingtype = #{encodingtype},</if>
+            <if test="encodingaeskey != null  and encodingaeskey != ''">encodingaeskey = #{encodingaeskey},</if>
+            <if test="oauthUrl != null  and oauthUrl != ''">oauth_url = #{oauthUrl},</if>
+            <if test="apiDomain != null  and apiDomain != ''">api_domain = #{apiDomain},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWxOffiaccountConfigById" parameterType="Long">
+        <!-- update wx_offiaccount_config set del_flag = '1' where id = #{id} -->
+        delete from wx_offiaccount_config where id = #{id}
+    </delete>
+
+    <delete id="deleteWxOffiaccountConfigByIds" parameterType="String">
+        update wx_offiaccount_config set del_flag = '1' where id in
+        <!-- delete from wx_offiaccount_config where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

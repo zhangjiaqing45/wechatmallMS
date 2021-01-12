@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.umsMemberShopStar.mapper.UmsMemberShopStarMapper">
+    <!--获取会员所有收藏到店铺-->
+    <select id="getMemberShopStar" resultType="com.fante.project.business.bizShopInfo.domain.BizShopInfo">
+        SELECT
+            shop.id,
+            shop.company_name,
+            shop.province,
+            shop.city,
+            shop.district,
+            shop.address,
+            shop.longitude,
+            shop.latitude
+        FROM
+            biz_shop_info shop
+            LEFT JOIN ums_member_shop_star star ON star.shop_id = shop.id
+        WHERE
+            star.member_id = #{memberId}
+
+    </select>
+    <delete id="memberDelShopStar" parameterType="Long">
+        delete from ums_member_shop_star
+        where shop_id = #{id}
+        and member_id = #{memberId}
+    </delete>
+</mapper>

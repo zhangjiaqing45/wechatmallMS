@@ -1,0 +1,9 @@
+
+l
+java:S1128"VRemove this unused import 'com.fante.project.business.omsOrder.domain.OmsOrderDetail'.(ñ¯È–
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(õÄŞşÿÿÿÿ
+w
+java:S1128"bRemove this unused import 'com.fante.project.business.pmsProductComment.domain.PmsProductComment'.(Ô¡às
+z
+java:S1128
+"dRemove this unused import 'com.fante.project.business.umsDistribution.domain.UmsDistributionResult'.(À°¤è

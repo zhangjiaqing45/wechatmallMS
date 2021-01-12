@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('优惠券批量发放')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <input type="hidden" name="couponId" th:value="${coupon.id}" />
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>用户昵称：</p>
+                            <input type="text" name="nickname"/>
+                        </li>
+                        <li>
+                            <p>手机号码：</p>
+                            <input type="text" name="phone"/>
+                        </li>
+                        <li>
+                            <p>订阅标识：</p>
+                            <select name="subscribe" th:with="type=${@custom.memberSubscribe()}">
+                                <option value="">请选择</option>
+                                <option th:each="t : ${type}" th:text="${t.value}" th:value="${t.key}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>存款分组：</p>
+                            <input type="text" name="depositgroup"/>
+                        </li>
+                        <li>
+                            <p>姓名：</p>
+                            <input type="text" name="surname"/>
+                        </li>
+                        <li>
+                            <p>身份证号：</p>
+                            <input type="text" name="idcard"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i> 搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i> 重置</a>
+                            <a class="btn btn-success btn-rounded btn-sm" onclick="synchronousDepositgroup()"><i class="fa fa-refresh"></i> 同步存款分组</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <span class="btn btn-outline btn-info">[[${'优惠券: [ '+coupon.name+' ]  剩余: '+(coupon.count-coupon.receiveCount)+' 张'}]]</span>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var prefix = ctx + "business/smsCoupon";
+    var publishStatus = [[${@custom.allPublicStatusPlus()}]];
+    var coupon = [[${coupon}]];
+    var subscribeTypeDatas = [[${@custom.memberSubscribeAll()}]];
+    var sexDatas = [[${@dict.getType('sys_user_sex')}]];
+    $(function() {
+        var options = {
+            url: prefix + "/selectMember",
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            rememberSelected: true,
+            clickToSelect: true,
+            modalName: "批量发券",
+            sortName: "createTime",
+            sortOrder: "desc",
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: true
+                },
+                {
+                    field : 'id',
+                    title : '主键',
+                    visible: false
+                },
+                // {
+                //     field : 'pid',
+                //     title : '上级ID',
+                //     visible: false
+                // },
+                // {
+                //     field : 'openid',
+                //     title : '公众号openid',
+                //     visible: false
+                // },
+                // {
+                //     field : 'unionid',
+                //     title : '微信unionid',
+                //     visible: false
+                // },
+                {
+                    field : 'headimgurl',
+                    title : '用户头像',
+                    formatter : function(value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                // {
+                //     field : 'username',
+                //     title : '用户名',
+                //     visible: false
+                // },
+                {
+                    field : 'status',
+                    title : '帐号状态',
+                    visible: false,
+                    formatter: function(value, row, index) {
+                        if (statusDatas[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", statusDatas[value].style, statusDatas[value].desc);
+                        }
+                    }
+                },
+                // {
+                //     field : 'sourceType',
+                //     title : '用户来源',
+                //     visible: false,
+                //     formatter: function (value, row, index) {
+                //         if (sourceTypeDatas[value]) {
+                //             return $.common.sprintf("<span class='badge badge-%s'>%s</span>", sourceTypeDatas[value].style, sourceTypeDatas[value].desc);
+                //         }
+                //     }
+                // },
+                {
+                    field : 'nickname',
+                    title : '昵称'
+                },
+                {
+                    field : 'phone',
+                    title : '用户手机'
+                },
+                {
+                    field : 'sex',
+                    title : '用户性别',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(sexDatas, value);
+                    }
+                },
+                // {
+                //     field : 'country',
+                //     title : '位置',
+                //     formatter : function(value, row, index) {
+                //         var pos = "";
+                //         if (row.country) {
+                //             pos += row.country;
+                //         }
+                //         if (row.province) {
+                //             pos += " / " + row.province;
+                //         }
+                //         if (row.city) {
+                //             pos += " / " + row.city;
+                //         }
+                //         return pos;
+                //     }
+                // },
+                // {
+                //     field : 'accountType',
+                //     title : '结算账户类型',
+                //     formatter: function(value, row, index) {
+                //         return $.table.selectDictLabel(accountTypeDatas, value);
+                //     }
+                // },
+                // {
+                //     field : 'account',
+                //     title : '结算账户'
+                // },
+                {
+                    field : 'subscribe',
+                    title : '订阅标识',
+                    formatter: function (value, row, index) {
+                        if (subscribeTypeDatas[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", subscribeTypeDatas[value].style, subscribeTypeDatas[value].desc);
+                        }
+                    }
+                },
+                {
+                    field : 'depositgroup',
+                    title : '存款分组'
+                },
+                {
+                    field : 'surname',
+                    title : '姓名'
+                },
+                {
+                    field : 'idcard',
+                    title : '身份证号'
+                },
+                // {
+                //     field : 'cash',
+                //     title : '现金余额',
+                //     formatter: function (value, row, index) {
+                //         return $.common.sprintf('<a href="javascript:void(0)" onclick="cashDetail(\'' + row.id + '\', \''+row.nickname+'\')"><i class="fa fa-jpy"></i><b> %s</b></a>', value);
+                //     }
+                // },
+                // {
+                //     field : 'integration',
+                //     title : '积分余额',
+                //     formatter: function (value, row, index) {
+                //         return $.common.sprintf('<a href="javascript:void(0)" onclick="integrationDetail(\'' + row.id + '\', \''+row.nickname+'\')"><i class="fa fa-jpy"></i><b> %s</b></a>', value);
+                //     }
+                // },
+                // {
+                //     field : 'historyIntegration',
+                //     title : '历史积分'
+                // },
+                // {
+                //     field : 'commissionWait',
+                //     title : '待入佣金'
+                // },
+                // {
+                //     field : 'commission',
+                //     title : '佣金余额',
+                //     formatter: function (value, row, index) {
+                //         return $.common.sprintf('<a href="javascript:void(0)" onclick="commissionDetail(\'' + row.id + '\', \''+row.nickname+'\')"><i class="fa fa-jpy"></i><b> %s</b></a>', value);
+                //     }
+                // },
+            ]
+        };
+        $.table.init(options);
+    });
+
+    /**
+     * 选择提交
+     * @param index
+     * @param layero
+     */
+    function submitHandler(index, layero) {
+        var rows = $.table.selectFirstColumns();
+        if (rows.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        var surplus = coupon.count - coupon.receiveCount;
+        if(rows.length>surplus){
+            $.modal.alertWarning("剩余优惠券数量不足！<br/>欲发放优惠券:"+rows.length+" 张<br/>剩余优惠券:"+surplus+" 张")
+            return;
+        }
+        $.modal.confirm("确定发放优惠券"+rows.length+"张?",function () {
+            (parent.batchGiveCouponCallback && typeof (parent.batchGiveCouponCallback) === "function") && parent.batchGiveCouponCallback(rows.join(), coupon.id);
+            $.modal.close();
+        });
+    }
+
+    /**
+     * 同步存款分组标识
+     */
+    function synchronousDepositgroup() {
+        $.modal.confirm("确认同步存款分组标识", function(){
+            $.operate.get(prefix + "/synchronousDepositgroup", {},function (res) {
+                if(res.code===web_status.SUCCESS){
+                    $.modal.msgSuccess(res.msg)
+                }else{
+                    $.modal.alertWarning(res.msg)
+                }
+                $.table.search();
+            })
+        });
+    }
+</script>
+</body>
+</html>

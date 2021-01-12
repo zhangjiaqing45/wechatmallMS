@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsGroupGameRecord.mapper.SmsGroupGameRecordMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SmsGroupGameRecordResultExt" type="扩展类全包名" extends="SmsGroupGameRecordResult">
+
+    </resultMap>
+     -->
+    <resultMap id="groupGameDetailResultMap" type="com.fante.project.business.smsGroupGameRecord.domain.SmsGroupGameRecordDetail" extends="SmsGroupGameRecordResult">
+        <result column="timeOut"  property="timeOut" />
+        <collection property="groupMemberRecordList" resultMap="com.fante.project.business.smsGroupMemberRecord.mapper.SmsGroupMemberRecordMapper.SmsGroupMemberRecordResult" columnPrefix="gmr_"/>
+    </resultMap>
+    <sql id="groupGameDetailResultMap_ggr_param">
+            ggr.id,
+            ggr.shop_name,
+            ggr.shop_id,
+            ggr.group_game_id,
+            ggr.target_member_count,
+            ggr.group_member_count,
+            ggr.`status`,
+            ggr.product_name,
+            ggr.product_pic,
+            ggr.create_by,
+            ggr.create_time,
+            ggr.update_by,
+            ggr.update_time,
+            ggr.remark
+    </sql>
+    <sql id="groupGameDetailResultMap_gmr_param">
+            gmr.id as gmr_id,
+            gmr.group_join_record_id as gmr_group_join_record_id,
+            gmr.group_game_sku_id as gmr_group_game_sku_id,
+            gmr.member_id as gmr_member_id,
+            gmr.member_nick as gmr_member_nick,
+            gmr.member_icon as gmr_member_icon,
+            gmr.quantity as gmr_quantity,
+            gmr.product_name as gmr_product_name,
+            gmr.sku_sp_data as gmr_sku_sp_data,
+            gmr.sku_pic as gmr_sku_pic,
+            gmr.group_price as gmr_group_price,
+            gmr.status as gmr_status,
+            gmr.create_by as gmr_create_by,
+            gmr.create_time as gmr_create_time,
+            gmr.update_by as gmr_update_by,
+            gmr.update_time as gmr_update_time,
+            gmr.order_sn as gmr_order_sn,
+            gmr.remark as gmr_remark
+    </sql>
+
+    <select id="getSmsGroupGameRecordDetailById" resultMap="groupGameDetailResultMap">
+        SELECT
+            <include refid="groupGameDetailResultMap_ggr_param"/>,
+            <include refid="groupGameDetailResultMap_gmr_param"/>
+        FROM
+            sms_group_game_record ggr
+            LEFT JOIN sms_group_member_record gmr ON ggr.id = gmr.group_join_record_id
+        WHERE
+            ggr.id = #{id}
+    </select>
+
+    <select id="getSmsGroupGameRecordList" parameterType="SmsGroupGameRecord" resultMap="SmsGroupGameRecordResult">
+        <include refid="selectSmsGroupGameRecordVo"/>
+        <where>
+            del_flag = '0'
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="groupGameId != null "> and group_game_id = #{groupGameId}</if>
+            <if test="targetMemberCount != null "> and target_member_count = #{targetMemberCount}</if>
+            <if test="groupMemberCount != null "> and group_member_count = #{groupMemberCount}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="createBy != null  and createBy != ''"> and create_by like concat('%', #{createBy}, '%')</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    <!--预定团购名额-->
+    <update id="reservationQuotas">
+        UPDATE sms_group_game_record
+        SET lock_member_count = lock_member_count + 1
+        WHERE
+            id =
+            (
+                select x.id from
+                (
+                    select sggr.id as id from sms_group_game_record sggr left join sms_group_game sgg
+                    on sggr.group_game_id = sgg.id where sggr.id = #{groupId}
+                    and DATE_ADD(sggr.create_time,INTERVAL sgg.aging HOUR) &gt;= NOW()
+                )x
+            )
+            AND lock_member_count + group_member_count &lt; target_member_count
+            AND STATUS = '0'
+    </update>
+    <!--释放团购名额-->
+    <update id="recoverQuotas">
+        update sms_group_game_record
+        set
+            lock_member_count = lock_member_count-1
+        where
+            id = #{groupId}
+            and lock_member_count &gt; 0
+    </update>
+    <!--支付成功正式加入此团-->
+    <update id="paySuccess">
+        update sms_group_game_record
+        set
+            lock_member_count = lock_member_count-1,
+            group_member_count = group_member_count + 1
+        where
+            id = #{groupId}
+            and lock_member_count &gt; 0
+            and group_member_count &lt;= target_member_count
+    </update>
+    <select id="validateAging" resultType="int">
+        SELECT
+            CASE
+                WHEN count(*)= 0 THEN - 1
+                ELSE sgg.target_member_count - (select count(*) from sms_group_member_record where group_join_record_id = #{id})
+            END AS vd
+        FROM
+            sms_group_game_record sggr
+            LEFT JOIN sms_group_game sgg ON sgg.id = sggr.group_game_id
+        WHERE
+            sggr.id = #{id}
+    </select>
+    <!--设置团购状态为成功-->
+    <update id="groupSuccess">
+        update sms_group_game_record set status='1'
+         where id = #{recordId}
+    </update>
+    <!--设置团购状态为失败-->
+    <update id="groupFailure">
+        update sms_group_game_record set status='2'
+         where id = #{recordId}
+    </update>
+    <!--(app)获取当前商品团购记录-->
+    <select id="getGroupRecordList" resultMap="groupGameDetailResultMap">
+        SELECT
+            UNIX_TIMESTAMP(DATE_ADD(ggr.create_time,interval #{aging} HOUR)) - UNIX_TIMESTAMP(NOW()) timeOut,
+            <include refid="groupGameDetailResultMap_ggr_param"/>,
+            <include refid="groupGameDetailResultMap_gmr_param"/>
+        FROM
+            sms_group_game_record ggr
+            INNER JOIN sms_group_member_record gmr ON ggr.id = gmr.group_join_record_id
+        WHERE
+            ggr.id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        order by  ggr.id desc
+        <!-- ggr.group_game_id = #{groupGameId}
+         and ggr.`status` = #{status}
+         ## 目标人数 < 实际参团人数 + 锁定参团人数
+            and ggr.target_member_count &gt; ggr.lock_member_count + ggr.group_member_count
+           ## 排除自己所在的团
+            and ggr.id not in
+            (
+                select
+                    group_join_record_id
+                from
+                    sms_group_member_record
+                where
+                    member_id = #{memberId}
+                    and group_game_sku_id = #{groupGameId}
+            )
+            -->
+    </select>
+    <!--获取用户团购记录详情-->
+    <select id="getMemberGroupRecord" resultMap="groupGameDetailResultMap">
+        SELECT
+            <include refid="groupGameDetailResultMap_ggr_param"/>,
+            <include refid="groupGameDetailResultMap_gmr_param"/>
+        FROM
+            sms_group_game_record ggr
+            INNER JOIN sms_group_member_record gmr ON ggr.id = gmr.group_join_record_id
+        WHERE
+        ggr.id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        order by  ggr.id desc
+        <!--
+        gmr.member_id = #{memberId}
+        <if test="status!=null and status!=''">
+            and ggr.`status` = #{status}
+        </if>
+        -->
+    </select>
+    <!--(app)获取当前商品团购记录-->
+    <select id="getGroupRecordListBase" resultType="java.lang.Long">
+        SELECT
+            ggr.id
+        FROM
+            sms_group_game_record ggr
+            INNER JOIN sms_group_member_record gmr ON ggr.id = gmr.group_join_record_id
+        WHERE
+            ggr.group_game_id = #{groupGameId}
+            and ggr.`status` = #{status}
+            <!--目标人数 < 实际参团人数 + 锁定参团人数-->
+            and ggr.target_member_count &gt; ggr.lock_member_count + ggr.group_member_count
+            <!--排除自己所在的团-->
+            and ggr.id not in
+            (
+                select
+                    group_join_record_id
+                from
+                    sms_group_member_record
+                where
+                    member_id = #{memberId}
+                    and group_game_sku_id = #{groupGameId}
+            )
+            group by ggr.id
+    </select>
+    <!--获取用户团购记录详情-->
+    <select id="getMemberGroupRecordBase" resultType="java.lang.Long">
+        SELECT
+            ggr.id
+        FROM
+            sms_group_game_record ggr
+            INNER JOIN sms_group_member_record gmr ON ggr.id = gmr.group_join_record_id
+        WHERE
+        gmr.member_id = #{memberId}
+        <if test="status!=null and status!=''">
+            and ggr.`status` = #{status}
+        </if>
+        group by ggr.id
+    </select>
+</mapper>

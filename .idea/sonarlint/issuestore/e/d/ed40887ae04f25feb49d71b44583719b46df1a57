@@ -1,0 +1,28 @@
+
+<
+java:S11707"!Make this final field static too.(ß¦å°ÿÿÿÿÿ
+]	java:S125|"<This block of commented-out lines of code should be removed.(‹œµºüÿÿÿÿ8©’¨‚å.
+c
+java:S2259s"AA "NullPointerException" could be thrown; "rsp" is nullable here.(Ÿ‘‡™ÿÿÿÿÿ8©’¨‚å.
+V
+java:S1128"@Remove this unused import 'io.swagger.annotations.ApiOperation'.(¡šÜ
+Z	java:S106t"9Replace this use of System.out or System.err by a logger.(ÀØä¿ûÿÿÿÿ8³°þçâ.
+Z	java:S106s"9Replace this use of System.out or System.err by a logger.(Ÿ‘‡™ÿÿÿÿÿ8©’¨‚å.
+Z	java:S106u"9Replace this use of System.out or System.err by a logger.(„£ íýÿÿÿÿ8³°þçâ.
+Y	java:S125¾"<This block of commented-out lines of code should be removed.(ûà”†8©’¨‚å.
+Z	java:S106m"9Replace this use of System.out or System.err by a logger.(®Þ…èÿÿÿÿÿ8©’¨‚å.
+m	java:S117q"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ªãë©8©’¨‚å.
+U	java:S106k"9Replace this use of System.out or System.err by a logger.(æý’’8©’¨‚å.
+d
+java:S2259¥"AA "NullPointerException" could be thrown; "rsp" is nullable here.(ìÎœàúÿÿÿÿ8©’¨‚å.
+Z	java:S106v"9Replace this use of System.out or System.err by a logger.(ÌÜ”Õúÿÿÿÿ8³°þçâ.
+i
+java:S3252b"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(°Š¸‚8©’¨‚å.
+n	java:S117¢"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ªãë©8©’¨‚å.
+U	java:S106w"9Replace this use of System.out or System.err by a logger.(ö™Ø°8³°þçâ.
+A
+java:S2629A"$Invoke method(s) only conditionally.(žëùï8©’¨‚å.
+g
+java:S3252M"JUse static access with "org.apache.commons.lang3.StringUtils" for "EMPTY".(ùÍÛÀ8©’¨‚å.
+F
+java:S2629c"$Invoke method(s) only conditionally.(Ë‹À®þÿÿÿÿ8©’¨‚å.

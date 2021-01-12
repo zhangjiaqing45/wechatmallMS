@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsCouponProductCateRelation.mapper.SmsCouponProductCateRelationMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SmsCouponProductCateRelationResultExt" type="扩展类全包名" extends="SmsCouponProductCateRelationResult">
+
+    </resultMap>
+     -->
+
+    <sql id="selectJoinListVo">
+        select cr.id, cr.coupon_id, cr.product_category_id, c.`name` as product_category_name, c.description
+        from sms_coupon_product_cate_relation cr
+        inner join pms_product_category c on c.id = cr.product_category_id
+    </sql>
+
+
+    <select id="selectJoinList"
+            parameterType="com.fante.project.business.smsCouponProductCateRelation.domain.SmsCouponProductCateRelationDTO"
+            resultType="com.fante.project.business.smsCouponProductCateRelation.domain.SmsCouponProductCateRelationDTO">
+        <include refid="selectJoinListVo"/>
+        <where>
+            <if test="couponId != null "> and cr.coupon_id = #{couponId}</if>
+            <if test="productCategoryId != null "> and cr.product_category_id = #{productCategoryId}</if>
+            <if test="productCategoryName != null  and productCategoryName != ''"> and c.`name` like concat('%', #{productCategoryName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectCateForCoupon"
+            parameterType="com.fante.project.business.smsCouponProductCateRelation.domain.SmsCouponProductCateRelationDTO"
+            resultType="com.fante.project.business.smsCouponProductCateRelation.domain.SmsCouponProductCateRelationDTO">
+        select
+               cr.shop_id, cr.product_category_id, c.name as product_category_name, c.description
+        from pms_shop_category_relation cr
+        inner join pms_product_category c on cr.product_category_id=c.id
+        <where>
+            <if test="shopId != null">and cr.shop_id = #{shopId}</if>
+            <if test="productCategoryName != null and productCategoryName != ''">and c.name like concat('%', #{productCategoryName}, '%')</if>
+            <if test="couponId != null">
+            and not exists (
+                select
+                      cpr.product_category_id from sms_coupon_product_cate_relation cpr
+                <where>
+                    cpr.product_category_id=cr. product_category_id
+                    and cpr.coupon_id = #{couponId}
+                </where>
+            )
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByCouponId" parameterType="Long">
+        delete from sms_coupon_product_cate_relation where coupon_id = #{couponId}
+    </delete>
+
+    <insert id="batchInsertCateForCoupon" parameterType="list">
+        insert into sms_coupon_product_cate_relation
+        (
+            coupon_id,
+            product_category_id
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                #{item.couponId},
+                #{item.productCategoryId}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

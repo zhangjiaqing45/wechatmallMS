@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsFlashPromotionProduct.mapper.SmsFlashPromotionProductMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SmsFlashPromotionProductResultExt" type="扩展类全包名" extends="SmsFlashPromotionProductResult">
+
+    </resultMap>
+     -->
+
+    <select id="selectJoinList"
+            parameterType="com.fante.project.business.smsFlashPromotionProduct.domain.SmsFlashPromotionProductDTO"
+            resultType="com.fante.project.business.smsFlashPromotionProduct.domain.SmsFlashPromotionProductDTO">
+        select pp.id, pp.flash_promotion_id, pp.flash_promotion_session_id, pp.product_id, pp.product_sn,
+        pp.product_name, pp.product_pic, pp.min_price, pp.sales, pp.sort, pp.status,
+        fp.shop_id, p.publish_status, p.verify_status
+        from sms_flash_promotion_product pp
+        inner join sms_flash_promotion fp on pp.flash_promotion_id = fp.id
+        inner join pms_product p on pp.product_id = p.id
+        <where>
+            <if test="shopId != null">and fp.shop_id = #{shopId}</if>
+            <if test="flashPromotionId != null">and pp.flash_promotion_id = #{flashPromotionId}</if>
+            <if test="flashPromotionSessionId != null">and pp.flash_promotion_session_id = #{flashPromotionSessionId}
+            </if>
+            <if test="productSn != null and productSn != ''">and pp.product_sn like concat('%', #{productSn}, '%')</if>
+            <if test="status != null and status!=''">and pp.status = #{status}</if>
+            <if test="publishStatus != null and publishStatus!=''">and p.publish_status = #{publishStatus}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''">and p.verify_status = #{verifyStatus}</if>
+            <if test="productName != null and productName != ''">and pp.product_name like concat('%', #{productName},
+                '%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectProductSelectList"
+            parameterType="com.fante.project.business.smsFlashPromotionProduct.domain.SmsFlashPromotionProductSelectDTO"
+            resultType="com.fante.project.business.smsFlashPromotionProduct.domain.SmsFlashPromotionProductSelectDTO">
+        select p.id as product_id, p.product_sn, p.shop_id, p.brand_id, p.product_category_id, p.product_category_name,
+        p.brand_name, p.publish_status, p.verify_status, p.name as product_name
+        from pms_product p
+        <where>
+            p.del_flag = '0'
+            and not exists (
+            select pp.product_id from sms_flash_promotion_product pp
+            <where>
+                pp.product_id = p.id
+                <if test="flashPromotionId != null">and pp.flash_promotion_id = #{flashPromotionId}</if>
+                <if test="flashPromotionSessionId != null">and pp.flash_promotion_session_id =
+                    #{flashPromotionSessionId}
+                </if>
+            </where>
+            )
+            <if test="shopId != null">and p.shop_id = #{shopId}</if>
+            <if test="productSn != null and productSn != ''">and p.product_sn like concat('%', #{productSn}, '%')</if>
+            <if test="brandId != null ">and p.brand_id = #{brandId}</if>
+            <if test="productCategoryId != null ">and p.product_category_id = #{productCategoryId}</if>
+            <if test="publishStatus != null and publishStatus!=''">and p.publish_status = #{publishStatus}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''">and p.verify_status = #{verifyStatus}</if>
+            <if test="productName != null and productName != ''">and p.name like concat('%', #{productName}, '%')</if>
+        </where>
+    </select>
+    <!--根据秒杀时间段获取秒杀商品-->
+    <select id="getFlashProductList"
+            parameterType="com.fante.project.api.appView.domain.FlashProductParam"
+            resultType="com.fante.project.business.smsFlashPromotionProduct.domain.SmsFlashPromotionProductDTO">
+        SELECT
+            pp.id,
+            pp.flash_promotion_id,
+            pp.flash_promotion_session_id,
+            pp.product_id,
+            pp.product_sn,
+            pp.product_name,
+            pp.product_pic,
+            pp.min_price,
+            pp.sales,
+            pp.sort,
+            fp.shop_id
+        FROM
+            sms_flash_promotion_product pp
+        INNER JOIN sms_flash_promotion fp ON pp.flash_promotion_id = fp.id
+        INNER JOIN pms_product p ON pp.product_id = p.id
+        <where>
+            <!--店铺id-->
+            <if test="shopId != null">and fp.shop_id = #{shopId}</if>
+            <!--时间段id-->
+            <if test="flashPromotionSessionId != null">and pp.flash_promotion_session_id = #{flashPromotionSessionId}
+            </if>
+            <!--活动启用状态：启用-->
+            <if test="promotionStatus != null and promotionStatus!=''">and fp.status = #{promotionStatus}</if>
+            <!--时间段状态：启用-->
+            <if test="sessionStatus != null and sessionStatus!=''">and pp.status = #{sessionStatus}</if>
+            <!--商品上架状态：上架-->
+            <if test="publishStatus != null and publishStatus!=''">and p.publish_status = #{publishStatus}</if>
+            <!--商品名称:模糊查询-->
+            <if test="productName != null and productName != ''">and pp.product_name like concat('%', #{productName},
+                '%')
+            </if>
+        </where>
+    </select>
+    <!--秒杀商品详情页面数据封装-->
+    <resultMap id="flashDetailPageInfoMap"
+               type="com.fante.project.api.appView.domain.PmsFlashProductDetailPageInfo"
+               extends="SmsFlashPromotionProductResult">
+        <!--开始时间-->
+        <result column="start_time"  property="startTime"/>
+        <!--结束时间-->
+        <result column="end_time"  property="endTime"/>
+        <!--店铺名称-->
+        <result column="shop_id"  property="shopId"/>
+        <!--商品市场价-->
+        <result column="original_price"  property="originalPrice"/>
+        <!--店铺名称-->
+        <result column="shop_name"  property="shopName"/>
+        <!--副标题-->
+        <result column="sub_title"  property="subTitle"/>
+        <!--商品图册-->
+        <result column="album_pics"  property="albumPics"/>
+        <!--商品参数-->
+        <result column="param_data"  property="paramData"/>
+        <!--商品描述-->
+        <result column="description"  property="description"/>
+        <!--商品详情标题-->
+        <result column="detail_title"  property="detailTitle"/>
+        <!--商品详情描述-->
+        <result column="detail_desc"  property="detailDesc"/>
+        <!--商品详情html-->
+        <result column="detail_html"  property="detailHtml"/>
+        <!--经度-->
+        <result column="longitude"  property="longitude"/>
+        <!--纬度-->
+        <result column="latitude"  property="latitude"/>
+        <!--sku秒杀信息集合-->
+        <collection property="skuList"
+                    resultMap="com.fante.project.business.smsFlashPromotionSku.mapper.SmsFlashPromotionSkuMapper.SmsFlashPromotionSkuResult"
+                    columnPrefix="item_"/>
+    </resultMap>
+
+    <!--(app)获取秒杀商品详情-->
+    <select id="getFlashProductDetailInfo" resultMap="flashDetailPageInfoMap">
+        SELECT
+            <!--秒杀商品开始结束时间-->
+            sp.start_time,
+            sp.end_time,
+            <!--商品秒杀关系表信息-->
+            pp.id,
+            pp.flash_promotion_id,
+            pp.flash_promotion_session_id,
+            pp.product_id,
+            pp.product_sn,
+            pp.product_name,
+            pp.product_pic,
+            pp.min_price,
+            pp.sales,
+            pp.sort,
+            pp.`status`,
+            <!--商品表信息-->
+            p.original_price,
+            p.sub_title,
+            p.album_pics,
+            p.param_data,
+            p.description,
+            p.detail_title,
+            p.detail_desc,
+            p.detail_html,
+            <!--商品sku秒杀关系表信息-->
+            sku.id as item_id,
+            sku.promotion_priduct_id as item_promotion_priduct_id,
+            sku.sku_id as item_sku_id,
+            sku.sku_sp_data as item_sku_sp_data,
+            sku.sku_pic as item_sku_pic,
+            sku.sku_price as item_sku_price,
+            sku.flash_promotion_price as item_flash_promotion_price,
+            sku.flash_promotion_count as item_flash_promotion_count,
+            sku.flash_promotion_limit as item_flash_promotion_limit,
+            sku.lock_stock as item_lock_stock,
+            sku.sort as item_sort,
+            sku.sales as item_sales,
+            <!--店铺信息-->
+            shop.id AS shop_id,
+            shop.company_name AS shop_name,
+            shop.longitude AS longitude,
+            shop.latitude AS latitude
+        FROM
+            sms_flash_promotion_product pp
+            INNER JOIN sms_flash_promotion_sku sku ON sku.promotion_priduct_id = pp.id
+            INNER JOIN sms_flash_promotion fp ON fp.id = pp.flash_promotion_id
+            INNER JOIN sms_flash_promotion_session sp ON sp.id = pp.flash_promotion_session_id
+            INNER JOIN pms_product p ON p.id = pp.product_id
+            INNER JOIN biz_shop_info shop ON shop.id = fp.shop_id
+        WHERE
+            pp.id = #{productId}
+            AND fp.`status` = '1'
+            AND pp.`status` = '0'
+            AND sp.`status` = '0'
+            AND p.publish_status = '1'
+    </select>
+
+
+</mapper>

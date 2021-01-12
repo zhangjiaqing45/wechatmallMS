@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('微信支付详情')" />
+    <th:block th:include="include :: jsonview-css"/>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-wxPayLog-edit" th:object="${wxPayLog}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">日志状态：</label>
+                        <div class="col-sm-8">
+                            <input name="status" th:field="*{status}" class="form-control" type="hidden" readonly>
+                            <input id="statusShow" class="form-control" type="text" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">日志类型：</label>
+                        <div class="col-sm-8">
+                            <input name="type" th:field="*{type}" class="form-control" type="hidden" readonly>
+                            <input id="typeShow" class="form-control" type="text" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">用户标识：</label>
+                        <div class="col-sm-8">
+                            <input name="openid" th:field="*{openid}" class="form-control" type="text" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">商户订单号/退款单号：</label>
+                        <div class="col-sm-8">
+                            <input name="outTradeNo" th:field="*{outTradeNo}" class="form-control" type="text" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">订单/退款金额(分)：</label>
+                        <div class="col-sm-8">
+                            <input name="totalFee" th:field="*{totalFee}" class="form-control" type="text" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">提示信息：</label>
+                        <div class="col-sm-8">
+                            <input name="msg" th:field="*{msg}" class="form-control" type="text" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">调用信息：</label>
+                <div class="col-sm-10">
+                    <pre id="content"></pre>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: jsonview-js"/>
+    <script th:inline="javascript">
+        var logTypes = [[${@custom.wxPayLogTypes()}]];
+        var content = [[${wxPayLog.content}]];
+
+        $(function () {
+            if (content) {
+                $("#content").JSONView(content);
+            }
+            $("#statusShow").val($("#status").val() == '0' ? "调用成功" : "调用失败");
+            $("#typeShow").val(logTypes[$("#type").val()]);
+        })
+
+        
+        // var prefix = ctx + "business/wxPayLog";
+        // $("#form-wxPayLog-edit").validate({
+        //     focusCleanup: true
+        // });
+        //
+        // function submitHandler() {
+        //     if ($.validate.form()) {
+        //         $.operate.save(prefix + "/edit", $('#form-wxPayLog-edit').serialize());
+        //     }
+        // }
+    </script>
+</body>
+</html>

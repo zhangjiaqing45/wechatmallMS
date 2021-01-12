@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改订单退货申请')" />
+    <th:block th:include="include :: select2-css"/>
+    <style>
+        .static-table th, .static-table td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="white-bg">
+<div class="container-div">
+    <div class="row" th:object="${omsOrderReturnApply}">
+        <!--退货商品信息-->
+        <div class="col-sm-9 col-lg-offset-1">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h3>退货商品
+                    </h3>
+                </div>
+                <div class="ibox-content">
+                    <table class="table table-bordered static-table">
+                        <tr>
+                            <th>商品图片</th>
+                            <th>商品名称</th>
+                            <th>价格/货号</th>
+                            <th>规格属性</th>
+                            <th>数量</th>
+                            <th>小计</th>
+                        </tr>
+                        <tr>
+                            <td class="ft-uploader__files">
+                                <img class='ft-uploader__file' style="float:initial"
+                                     th:data-src="*{productPic}"
+                                     th:src="*{'/'+productPic}"/>
+                            </td>
+                            <td >
+                                <label th:text="*{productName}"></label><br>
+                                <label th:text="*{productBrand}"></label>
+                            </td>
+                            <td >
+                                ￥<label th:text="*{productRealPrice}"></label><br>
+                                <label th:text="*{productSn}"></label>
+                            </td>
+                            <td id="spData">
+                            </td>
+                            <td th:text="*{productCount}"></td>
+                            <td th:text="*{productCount*productRealPrice}"></td>
+                        </tr>
+                    </table>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>
+                            注意 : 此处显示的价格是支付单价 = 商品单价 + 平均到单个商品的运费 - 平均到单个商品的优惠价格
+                     </span>
+                    <div class="h4">
+                        <div class="m-r-lg " style="font-weight: 600;text-align: right">合计：<label class="text-danger" th:text="*{productCount*productRealPrice}"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--服务单信息-->
+        <div class="col-sm-9 col-lg-offset-1">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h3>服务单信息
+                    </h3>
+                </div>
+                <div class="ibox-content">
+                    <!--服务单信息-->
+                    <table class="table table-bordered table-service">
+                        <tr>
+                            <th class="active input-s">服务单号</th>
+                            <td th:text="*{id}"></td>
+                        </tr>
+                        <tr>
+                            <th class="active input-s">申请状态</th>
+                            <td th:text="${@custom.returnStatus()[omsOrderReturnApply.status]}"></td>
+                        </tr>
+                        <tr>
+                            <th class="active input-s">订单编号</th>
+                            <td th:text="*{orderSn}"></td>
+                        </tr>
+                        <tr>
+                            <th class="active input-s">申请时间</th>
+                            <td th:text="*{#dates.format(createTime, 'yyyy年MM月dd日 HH时mm分ss秒')}"></td>
+                        </tr>
+                       <!-- <tr>
+                            <th class="active input-s">用户账号</th>
+                            <td th:text="*{createBy}"></td>
+                        </tr>-->
+                        <tr>
+                            <th class="active input-s">用户昵称</th>
+                            <td th:text="*{memberNickName}"></td>
+                        </tr>
+                        <tr>
+                            <th class="active input-s">联系人</th>
+                            <td th:text="*{returnName}"></td>
+                        </tr>
+                        <tr>
+                            <th class="active input-s">联系电话</th>
+                            <td th:text="*{returnPhone}"></td>
+                        </tr>
+                        <tr>
+                            <th class="active input-s">退货原因</th>
+                            <td th:text="*{reason}"></td>
+                        </tr>
+                        <tr>
+                            <th class="active input-s">问题描述</th>
+                            <td th:text="*{description}"></td>
+                        </tr>
+                        <tr>
+                            <th class="active input-s">凭证图片</th>
+                            <td >
+                                <input name="albumPics" th:value="*{proofPics}" class="form-control" type="hidden">
+                                <ul class="ft-uploader__files" id="albumPicsImg" style="margin-top: 10px;" >
+                                    <!-- 图片展示 -->
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                    <form id="form-return-handle">
+                        <input type="hidden" name="id" th:field="*{id}">
+                        <!--收货人信息-->
+                        <table th:if="*{status!='3'}" class="table table-bordered table-service">
+                            <tr>
+                                <th class="active input-s">订单金额</th>
+                                <td th:text="*{productCount*productRealPrice+' 元'}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="active input-s">确认退款金额</th>
+                                <td >
+                                    <div class="input-group input-s-lg" th:if="${isFranchisee}">
+                                        <input id="returnAmount"
+                                               name="returnAmount"
+                                               class="form-control"
+                                               type="text"
+                                               th:value="*{returnAmount?:productCount*productRealPrice}">
+                                        <span class="input-group-addon">元</span>
+                                    </div>
+                                    <div th:unless="${isFranchisee}" class="input-group input-s-lg" th:text="*{returnAmount + ' 元' }" ></div>
+                                </td>
+                            </tr>
+                            <tr th:if="${isFranchisee}">
+                                <th class="active input-s">选择收货点</th>
+                                <td>
+                                    <div class="input-s-lg">
+                                        <input type="hidden" name="companyAddressId" id="companyAddressId" th:field="*{companyAddressId}">
+                                        <select id="receiveId" name="receiveId">
+                                        </select>
+                                    </div>
+                                    <!--收货地址选择-->
+                                </td>
+                            </tr>
+                            <tr >
+                                <th class="active input-s">收货人姓名</th>
+                                <td id="receiveName" th:text="*{receiveName}"></td>
+                            </tr>
+                            <tr >
+                                <th class="active input-s">所在区域</th>
+                                <td id="receiveArea" th:text="*{receiveArea}"></td>
+                            </tr>
+                            <tr>
+                                <th class="active input-s">详细地址</th>
+                                <td id="receiveAddr" th:text="*{receiveAddr}"></td>
+                            </tr>
+                            <tr >
+                                <th class="active input-s">联系电话</th>
+                                <td id="receivePhone" th:text="*{receivePhone}"></td>
+                            </tr>
+                        </table>
+
+                        <!--用户退货邮寄信息-->
+                        <table th:if="*{deliverySn!=''&&deliverySn!=null}" class="table table-bordered table-service">
+                            <tr>
+                                <th class="active input-s">邮寄公司</th>
+                                <td th:text="*{deliveryCompany}"></td>
+                            </tr>
+                            <tr>
+                                <th class="active input-s">邮寄单号</th>
+                                <td >
+                                    <label th:text="*{deliverySn}"></label>
+                                    <button type="button" class="btn btn-success btn-sm m-l-xl" th:deliverysn="*{deliverySn}" onclick="showProgress(this)">点击查询</button>
+                                </td>
+                            </tr>
+                        </table>
+                        <!--处理备注信息 待处理不显示-->
+                        <table th:if="*{status!='0'}" class="table table-bordered table-service">
+                            <tr>
+                                <th class="active input-s">处理人员</th>
+                                <td th:text="*{handleMan}"></td>
+                            </tr>
+                            <tr>
+                                <th class="active input-s">处理时间</th>
+                                <td th:text="*{#dates.format(handleTime, 'yyyy年MM月dd日 HH时mm分ss秒')}"></td>
+                            </tr>
+                            <tr>
+                                <th class="active input-s">处理备注</th>
+                                <td th:text="*{handleNote}"></td>
+                            </tr>
+                        </table>
+                        <!--收货备注信息 只有退货成功已完成显示-->
+                        <table th:if="*{status=='2'}" class="table table-bordered table-service">
+                            <tr>
+                                <th class="active input-s">处理人员</th>
+                                <td th:text="*{receiveMan}"></td>
+                            </tr>
+                            <tr>
+                                <th class="active input-s">收货时间</th>
+                                <td th:text="*{#dates.format(receiveTime, 'yyyy年MM月dd日 HH时mm分ss秒')}"></td>
+                            </tr>
+                            <tr>
+                                <th class="active input-s">收货备注</th>
+                                <td th:text="*{receiveNote}"></td>
+                            </tr>
+                        </table>
+                        <!--备注 待处理显示 退货中显示-->
+                        <table th:if="*{status=='0'||status=='1'}" class="table table-bordered table-service">
+                            <tr  th:if="${isFranchisee}">
+                                <th class="active input-s">处理备注</th>
+                                <td>
+                                    <div class="input-group input-s-lg">
+                                        <input type="text" class="form-control" id="remark" name="remark" >
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                    <div class="text-center" th:if="${isFranchisee}">
+                        <button th:if="*{status=='1'}" id="receivedBtn" class="btn btn-primary btn-sm" onclick="confirmReceive()" type="button">确认收货</button>
+                        <button th:if="*{status=='0'}" id="confirmBtn" class="btn btn-primary btn-sm" onclick="confirmReturn()" type="button">同意退货</button>
+                        <button th:if="*{status=='0'}" id="refuseBtn" class="btn btn-danger  btn-sm m-l-lg" onclick="refuseReturn()" type="button">拒绝退货</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: select2-js"/>
+</body>
+</html>
+
+
+
+<script th:inline="javascript" type="text/javascript">
+    var prefix = ctx + "business/omsOrderReturnApply";
+    var progress_prefix = ctx + "business/omsOrder";
+    var returnDetail = [[${omsOrderReturnApply}]]; console.log(returnDetail);
+    var receiveDatas = [[${receiveDatas}]];
+    var isFranchisee = [[${isFranchisee}]];console.log(isFranchisee);
+    var receiveMap = {};
+    $(function () {
+        initSpData();
+        initAlbumPics();
+        if (isFranchisee) {
+            initSelectAddress();
+        }
+
+        $('#receiveId').on('select2:select', function (e) {
+            $('#companyAddressId').val($(e.target).val());
+            choseReceiveAddress($(e.target).val())
+        });
+    })
+    /**
+     * 初始化下拉选项
+     */
+    function initSelectAddress(){
+        if(receiveDatas.length==0){
+            $.modal.msgWarning("至少需要添加一个退货收货地址.")
+            //初始化选项
+            $("#receiveId").select2({
+                placeholder: "",
+                data: []
+            });
+            return;
+        }
+        //选项
+        var selectDatas = [];
+        //若初始地址为空则获取默认地址
+        var defaultAddressId = $('#companyAddressId').val();
+        receiveDatas.forEach(function (value,index) {
+            //若初始地址为空则获取默认地址
+            if(!defaultAddressId && (value.receiveStatus == '1')){
+                $('#companyAddressId').val(value.id);
+                defaultAddressId = value.id;
+            }
+            receiveMap[value.id]=value;
+            selectDatas.push({id:value.id,text:value.name})
+        })
+        //初始化选项
+        $("#receiveId").select2({
+            placeholder: "",
+            data: selectDatas
+        });
+        //如果未选择或状态是待审核初始化 其他收货信息
+        defaultAddressId = defaultAddressId || receiveDatas[0].id;
+        $("#receiveId").select2('val',[defaultAddressId]);
+        //如果未选择或状态是待审核初始化 其他收货信息
+        if(returnDetail.status == 0){
+            choseReceiveAddress(defaultAddressId);
+        }else{
+            $("#receiveId").attr("disabled","disabled")
+            $("#returnAmount").attr("disabled","disabled")
+        }
+    }
+    /**
+     * 根据选择的id同步相关信息
+     */
+    function choseReceiveAddress(id) {
+        var addr = receiveMap[id]
+        $('#companyAddressId').val(addr.id);
+        $('#receiveName').text(addr.persionName);
+        $('#receiveArea').text(addr.province+" "+addr.city+" "+addr.region);
+        $('#receiveAddr').text(addr.detailAddress);
+        $('#receivePhone').text(addr.persionPhone);
+    }
+    /**
+     * 初始化 规格信息
+     */
+    function initSpData() {
+        var spDatas = returnDetail.spData.replace(/{/g,'')
+            .replace(/}/g,'').replace(/\"/g,'').split("\,");
+        var spDataTEXT = '';
+        spDatas.forEach(function (value,index) {
+            spDataTEXT+=value+"; ";
+            if (index%2==1){
+                spDataTEXT +='<br/>'
+            }
+        })
+        $('#spData').html(spDataTEXT)
+    }
+
+    /**
+     * 初始化凭证画册
+     */
+    function initAlbumPics() {
+        var albumPics = $("input[name='albumPics']").val()
+        if (albumPics && albumPics.split(",").length > 0) {
+            var pics = albumPics.split(","), tpl = "";
+            for (var i in pics) {
+                tpl += "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + pics[i] + ")\" data-src=\"" + pics[i] + "\" ></li>";
+            }
+            $("#albumPicsImg").html(tpl);
+        }
+    }
+    /**
+     * 图片预览--通用
+     */
+    $(".ft-uploader__files").on("click", ".ft-uploader__file", function(e) {
+        if ($(this).attr("data-src")) {
+            $.modal.preview(respath + $(this).attr("data-src"));
+        }
+    });
+
+
+    /**
+     * 确认退货
+     */
+    function confirmReturn() {
+        var remark = $('#remark').val();
+        var receiveId = $('#receiveId').val();
+
+        if(!receiveId){
+            $('#receiveId').addClass("error");
+            $.modal.msgWarning("地址不能为空！");
+            return
+        }
+        if(!remark){
+            $('#remark').addClass("error");
+            $.modal.msgWarning("备注不能为空！");
+            return
+        }
+        if ($.validate.form()) {
+            $.modal.confirm("确定要 [同意] 退货吗？", function () {
+                $.operate.save(prefix + "/confirmReturn", $('#form-return-handle').serialize());
+            })
+
+        }
+    }
+    /**
+     * 拒绝退货
+     */
+    function refuseReturn() {
+        var remark = $('#remark').val();
+        if(!remark){
+            $('#remark').addClass("error");
+            $.modal.msgWarning("备注不能为空！");
+            return
+        }
+        if ($.validate.form()) {
+            $.modal.confirm("确定要 [拒绝] 退货吗？", function () {
+                $.operate.save(prefix + "/refuseReturn", $('#form-return-handle').serialize());
+            })
+        }
+    }
+    /**
+     * 确认收货
+     */
+    function confirmReceive() {
+        var remark = $('#remark').val();
+        if(!remark){
+            $('#remark').addClass("error");
+            $.modal.msgWarning("备注不能为空！");
+            return
+        }
+        if ($.validate.form()) {
+            $.modal.confirm("确认收货后,退货金额将返回至客户,是否继续？", function () {
+                $.operate.save(prefix + "/confirmReceive", $('#form-return-handle').serialize());
+            })
+        }
+    }
+    /**************************物流跟踪 start*****************************************/
+    /**
+     * 物流跟踪
+     */
+    function showProgress(ele){
+
+        var deliverySn = $(ele).attr("deliverysn");
+        var options = {
+            title: '订单跟踪',
+            url: progress_prefix+"/progress/"+deliverySn,
+            width: $(window).width()*0.5,
+            height: $(window).height()-100,
+            btn: false,
+        };
+        $.modal.openOptions(options);
+    }
+    /**************************物流跟踪 end*****************************************/
+    //验证
+    $("#form-return-handle").validate({
+        rules: {
+            returnAmount: {
+                required: true,
+                isPrice:true,
+                min:1,
+                max:returnDetail.productRealPrice*returnDetail.productCount,
+            },
+            companyAddressId: {
+                required: true,
+            },
+        },
+        messages: {
+            returnAmount: {
+                required: "退款金额不能为空",
+                isPrice: "退款金额格式不正确",
+                min:"退款金额不得低于1元",
+                max:"退款金额不得超过支付价格"
+            },
+            companyAddressId: {
+                required: "收货地点不能为空",
+            },
+        },
+        focusCleanup: true,
+    });
+
+
+</script>

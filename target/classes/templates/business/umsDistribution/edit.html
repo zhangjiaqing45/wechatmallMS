@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改分销比例商品角色关系')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <div class="tabs-container">
+
+            <div class="tabs-left">
+                <ul class="nav nav-tabs" >
+                    <li th:each="item,itemStat: ${distributionList}"
+                        th:class="${itemStat.index == 0?'active':''}" >
+                            <a data-toggle="tab"
+                               th:href="'#tab_'+${item.roleType}"
+                               th:text="${item.roleName}"></a>
+                    </li>
+                </ul>
+
+                <div class="tab-content ">
+                    <div th:each="item,itemStat: ${distributionList}"
+                         th:class="${itemStat.index == 0?'tab-pane active':'tab-pane'}"
+                         th:id="'tab_'+${item.roleType}" >
+                        <div class="panel-body">
+                            <strong th:text="${item.roleName}+'佣金设置'"></strong>
+                            <p>
+                                <form class="form-horizontal m" th:id="${'form-umsDistribution-edit-'+item.roleType}" >
+                                    <input name="id" th:value="${item.id}" type="hidden">
+                                    <input name="roleType" th:value="${item.roleType}"  type="hidden">
+                                    <div class="form-group">
+                                        <input name="productId" th:value="${item.productId}"  type="hidden">
+                                        <label class="col-sm-3 control-label  ">商品：</label>
+                                        <div class="col-sm-8">
+                                            <input name="productName" th:value="${item.productName}" class="form-control" type="text" disabled="true">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label  ">分销额：</label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group m-b"><span class="input-group-addon">比例</span>
+                                                <input th:id="${'ratio_'+item.roleType+item.productId}"
+                                                       name="ratio"
+                                                       th:value="${#numbers.formatDecimal(item.ratio*100, 2, 0)}"
+                                                       min="0"
+                                                       max="99"
+                                                       onblur="validateThisValue(this)"
+                                                       class="form-control"
+                                                       type="number">
+                                                <span class="input-group-addon">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label  ">操作：</label>
+                                        <div class="col-sm-8">
+                                            <button  class="btn btn-warning" th:data="${'ratio_'+item.roleType+item.productId}" type="button" onclick="reflashMoney(this)">刷新预览</button>
+                                            <button  class="btn btn-success m-l-lg"  th:data="${item.roleType}"  type="button" onclick="modifyRatio(this)">确定修改</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">佣金预览：</label>
+                                        <div class="col-sm-8">
+                                            <table class="table table-bordered table-hover">
+                                                <tr>
+                                                    <th>规格</th>
+                                                    <th>价格</th>
+                                                    <th><span th:text="${item.roleName}"></span>佣金</th>
+                                                </tr>
+                                                <tr th:each="sku,itemStat : ${item.skuList}">
+                                                    <td th:text="${sku.spData}">
+                                                    </td>
+                                                    <td th:text="${sku.price}">
+                                                    </td>
+                                                    <td  th:id = "${item.roleType+item.productId+'_'+sku.id}" th:text="${sku.price*item.ratio}">
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </form>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript" type="text/javascript">
+        /**
+         * 佣金为空则返回0
+         * @param that
+         */
+        function validateThisValue(that) {
+            var ratio = $(that).val();
+            if(!ratio){
+                $(that).val("0")
+            }
+        }
+        /**
+         * 刷新佣金
+         * @param that
+         */
+        function reflashMoney(that) {
+            var ratio_id = $(that).attr("data");
+            var ratio = $('#'+ratio_id).val()/100;
+            var product_id = ratio_id.replace(/ratio_/g,"");
+            $("td[id^="+product_id+"_]").each(function (index, item) {
+                var val = $(item).prev().text();
+                //佣金向下取整数
+                $(item).text((parseFloat(val)*ratio).toFixed(2));
+            })
+        }
+        /**
+         * 确定修改佣金
+         * @param that
+         */
+        function modifyRatio(that) {
+            var roleType = $(that).attr("data");
+            submitHandler(roleType);
+        }
+        var prefix = ctx + "business/umsDistribution";
+
+        /**
+         * 提交表单
+         * @param roleType 角色类型
+         */
+        function submitHandler(roleType) {
+           $.operate.saveModal(prefix + "/edit", $('#form-umsDistribution-edit-'+roleType).serialize());
+        }
+    </script>
+</body>
+</html>

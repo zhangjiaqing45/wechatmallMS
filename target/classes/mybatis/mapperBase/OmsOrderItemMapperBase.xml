@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsOrderItem.mapper.OmsOrderItemMapper">
+    
+    <resultMap type="OmsOrderItem" id="OmsOrderItemResult">
+        <result property="id"    column="id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="orderSn"    column="order_sn"    />
+        <result property="productId"    column="product_id"    />
+        <result property="gameSkuId"    column="game_sku_id"    />
+        <result property="productPic"    column="product_pic"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productSpData"    column="product_sp_data"    />
+        <result property="productBrand"    column="product_brand"    />
+        <result property="productSn"    column="product_sn"    />
+        <result property="payPrice"    column="pay_price"    />
+        <result property="productPrice"    column="product_price"    />
+        <result property="freightPrice"    column="freight_price"    />
+        <result property="couponPrice"    column="coupon_price"    />
+        <result property="productQuantity"    column="product_quantity"    />
+        <result property="productSkuId"    column="product_sku_id"    />
+        <result property="productSkuCode"    column="product_sku_code"    />
+        <result property="productCategoryId"    column="product_category_id"    />
+        <result property="promotionInfo"    column="promotion_info"    />
+        <result property="initPrice"    column="init_price"    />
+        <result property="giftIntegration"    column="gift_integration"    />
+        <result property="giftGrowth"    column="gift_growth"    />
+        <result property="returnStatus"    column="return_status"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectOmsOrderItemVo">
+        select id, order_id, order_sn, product_id, game_sku_id, product_pic, product_name, product_sp_data, product_brand, product_sn, pay_price, product_price, freight_price, coupon_price, product_quantity, product_sku_id, product_sku_code, product_category_id, promotion_info, init_price, gift_integration, gift_growth, return_status, status, create_by, create_time, update_by, update_time, remark, del_flag from oms_order_item
+    </sql>
+
+    <select id="selectOmsOrderItemList" parameterType="OmsOrderItem" resultMap="OmsOrderItemResult">
+        <include refid="selectOmsOrderItemVo"/>
+        <where>
+           del_flag = '0'
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="gameSkuId != null "> and game_sku_id = #{gameSkuId}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productSpData != null  and productSpData != ''"> and product_sp_data = #{productSpData}</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="payPrice != null "> and pay_price = #{payPrice}</if>
+            <if test="productPrice != null "> and product_price = #{productPrice}</if>
+            <if test="freightPrice != null "> and freight_price = #{freightPrice}</if>
+            <if test="couponPrice != null "> and coupon_price = #{couponPrice}</if>
+            <if test="productQuantity != null "> and product_quantity = #{productQuantity}</if>
+            <if test="productSkuId != null "> and product_sku_id = #{productSkuId}</if>
+            <if test="productSkuCode != null  and productSkuCode != ''"> and product_sku_code = #{productSkuCode}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="promotionInfo != null  and promotionInfo != ''"> and promotion_info = #{promotionInfo}</if>
+            <if test="initPrice != null "> and init_price = #{initPrice}</if>
+            <if test="giftIntegration != null "> and gift_integration = #{giftIntegration}</if>
+            <if test="giftGrowth != null "> and gift_growth = #{giftGrowth}</if>
+            <if test="returnStatus != null  and returnStatus != ''"> and return_status = #{returnStatus}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="countOmsOrderItem" parameterType="OmsOrderItem" resultType="int">
+        select count(*) from oms_order_item
+        <where>
+            del_flag = '0'
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="gameSkuId != null "> and game_sku_id = #{gameSkuId}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productSpData != null  and productSpData != ''"> and product_sp_data = #{productSpData}</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="payPrice != null "> and pay_price = #{payPrice}</if>
+            <if test="productPrice != null "> and product_price = #{productPrice}</if>
+            <if test="freightPrice != null "> and freight_price = #{freightPrice}</if>
+            <if test="couponPrice != null "> and coupon_price = #{couponPrice}</if>
+            <if test="productQuantity != null "> and product_quantity = #{productQuantity}</if>
+            <if test="productSkuId != null "> and product_sku_id = #{productSkuId}</if>
+            <if test="productSkuCode != null  and productSkuCode != ''"> and product_sku_code = #{productSkuCode}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="promotionInfo != null  and promotionInfo != ''"> and promotion_info = #{promotionInfo}</if>
+            <if test="initPrice != null "> and init_price = #{initPrice}</if>
+            <if test="giftIntegration != null "> and gift_integration = #{giftIntegration}</if>
+            <if test="giftGrowth != null "> and gift_growth = #{giftGrowth}</if>
+            <if test="returnStatus != null  and returnStatus != ''"> and return_status = #{returnStatus}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="checkOmsOrderItemUnique" parameterType="OmsOrderItem" resultType="int">
+        select count(*) from oms_order_item
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="gameSkuId != null "> and game_sku_id = #{gameSkuId}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productName != null  and productName != ''"> and product_name = #{productName}</if>
+            <if test="productSpData != null  and productSpData != ''"> and product_sp_data = #{productSpData}</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="payPrice != null "> and pay_price = #{payPrice}</if>
+            <if test="productPrice != null "> and product_price = #{productPrice}</if>
+            <if test="freightPrice != null "> and freight_price = #{freightPrice}</if>
+            <if test="couponPrice != null "> and coupon_price = #{couponPrice}</if>
+            <if test="productQuantity != null "> and product_quantity = #{productQuantity}</if>
+            <if test="productSkuId != null "> and product_sku_id = #{productSkuId}</if>
+            <if test="productSkuCode != null  and productSkuCode != ''"> and product_sku_code = #{productSkuCode}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="promotionInfo != null  and promotionInfo != ''"> and promotion_info = #{promotionInfo}</if>
+            <if test="initPrice != null "> and init_price = #{initPrice}</if>
+            <if test="giftIntegration != null "> and gift_integration = #{giftIntegration}</if>
+            <if test="giftGrowth != null "> and gift_growth = #{giftGrowth}</if>
+            <if test="returnStatus != null  and returnStatus != ''"> and return_status = #{returnStatus}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOmsOrderItemById" parameterType="Long" resultMap="OmsOrderItemResult">
+        <include refid="selectOmsOrderItemVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertOmsOrderItem" parameterType="OmsOrderItem" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_order_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null ">order_id,</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn,</if>
+            <if test="productId != null ">product_id,</if>
+            <if test="gameSkuId != null ">game_sku_id,</if>
+            <if test="productPic != null  and productPic != ''">product_pic,</if>
+            <if test="productName != null  and productName != ''">product_name,</if>
+            <if test="productSpData != null  and productSpData != ''">product_sp_data,</if>
+            <if test="productBrand != null  and productBrand != ''">product_brand,</if>
+            <if test="productSn != null  and productSn != ''">product_sn,</if>
+            <if test="payPrice != null ">pay_price,</if>
+            <if test="productPrice != null ">product_price,</if>
+            <if test="freightPrice != null ">freight_price,</if>
+            <if test="couponPrice != null ">coupon_price,</if>
+            <if test="productQuantity != null ">product_quantity,</if>
+            <if test="productSkuId != null ">product_sku_id,</if>
+            <if test="productSkuCode != null  and productSkuCode != ''">product_sku_code,</if>
+            <if test="productCategoryId != null ">product_category_id,</if>
+            <if test="promotionInfo != null  and promotionInfo != ''">promotion_info,</if>
+            <if test="initPrice != null ">init_price,</if>
+            <if test="giftIntegration != null ">gift_integration,</if>
+            <if test="giftGrowth != null ">gift_growth,</if>
+            <if test="returnStatus != null  and returnStatus != ''">return_status,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null ">#{orderId},</if>
+            <if test="orderSn != null  and orderSn != ''">#{orderSn},</if>
+            <if test="productId != null ">#{productId},</if>
+            <if test="gameSkuId != null ">#{gameSkuId},</if>
+            <if test="productPic != null  and productPic != ''">#{productPic},</if>
+            <if test="productName != null  and productName != ''">#{productName},</if>
+            <if test="productSpData != null  and productSpData != ''">#{productSpData},</if>
+            <if test="productBrand != null  and productBrand != ''">#{productBrand},</if>
+            <if test="productSn != null  and productSn != ''">#{productSn},</if>
+            <if test="payPrice != null ">#{payPrice},</if>
+            <if test="productPrice != null ">#{productPrice},</if>
+            <if test="freightPrice != null ">#{freightPrice},</if>
+            <if test="couponPrice != null ">#{couponPrice},</if>
+            <if test="productQuantity != null ">#{productQuantity},</if>
+            <if test="productSkuId != null ">#{productSkuId},</if>
+            <if test="productSkuCode != null  and productSkuCode != ''">#{productSkuCode},</if>
+            <if test="productCategoryId != null ">#{productCategoryId},</if>
+            <if test="promotionInfo != null  and promotionInfo != ''">#{promotionInfo},</if>
+            <if test="initPrice != null ">#{initPrice},</if>
+            <if test="giftIntegration != null ">#{giftIntegration},</if>
+            <if test="giftGrowth != null ">#{giftGrowth},</if>
+            <if test="returnStatus != null  and returnStatus != ''">#{returnStatus},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOmsOrderItem" parameterType="OmsOrderItem">
+        update oms_order_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null ">order_id = #{orderId},</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn = #{orderSn},</if>
+            <if test="productId != null ">product_id = #{productId},</if>
+            <if test="gameSkuId != null ">game_sku_id = #{gameSkuId},</if>
+            <if test="productPic != null  and productPic != ''">product_pic = #{productPic},</if>
+            <if test="productName != null  and productName != ''">product_name = #{productName},</if>
+            <if test="productSpData != null  and productSpData != ''">product_sp_data = #{productSpData},</if>
+            <if test="productBrand != null  and productBrand != ''">product_brand = #{productBrand},</if>
+            <if test="productSn != null  and productSn != ''">product_sn = #{productSn},</if>
+            <if test="payPrice != null ">pay_price = #{payPrice},</if>
+            <if test="productPrice != null ">product_price = #{productPrice},</if>
+            <if test="freightPrice != null ">freight_price = #{freightPrice},</if>
+            <if test="couponPrice != null ">coupon_price = #{couponPrice},</if>
+            <if test="productQuantity != null ">product_quantity = #{productQuantity},</if>
+            <if test="productSkuId != null ">product_sku_id = #{productSkuId},</if>
+            <if test="productSkuCode != null  and productSkuCode != ''">product_sku_code = #{productSkuCode},</if>
+            <if test="productCategoryId != null ">product_category_id = #{productCategoryId},</if>
+            <if test="promotionInfo != null  and promotionInfo != ''">promotion_info = #{promotionInfo},</if>
+            <if test="initPrice != null ">init_price = #{initPrice},</if>
+            <if test="giftIntegration != null ">gift_integration = #{giftIntegration},</if>
+            <if test="giftGrowth != null ">gift_growth = #{giftGrowth},</if>
+            <if test="returnStatus != null  and returnStatus != ''">return_status = #{returnStatus},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOmsOrderItemById" parameterType="Long">
+        <!-- update oms_order_item set del_flag = '1' where id = #{id} -->
+        delete from oms_order_item where id = #{id}
+    </delete>
+
+    <delete id="deleteOmsOrderItemByIds" parameterType="String">
+        update oms_order_item set del_flag = '1' where id in
+        <!-- delete from oms_order_item where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

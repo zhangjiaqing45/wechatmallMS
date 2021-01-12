@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.accShopCashApply.mapper.AccShopCashApplyMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="AccShopCashApplyResultExt" type="扩展类全包名" extends="AccShopCashApplyResult">
+
+    </resultMap>
+
+    -->
+
+    <update id="applyAudit" >
+        update acc_shop_cash_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <!--<if test="shopId != null ">shop_id = #{shopId},</if>-->
+            <!--<if test="money != null ">money = #{money},</if>-->
+            <if test="status != null  and status != ''">`status` = #{status},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <sql id="selectJoinVo">
+        select ca.id, ca.shop_id, ca.money, ca.`status`,
+               ca.create_by, ca.create_time, ca.update_by, ca.update_time, ca.remark, ca.del_flag,
+               s.`code`, s.company_name, s.account_type, s.account, s.bind_name
+        from acc_shop_cash_apply ca
+        inner join biz_shop_info s on s.id = ca.shop_id
+    </sql>
+
+    <select id="selectJoinList"
+            parameterType="com.fante.project.business.accShopCashApply.domain.AccShopCashApplyDTO"
+            resultType="com.fante.project.business.accShopCashApply.domain.AccShopCashApplyDTO">
+        <include refid="selectJoinVo"/>
+        <where>
+            ca.del_flag = '0'
+            <if test="shopId != null "> and ca.shop_id = #{shopId}</if>
+            <if test="status != null  and status != ''"> and ca.status = #{status}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(ca.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(ca.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+            <if test="code != null and code != '' "> and s.code = #{code}</if>
+            <if test="companyName != null  and companyName != ''"> and s.company_name like concat('%', #{companyName}, '%')</if>
+        </where>
+    </select>
+
+
+</mapper>

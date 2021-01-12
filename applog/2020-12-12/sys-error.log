@@ -1,0 +1,8 @@
+09:56:29.556 [http-nio-8099-exec-9] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+09:56:58.326 [http-nio-8099-exec-26] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+09:57:00.228 [http-nio-8099-exec-24] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+09:58:12.692 [http-nio-8099-exec-27] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+13:13:39.137 [http-nio-8099-exec-15] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+13:14:10.181 [http-nio-8099-exec-27] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+13:14:11.876 [http-nio-8099-exec-28] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常
+13:14:36.981 [http-nio-8099-exec-23] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常

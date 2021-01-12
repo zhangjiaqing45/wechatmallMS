@@ -1,0 +1,12 @@
+
+f
+java:S1128"KRemove this unused import 'com.fante.common.business.enums.SmsCouponConst'.(îºÅ§ıÿÿÿÿ
+h
+java:S1128"RRemove this unused import 'com.fante.project.business.smsCoupon.domain.SmsCoupon'.(œÀ¬û
+u
+java:S1192¡"YDefine a constant instead of duplicating this literal "ç¼ºå°‘ç§¯åˆ†å•†å“æ ‡è¯†" 3 times.(‚ÚÎ©üÿÿÿÿ
+g
+java:S3252j"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(¡í×ıùÿÿÿÿ
+g
+java:S3252|"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(†­Éäøÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(…£öäÿÿÿÿÿ

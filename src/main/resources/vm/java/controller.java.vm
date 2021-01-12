@@ -1,0 +1,178 @@
+package ${packageName}.${businessName}.controller;
+
+import java.util.List;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.fante.framework.aspectj.lang.annotation.Log;
+import com.fante.framework.aspectj.lang.enums.BusinessType;
+import io.swagger.annotations.*;
+import ${packageName}.${businessName}.domain.${ClassName};
+import ${packageName}.${businessName}.service.I${ClassName}Service;
+import com.fante.framework.web.controller.BaseController;
+import com.fante.framework.web.domain.AjaxResult;
+import com.fante.common.utils.poi.ExcelUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+#if($table.crud)
+import com.fante.framework.web.page.TableDataInfo;
+#elseif($table.tree)
+import com.fante.common.utils.StringUtils;
+import com.fante.framework.web.domain.Ztree;
+#end
+
+/**
+ * ${functionName}Controller
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Api(tags = "${ClassName}Controller", description = "${functionName}")
+@Controller
+@RequestMapping("/${moduleName}/${businessName}")
+public class ${ClassName}Controller extends BaseController {
+
+    private static Logger log = LoggerFactory.getLogger(${ClassName}Controller.class);
+
+    private String prefix = "${moduleName}/${businessName}";
+
+    @Autowired
+    private I${ClassName}Service ${className}Service;
+
+    @RequiresPermissions("${permissionPrefix}:view")
+    @GetMapping()
+    public String ${businessName}() {
+        return prefix + "/${businessName}";
+    }
+
+#if($table.crud)
+    @ApiOperation("条件查询${functionName}列表")
+    @RequiresPermissions("${permissionPrefix}:list")
+    @PostMapping("/list")
+    @ResponseBody
+    public TableDataInfo list(${ClassName} ${className}) {
+        startPage();
+        List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
+        return getDataTable(list);
+    }
+#elseif($table.tree)
+    @ApiOperation("查询${functionName}列表（tree）")
+    @RequiresPermissions("${permissionPrefix}:list")
+    @PostMapping("/list")
+    @ResponseBody
+    public List<${ClassName}> list(${ClassName} ${className}) {
+        List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
+        return list;
+    }
+#end
+
+    @ApiOperation("导出${functionName}列表")
+    @RequiresPermissions("${permissionPrefix}:export")
+    @Log(title = "${functionName}", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    @ResponseBody
+    public AjaxResult export(${ClassName} ${className}) {
+        List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
+        ExcelUtil<${ClassName}> util = new ExcelUtil<${ClassName}>(${ClassName}. class);
+        return util.exportExcel(list, "${businessName}");
+    }
+
+#if($table.crud)
+    @ApiOperation("[跳转] 到新增${functionName}页面")
+    @GetMapping("/add")
+    public String add() {
+        return prefix + "/add";
+    }
+#elseif($table.tree)
+    @ApiOperation("[跳转] 到新增${functionName}页面（tree）")
+    @GetMapping(value = {"/add/{${pkColumn.javaField}}", "/add/"})
+    public String add(@PathVariable(value = "${pkColumn.javaField}", required = false)Long ${pkColumn.javaField}, ModelMap mmap) {
+        if (StringUtils.isNotNull(${pkColumn.javaField})) {
+            mmap.put("${className}", ${className}Service.select${ClassName}ById(${pkColumn.javaField}));
+        }
+        return prefix + "/add";
+    }
+#end
+
+    @ApiOperation("新增保存${functionName}")
+    @RequiresPermissions("${permissionPrefix}:add")
+    @Log(title = "${functionName}", businessType = BusinessType.INSERT)
+    @PostMapping("/add")
+    @ResponseBody
+    public AjaxResult addSave(${ClassName} ${className}) {
+        return toAjax(${className}Service.insert${ClassName}(${className}));
+    }
+
+    @ApiOperation("[跳转] 到${functionName}编辑页面")
+    @GetMapping("/edit/{${pkColumn.javaField}}")
+    public String edit(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField}, ModelMap mmap) {
+        ${ClassName} ${className} =${className}Service.select${ClassName}ById(${pkColumn.javaField});
+        mmap.put("${className}", ${className});
+        return prefix + "/edit";
+    }
+
+    @ApiOperation("修改保存${functionName}")
+    @RequiresPermissions("${permissionPrefix}:edit")
+    @Log(title = "${functionName}", businessType = BusinessType.UPDATE)
+    @PostMapping("/edit")
+    @ResponseBody
+    public AjaxResult editSave(${ClassName} ${className}) {
+        return toAjax(${className}Service.update${ClassName}(${className}));
+    }
+
+#if($table.crud)
+    @ApiOperation("批量删除${functionName}")
+    @RequiresPermissions("${permissionPrefix}:remove")
+    @Log(title = "${functionName}", businessType = BusinessType.DELETE)
+    @PostMapping("/remove")
+    @ResponseBody
+    public AjaxResult remove(String ids) {
+        return toAjax(${className}Service.delete${ClassName}ByIds(ids));
+    }
+#elseif($table.tree)
+
+    @ApiOperation("删除${functionName}通过id（tree）")
+    @RequiresPermissions("${permissionPrefix}:remove")
+    @Log(title = "${functionName}", businessType = BusinessType.DELETE)
+    @GetMapping("/remove/{${pkColumn.javaField}}")
+    @ResponseBody
+    public AjaxResult remove(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField}) {
+        return toAjax(${className}Service.delete${ClassName}ById(${pkColumn.javaField}));
+    }
+#end
+#if($table.tree)
+
+            #set($BusinessName=$businessName.substring(0,1).toUpperCase() + ${businessName.substring(1)})
+    @ApiOperation("选择${functionName}树")
+    @GetMapping(value = {"/select${BusinessName}Tree/{${pkColumn.javaField}}", "/select${BusinessName}Tree/"})
+    public String select${BusinessName}Tree(@PathVariable(value = "${pkColumn.javaField}", required = false)Long ${pkColumn.javaField}, ModelMap mmap) {
+        if (StringUtils.isNotNull(${pkColumn.javaField})) {
+            mmap.put("${className}", ${className}Service.select${ClassName}ById(${pkColumn.javaField}));
+        }
+        return prefix + "/tree";
+    }
+
+    @ApiOperation("加载${functionName}树列表")
+    @GetMapping("/treeData")
+    @ResponseBody
+    public List<Ztree> treeData() {
+        List<Ztree> ztrees = ${className}Service.select${ClassName}Tree();
+        return ztrees;
+    }
+#end
+
+    @ApiOperation("${functionName}唯一校验")
+    @PostMapping("/checkUnique")
+    @ResponseBody
+    public String checkUnique(${ClassName} ${className}) {
+        return ${className}Service.check${ClassName}Unique(${className});
+    }
+
+}

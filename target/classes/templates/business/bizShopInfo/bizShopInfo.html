@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('店铺信息列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                           <!-- <li>
+                                <p>店铺编号：</p>
+                                <input type="text" name="code"/>
+                            </li>-->
+                            <li>
+                                <p>主营类目：</p>
+                                <input type="hidden" name="categoryId"/>
+                                <input type="text" name="category" placeholder="请选择主营类目" readonly onclick="selectMainCategory();" >
+                            </li>
+                            <li>
+                                <p>状态：</p>
+                                <select name="status" th:with="type=${@dict.getType('biz_status')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>店铺名称：</p>
+                                <input type="text" name="companyName"/>
+                            </li>
+                            <li>
+                                <p>法人：</p>
+                                <input type="text" name="legalPerson"/>
+                            </li>
+                            <li>
+                                <p>联系电话：</p>
+                                <input type="text" name="tel"/>
+                            </li>
+                            <!--<li>-->
+                                <!--<p>客服电话：</p>-->
+                                <!--<input type="text" name="serviceTel"/>-->
+                            <!--</li>-->
+                            <li>
+                                <p>账户类型：</p>
+                                <select name="accountType" th:with="type=${@dict.getType('biz_account_type')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>是否推荐：</p>
+                                <select name="recommend" >
+                                    <option value="">所有</option>
+                                    <option value="0">不推荐</option>
+                                    <option value="1">推荐</option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>是否热门：</p>
+                                <select name="ishot" >
+                                    <option value="">所有</option>
+                                    <option value="0">非热门</option>
+                                    <option value="1">热门</option>
+                                </select>
+                            </li>
+                            <!--<li>-->
+                                <!--<p>绑定实名：</p>-->
+                                <!--<input type="text" name="bindName"/>-->
+                            <!--</li>-->
+                            <li>
+                                <p>账户账号：</p>
+                                <input type="text" name="account"/>
+                            </li>
+                            <li class="select-dist">
+                                <p>地区：</p>
+                                <select name="province"></select>
+                                <select name="city"></select>
+                                <select name="district"></select>
+                            </li>
+                            <li class="select-time">
+                                <p>创建时间：</p>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCreateTime]" readonly/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCreateTime]" readonly/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="shopInfoReset();"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.addFull()" shiro:hasPermission="business:bizShopInfo:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <!--<a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="business:bizShopInfo:edit">-->
+                    <!--<i class="fa fa-edit"></i> 修改-->
+                <!--</a>-->
+                <!--<a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="business:bizShopInfo:remove">-->
+                    <!--<i class="fa fa-remove"></i> 删除-->
+                <!--</a>-->
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:bizShopInfo:export">-->
+                    <!--<i class="fa fa-download"></i> 导出-->
+                 <!--</a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: distpicker-js"/>
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('business:bizShopInfo:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('business:bizShopInfo:remove')}]];
+        var statusDatas = [[${@dict.getType('biz_status')}]];
+        var accountTypeDatas = [[${@dict.getType('biz_account_type')}]];
+        var prefix = ctx + "business/bizShopInfo";
+        var prefixCategory = ctx + "business/bizMainCategory";
+
+        $(function() {
+            $(".select-dist").distpicker({
+                province: '- 省 -',
+                city: '- 市 -',
+                district: '- 区 -'
+            });
+
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "店铺信息",
+                sortName: "createTime",
+                sortOrder: "desc",
+                columns: [
+                //     {
+                //     checkbox: true
+                // },
+                {
+                    field : 'id', 
+                    title : '主键',
+                    visible: false
+                },
+                {
+                    field : 'pic',
+                    title : '店铺主图',
+                    formatter : function(value, row, index) {
+                        return $.table.imageView(respath+value);
+                    }
+                },
+                {
+                    field : 'code',
+                    title : '店铺编号',
+                    visible:false,
+                },
+                {
+                    field : 'companyName',
+                    title : '店铺名称'
+                },
+                {
+                    field : 'category',
+                    title : '主营类目'
+                },
+                {
+                    field : 'status', 
+                    title : '状态',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(statusDatas, value);
+                    }
+                },
+                // {
+                //     field : 'audit',
+                //     title : '审核状态'
+                // },
+                {
+                    field : 'province',
+                    title : '地区',
+                    formatter: function(value, row, index) {
+                        var diqu = "";
+                        if (row.province) {
+                            diqu += row.province;
+                        }
+                        if (row.city) {
+                            diqu += "/" +  row.city;
+                        }
+                        if (row.district) {
+                            diqu += "/" +  row.district;
+                        }
+                        return diqu;
+                    }
+                },
+                // {
+                //     field : 'address',
+                //     title : '详细地址',
+                //     formatter: function (value, row, index) {
+                //         return $.table.tooltip(value, 10, "open");
+                //     }
+                // },
+                {
+                    field : 'legalPerson', 
+                    title : '法人'
+                },
+                {
+                    field : 'tel', 
+                    title : '联系电话'
+                },
+                // {
+                //     field : 'serviceTel',
+                //     title : '客服电话'
+                // },
+                // {
+                //     field : 'license',
+                //     title : '营业执照'
+                // },
+                // {
+                //     field : 'sfzFront',
+                //     title : '法人身份证正面'
+                // },
+                // {
+                //     field : 'sfzBack',
+                //     title : '法人身份证反面'
+                // },
+                // {
+                //     field : 'submitInfo',
+                //     title : '主营类目需要的提交资料'
+                // },
+                {
+                    field : 'accountType', 
+                    title : '结算账户类型',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(accountTypeDatas, value);
+                    }
+                },
+                {
+                    field : 'bindName', 
+                    title : '账户绑定实名'
+                },
+                {
+                    field : 'account', 
+                    title : '结算账户账号'
+                },
+                {
+                    field : 'cash',
+                    title : '现金账户',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return $.common.sprintf('<a href="javascript:void(0)" onclick="cashDetail(\'' + row.id + '\', \''+row.companyName+'\')"><i class="fa fa-jpy"></i><b> %s</b></a>', value);
+                    }
+                },
+                {
+                    field : 'brokerage',
+                    title : '佣金账户',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return $.common.sprintf('<a href="javascript:void(0)" onclick="brokerageDetail(\'' + row.id + '\', \''+row.companyName+'\')"><i class="fa fa-jpy"></i><b> %s</b></a>', value);
+                    }
+                },
+                {
+                    field : 'recommend',
+                    title : '是否推荐',
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                {
+                    field : 'ishot',
+                    title : '是否热门',
+                    formatter: function (value, row, index) {
+                        return ishotstatusTools(row);
+                    }
+                },
+                {
+                    field : 'paymentDisplay',
+                    title : '是否支付',
+                    formatter: function (value, row, index) {
+                        return isDisplaystatusTools(row);
+                    }
+                },
+                {
+                    field : 'createTime',
+                    title : '创建时间',
+                    visible: false
+                },
+                {
+                    field : 'tag',
+                    title : '标签',
+                    visible:false,
+                    formatter: function(value, row, index) {
+                        return  $.table.tooltip(value,10,'open')
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editFull(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        /* 支付状态显示 */
+        function isDisplaystatusTools(row) {
+            if (row.paymentDisplay === '0') {
+                return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="displayenable(\'' + row.id + '\')"></i> ';
+            } else {
+                return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="displaydisable(\'' + row.id + '\')"></i> ';
+            }
+        }
+
+        /* 取消支付 */
+        function displaydisable(shopId) {
+            $.operate.post(prefix + "/paymentDisplay", {"id": shopId, "paymentDisplay": '0'});
+        }
+
+        /* 设为支付 */
+        function displayenable(shopId) {
+            $.operate.post(prefix + "/paymentDisplay", {"id": shopId, "paymentDisplay": '1'});
+        }
+
+
+        /* 热门状态显示 */
+        function ishotstatusTools(row) {
+            if (row.ishot === '0') {
+                return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="ishotenable(\'' + row.id + '\')"></i> ';
+            } else {
+                return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="ishotdisable(\'' + row.id + '\')"></i> ';
+            }
+        }
+
+        /* 取消热门 */
+        function ishotdisable(shopId) {
+            $.operate.post(prefix + "/ishot", {"id": shopId, "ishot": '0'});
+        }
+
+        /* 设为热门 */
+        function ishotenable(shopId) {
+            $.operate.post(prefix + "/ishot", {"id": shopId, "ishot": '1'});
+        }
+
+        /* 推荐状态显示 */
+        function statusTools(row) {
+            if (row.recommend === '0') {
+                return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.id + '\')"></i> ';
+            } else {
+                return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.id + '\')"></i> ';
+            }
+        }
+
+        /* 取消推荐 */
+        function disable(shopId) {
+            $.operate.post(prefix + "/recommend", {"id": shopId, "recommend": '0'});
+        }
+
+        /* 设为推荐 */
+        function enable(shopId) {
+            $.operate.post(prefix + "/recommend", {"id": shopId, "recommend": '1'});
+        }
+
+        /**
+         * 重置
+         */
+        function shopInfoReset() {
+            $("input[name='categoryId']").val("");
+            $("input[name='category']").val("");
+            $.form.reset();
+        }
+
+        /**
+         * 选择主营类目
+         */
+        function selectMainCategory(){
+            var width = $(window).width() > 800 ? 800 : "",
+                height = $(window).height() > 500 ? 500 : "";
+            $.modal.open("选择主营类目", prefixCategory + "/select", width, height);
+        }
+
+        /**
+         * 选择主营类目回调
+         * @param mainCategory 主营类目数据
+         */
+        function mainCategorySelectCallback(mainCategory) {
+            if (mainCategory && mainCategory.id) {
+                $("input[name='categoryId']").val(mainCategory.id);
+                $("input[name='category']").val(mainCategory.category);
+            } else {
+                $.modal.msgWarning("未选择主营类目");
+            }
+        }
+
+        function cashDetail(id, name) {
+            $.modal.confirm("查看店铺[ " + name + " ]<b> 现金账户 </b>明细", function () {
+                var options = {
+                    title: "店铺[ " + name + " ]<b> 现金账户 </b>明细",
+                    url: prefix + "/account/base/" + id,
+                    btn: false
+                };
+                $.modal.openOptions(options);
+            });
+        }
+
+        function brokerageDetail(id, name) {
+            $.modal.confirm("查看店铺[ " + name + " ]<b> 佣金账户 </b>明细", function () {
+                var options = {
+                    title: "店铺[ " + name + " ]<b> 佣金账户 </b>明细",
+                    url: prefix + "/account/commission/" + id,
+                    btn: false
+                };
+                $.modal.openOptions(options);
+            });
+        }
+
+    </script>
+</body>
+</html>

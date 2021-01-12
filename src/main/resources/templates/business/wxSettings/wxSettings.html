@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('微信公众号设置')" />
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <span class="label label-primary pull-right">设置</span>
+                    <h5>公众号相关</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m" id="form-wxSettings-add">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">关注提示：</label>
+                            <div class="col-sm-6">
+                                <input id="prompt" name="prompt" class="form-control edit-input" type="text" readonly required>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 用户关注页的标题 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">二维码：</label>
+                            <div class="col-sm-6">
+                                <input id="qrcode" name="qrcode" class="form-control" type="hidden" required>
+                                <div id="qrcodeShow" class="fileinput hidden">
+                                    <div class="thumbnail" style="width: 100px; height: 75px;">
+                                        <img style="max-height: 100%;" src="" onclick="$.modal.preview($(this).prop('src'));" />
+                                    </div>
+                                </div>
+                                <button id="qrcodeBtn" class="btn btn-success hidden" type="button">
+                                    <i class="fa fa-upload"></i>&nbsp;&nbsp; <span class="bold">上传二维码</span>
+                                </button>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 用户关注页展示(微信公众号的二维码，可在微信公众平台下载) </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">客服电话：</label>
+                            <div class="col-sm-6">
+                                <input id="serviceTel" name="serviceTel" class="form-control edit-input" type="text" readonly required>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 可填写座机号：区号 - 号码 | 手机号：长度11位 | 400电话：400-xxx-xxxx </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">分享图片：</label>
+                            <div class="col-sm-6">
+                                <input id="shareImg" name="shareImg" class="form-control" type="hidden" required>
+                                <div id="shareImgShow" class="fileinput hidden">
+                                    <div class="thumbnail" style="width: 100px; height: 75px;">
+                                        <img style="max-height: 100%;" src="" onclick="$.modal.preview($(this).prop('src'));" />
+                                    </div>
+                                </div>
+                                <button id="shareImgBtn" class="btn btn-success hidden" type="button">
+                                    <i class="fa fa-upload"></i>&nbsp;&nbsp; <span class="bold">上传分享图片</span>
+                                </button>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 公众号分享显示的图标 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">分享标题：</label>
+                            <div class="col-sm-6">
+                                <input id="shareTitle" name="shareTitle" class="form-control edit-input" type="text" readonly required>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 公众号分享的标题 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">分享描述：</label>
+                            <div class="col-sm-6">
+                                <input id="shareDesc" name="shareDesc" class="form-control edit-input" type="text" readonly required>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 公众号分享的描述内容 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6 col-sm-offset-2" >
+                                <button type="button" id="editBtn" class="btn btn-success" onclick="editSetting();"><i class="fa fa-paste"></i> 编辑</button>
+                                <button type="button" id="cancelBtn" class="btn btn-warning hidden" onclick="unEdit();"><i class="fa fa-backward"></i> 取消</button>
+                                <button type="button" id="saveBtn" data-loading-text="Loading..." class="btn btn-primary hidden" onclick="saveSetting();"><i class="fa fa-check"></i> 保存</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: layui-all-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "business/wxSettings";
+    var wxSettings = [[${wxSettings}]];
+
+    var REG_TEL = /^(0\d{2,3}-)?\d{7,8}$/g;
+    var REG_PHONE = /^1[3|4|5|6|7|8|9][0-9]\d{8}$/;
+    var REG_400_TEL = /^(400)-(\d{3})-(\d{4}$)/;
+
+    $(function () {
+        if (wxSettings) {
+            for (var key in wxSettings) {
+                $("#" + key).val(wxSettings[key]);
+            }
+            if($("#qrcode").val()) {
+                $("#qrcodeShow .thumbnail img").prop("src", respath + $("#qrcode").val());
+                $("#qrcodeShow").removeClass("hidden");
+            }
+            if($("#shareImg").val()) {
+                $("#shareImgShow .thumbnail img").prop("src", respath + $("#shareImg").val());
+                $("#shareImgShow").removeClass("hidden");
+            }
+        }
+    });
+
+    /**
+     * 开启编辑
+     */
+    function editSetting() {
+        $("#qrcodeBtn").removeClass("hidden");
+        $("#shareImgBtn").removeClass("hidden");
+        $(".edit-input").removeAttr("readonly");
+        $("#saveBtn").removeClass("hidden").removeAttr("disabled");
+        $("#cancelBtn").removeClass("hidden").removeAttr("disabled");
+        $("#editBtn").addClass("hidden").attr("disabled", "disabled");
+    }
+
+    /**
+     * 取消编辑
+     */
+    function unEdit(){
+        $("#qrcodeBtn").addClass("hidden");
+        $("#shareImgBtn").addClass("hidden");
+        $(".edit-input").attr("readonly", "readonly");
+        $("#saveBtn").addClass("hidden").attr("disabled", "disabled");
+        $("#cancelBtn").addClass("hidden").attr("disabled", "disabled");
+        $("#editBtn").removeClass("hidden").removeAttr("disabled");
+        window.location.reload();
+    }
+
+    /**
+     * 保存设置
+     */
+    function saveSetting() {
+        if ($.validate.form()) {
+            var serviceTel = $("#serviceTel").val();console.log(serviceTel);
+            if (!REG_TEL.test(serviceTel) && !REG_PHONE.test(serviceTel) && !REG_400_TEL.test(serviceTel)) {
+                $.modal.msgWarning("请填写正确的座机号、手机号或400电话");
+                return false;
+            }
+
+            $("#cancelBtn").addClass("hidden").attr("disabled", "disabled");
+            $("#saveBtn").button('loading');
+            $.operate.post(prefix + "/add", $('#form-wxSettings-add').serialize(), function(result){
+                if (result.code === web_status.SUCCESS) {
+                    $.modal.alert("设置保存成功", modal_status.SUCCESS, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    $.modal.alertWarning(result.msg);
+                    $("#cancelBtn").removeClass("hidden").removeAttr("disabled");
+                    $("#saveBtn").button('reset');
+                }
+            });
+        }
+    }
+
+    $("#form-wxSettings-add").validate({
+        ignore: [],
+        rules: {
+            prompt: {
+                rangelength: [2, 20],
+            },
+            shareTitle: {
+                rangelength: [2, 20],
+            },
+            shareDesc: {
+                rangelength: [2, 30],
+            },
+        },
+        messages: {
+            prompt: {
+                required : "请填写关注提示",
+                rangelength: $.validator.format("关注提示字数在 {0} 到 {1} 字之间"),
+            },
+            qrcode: {
+                required : "请上传二维码",
+            },
+            serviceTel: {
+                required : "请填写客服电话",
+            },
+            shareImg: {
+                required : "请分享图片",
+            },
+            shareTitle: {
+                required : "请填写分享标题",
+                rangelength: $.validator.format("分享标题字数在 {0} 到 {1} 字之间"),
+            },
+            shareDesc: {
+                required : "请填写分享描述",
+                rangelength: $.validator.format("分享描述字数在 {0} 到 {1} 字之间"),
+            },
+        },
+        focusCleanup: true
+    });
+
+    $.operate.layuiUpload("#qrcodeBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function(r) {
+        if ($("#qrcodeShow").hasClass("hidden")) {
+            $("#qrcodeShow").removeClass("hidden");
+        }
+        $("#qrcodeShow .thumbnail img").prop("src", respath + r.fileName);
+        $("input[name='qrcode']").val(r.fileName);
+    });
+
+    $.operate.layuiUpload("#shareImgBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function(r) {
+        if ($("#shareImgShow").hasClass("hidden")) {
+            $("#shareImgShow").removeClass("hidden");
+        }
+        $("#shareImgShow .thumbnail img").prop("src", respath + r.fileName);
+        $("input[name='shareImg']").val(r.fileName);
+    });
+</script>
+</body>
+</html>

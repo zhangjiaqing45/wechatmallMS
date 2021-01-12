@@ -1,0 +1,12 @@
+
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Цьяиьяяяя
+<
+java:S1068%"'Remove this unused "log" private field.(ВРЮ0
+J
+java:S3740W"/Provide the parametrized type for this generic.(»ЁЧбяяяяя
+T
+java:S3416%"?Update this logger to use "CmsIntegralDisplayController.class".(ВРЮ0
+J
+java:S3740:"/Provide the parametrized type for this generic.(»ЁЧбяяяяя
+I
+java:S1874 "3Remove this use of "description"; it is deprecated.(АЂйЅ

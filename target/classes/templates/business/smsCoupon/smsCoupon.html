@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('优惠券列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li th:if="${isAdmin}">
+                            <p>店铺：</p>
+                            <input type="hidden" name="shopId"/>
+                            <input type="text" name="shop" readonly placeholder="请选择店铺" onclick="selectShop();" />
+                        </li>
+                        <li>
+                            <p>优惠券码：</p>
+                            <input type="text" name="code"/>
+                        </li>
+                        <li>
+                            <p>名称：</p>
+                            <input type="text" name="name"/>
+                        </li>
+                        <li>
+                            <p>状态：</p>
+                            <select name="status" th:with="type=${@custom.couponStatus()}">
+                                <option value="">请选择</option>
+                                <option th:each="type,key : ${type}" th:text="${key.current.value}"
+                                        th:value="${key.current.key}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>类型：</p>
+                            <select name="couponType" th:with="type=${@custom.couponType()}">
+                                <option value="">请选择</option>
+                                <option th:each="type,key : ${type}" th:text="${key.current.value}"
+                                        th:value="${key.current.key}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>使用对象：</p>
+                            <select name="memberLevel" th:with="type=${@custom.memberLevel()}">
+                                <option value="">请选择</option>
+                                <option th:each="type,key : ${type}" th:text="${key.current.value}"
+                                        th:value="${key.current.key}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>使用范围：</p>
+                            <select name="useType" th:with="type=${@custom.couponUseType()}">
+                                <option value="">请选择</option>
+                                <option th:each="type,key : ${type}" th:text="${key.current.value}"
+                                        th:value="${key.current.key}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="couponReset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.addFull()" shiro:hasPermission="business:smsCoupon:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <!--                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="business:smsCoupon:edit">-->
+            <!--                    <i class="fa fa-edit"></i> 修改-->
+            <!--                </a>-->
+            <!--                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="business:smsCoupon:remove">-->
+            <!--                    <i class="fa fa-remove"></i> 删除-->
+            <!--                </a>-->
+            <!--                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:smsCoupon:export">-->
+            <!--                    <i class="fa fa-download"></i> 导出-->
+            <!--                 </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:smsCoupon:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:smsCoupon:remove')}]];
+    var historyFlag = [[${@permission.hasPermi('business:smsCoupon:history')}]];
+    var putawayFlag = [[${@permission.hasPermi('business:smsCoupon:putaway')}]];
+    var soldoutFlag = [[${@permission.hasPermi('business:smsCoupon:soldout')}]];
+
+
+    var prefix = ctx + "business/smsCoupon";
+    var prefixShop = ctx + "business/bizShopInfo";
+    var couponTypeMap = [[${@custom.couponTypePlus()}]];
+    var couponUseTypeMap = [[${@custom.couponUseTypeAll()}]];
+    var couponStatusMap = [[${@custom.couponStatusPlus()}]];
+    var memberLevelPlus = [[${@custom.memberLevelPlus()}]];
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "优惠券",
+            sortName: "createTime",
+            sortOrder: "desc",
+            columns: [
+                //     {
+                //     checkbox: true
+                // },
+                {
+                    field: 'id',
+                    title: '编号',
+                    visible: false
+                },
+                {
+                    field: 'shopName',
+                    title: '店铺名称',
+                },
+                {
+                    field: 'code',
+                    title: '优惠券码',
+                    visible: false
+                },
+                {
+                    field: 'name',
+                    title: '优惠券名称'
+                },
+                {
+                    field: 'memberLevel',
+                    title: '使用对象',
+                    formatter: function (value,row,index) {
+                        if (memberLevelPlus[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", memberLevelPlus[value].style, memberLevelPlus[value].desc);
+                        }
+                    }
+                },
+                {
+                    field: 'status',
+                    title: '优惠券状态',
+                    formatter: function (value,row,index) {
+                        if (couponStatusMap[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", couponStatusMap[value].style, couponStatusMap[value].desc);
+                        }
+                    }
+                },
+                {
+                    field: 'couponType',
+                    title: '优惠券类型',
+                    formatter: function (value,row,index) {
+                        if (couponTypeMap[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", couponTypeMap[value].style, couponTypeMap[value].desc);
+                        }
+                    }
+                },
+                {
+                    field: 'useType',
+                    title: '使用范围',
+                    formatter: function (value,row,index) {
+                        if (couponUseTypeMap[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", couponUseTypeMap[value].style, couponUseTypeMap[value].desc);
+                        }
+                    }
+                },
+                {
+                    field: 'minPoint',
+                    title: '使用门槛',
+                    formatter: function (value,row,index) {
+                        if (value && value > 0) {
+                            return $.common.sprintf("满 <b><i class=\"fa fa-jpy\"> %s</i></b> 可用", value);
+                        } else {
+                            return "无使用门槛"
+                        }
+                    }
+                },
+                {
+                    field: 'amount',
+                    title: '满减金额/折扣',
+                    formatter: function (value, row, index) {
+                        if(row.couponType==='1'){
+                            //折扣
+                            return $.common.sprintf("<span class='badge badge-warning-light'>%s 折</span>", row.discount);
+                        }
+                        //满减
+                        return $.common.sprintf("<span class='badge badge-success'>%s 元</i></span>", value);
+                    }
+                },
+                {
+                    field: 'count',
+                    title: '总量/剩余',
+                    formatter:function (value,row) {
+                        return value+" / "+(value-row.receiveCount)
+                    }
+                },
+                {
+                    field: 'receiveCount',
+                    title: '领取量'
+                },
+                {
+                    field: 'useCount',
+                    title: '使用量'
+
+                },
+                {
+                    field: 'startTime',
+                    title: '有效时间',
+                    formatter: function (value,row,index) {
+                        return $.common.sprintf("%s 至 %s", value, row.endTime);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        //alert(row.btns+"...."+row.btns.length);
+                        if (row.btns && row.btns.length > 0) {
+                            var btns = row.btns;
+                            for (var i in btns) {
+                                actions.push(buildBtn(btns[i], row.id, row.code));
+                            }
+                        }
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function couponReset() {
+        $("input[name='shopId']").val("");
+        $.form.reset();
+    }
+
+    /**
+     * 操作按钮
+     */
+    var OPT_BTNS = {
+        "btn-eidt": '<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editFull(\'{id}\')"><i class="fa fa-edit"></i>编辑</a> ',
+        "btn-putaway": '<a class="btn btn-info btn-xs ' + putawayFlag + '" href="javascript:void(0)" onclick="putaway(\'{id}\', \'{code}\')"><i class="fa fa-edit"></i>上架</a> ',
+        "btn-soldout": '<a class="btn btn-warning btn-xs ' + soldoutFlag + '" href="javascript:void(0)" onclick="soldout(\'{id}\', \'{code}\')"><i class="fa fa-edit"></i>下架</a> ',
+        "btn-history": '<a class="btn btn-primary btn-xs ' + historyFlag + '" href="javascript:void(0)" onclick="history(\'{id}\', \'{code}\')"><i class="fa fa-edit"></i>查看</a> ',
+        "btn-delete": '<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'{id}\')"><i class="fa fa-remove"></i>删除</a>',
+        "btn-gift": '<a class="btn btn-success btn-xs '  + removeFlag + '" shiro:hasPermission="business:smsCoupon:add" href="javascript:void(0)" onclick="batchGift(\'{id}\')"><i class="fa fa-gift"></i>发券</a>'
+    }
+
+    /**
+     * 构建按钮
+     */
+    function buildBtn(sign, id, code) {
+        return OPT_BTNS[sign].replace(/{id}/g, id).replace(/{code}/, code);
+    }
+
+    /**
+     * 优惠券上架
+     */
+    function putaway(couponId, couponCode) {
+        $.modal.confirm("确认上架优惠券：" + couponCode, function(){
+            $.operate.post(prefix + "/putaway", {"id": couponId});
+        });
+    }
+
+    /**
+     * 优惠券下架
+     */
+    function soldout(couponId, couponCode) {
+        $.modal.confirm("确认下架优惠券：" + couponCode, function(){
+            $.operate.post(prefix + "/soldout", {"id": couponId});
+        });
+    }
+    /**
+     * 批量发券
+     */
+    function batchGift(couponId) {
+        $.modal.open("批量发券", prefix + "/giveCoupon/"+couponId);
+    }
+     /**
+      * 批量发放优惠券
+      */
+    function batchGiveCouponCallback(mids,couponId) {
+        $.operate.post(prefix+"/beachGiveCoupon",{memberIds:mids,couponId:couponId},function (res) {
+            if(res.code===web_status.SUCCESS){
+                $.modal.msgSuccess(res.msg)
+            }else{
+                $.modal.alertWarning(res.msg)
+            }
+            $.table.search();
+        })
+    }
+
+    /**
+     * 领取历史
+     */
+    function history(couponId, couponCode) {
+        var url = prefix + "/history/" + couponId;
+        var options = {
+            title: "优惠券<b> ["+couponCode+"] </b>详情",
+            url: url,
+            width: $(window).width(),
+            height: $(window).height(),
+            btn: false
+        };
+        $.modal.openOptions(options);
+    }
+
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='shopId']").val(shop.id);
+            $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+
+
+</script>
+</body>
+</html>

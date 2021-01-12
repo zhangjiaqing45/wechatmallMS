@@ -1,0 +1,67 @@
+
+W	java:S125é"<This block of commented-out lines of code should be removed.(Õ¼ä…øÿÿÿÿ
+W	java:S125"<This block of commented-out lines of code should be removed.(®­Ä™ÿÿÿÿÿ
+B
+java:S1481¡"&Remove this unused "i" local variable.(£˜ÜÆüÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ÏÏ‘Êıÿÿÿÿ
+{
+java:S1128"`Remove this unused import 'com.fante.project.business.smsCouponHistory.domain.SmsCouponHistory'.(âå§æøÿÿÿÿ
+R	java:S125¶"<This block of commented-out lines of code should be removed.(›‡ŠŞ
+]
+java:S2259•"AA "NullPointerException" could be thrown; "rsp" is nullable here.(©ßàÉûÿÿÿÿ
+I
+java:S1128/".Remove this unused import 'java.util.HashMap'.(™˜”€ùÿÿÿÿ
+W	java:S125˜"<This block of commented-out lines of code should be removed.(ü†ÀÔÿÿÿÿÿ
+w
+java:S1192b"\Define a constant instead of duplicating this literal "æš‚æœªå¯ç”¨ä¼˜æƒ åˆ¸åŠŸèƒ½" 5 times.(–¬ÜŞøÿÿÿÿ
+z
+java:S2629Ÿ"\Invoke method(s) only conditionally. Use the built-in formatting to construct this argument.(ã„Öß8¿–‚å.
+t
+java:S1192Œ"]Define a constant instead of duplicating this literal "ç™»å½•ç”¨æˆ·éå¹³å°ç”¨æˆ·" 12 times.(‘óï†
+\
+java:S1155 ">Use isEmpty() to check whether the collection is empty or not.(Éõ§ß8¿–‚å.
+`
+java:S1128""ERemove this unused import 'com.sun.javafx.collections.MappingChange'.(¹Ø´¯şÿÿÿÿ
+I
+java:S1874;"3Remove this use of "description"; it is deprecated.(£•¼ø
+B
+java:S1481¢"&Remove this unused "j" local variable.(å½„Öøÿÿÿÿ
+E
+java:S1068L"0Remove this unused "urlforidcard" private field.(¡‰â
+g	java:S117“"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¶ùÔ˜
+_
+java:S3457Ÿ"AFormat specifiers should be used instead of string concatenation.(ã„Öß8¿–‚å.
+Q
+java:S1854¡"5Remove this useless assignment to local variable "i".(£˜ÜÆüÿÿÿÿ
+P
+java:S1191""5Use classes from the Java API instead of Sun classes.(¹Ø´¯şÿÿÿÿ
+a
+java:S1192„"JDefine a constant instead of duplicating this literal "smsCoupon" 3 times.(òˆ¥º
+d
+java:S1128	"NRemove this unused import 'com.fante.framework.aspectj.lang.annotation.Excel'.(³›¸
+O
+java:S1128 ":Remove this unused import 'com.google.common.base.Joiner'.(ö¢ËX
+K
+java:S1128"6Remove this unused import 'com.alibaba.fastjson.JSON'.(Ö¢å$
+E
+java:S11281"*Remove this unused import 'java.util.Map'.(¼è½Òşÿÿÿÿ
+W
+java:S1128!"<Remove this unused import 'com.google.common.collect.Lists'.(ˆäóöøÿÿÿÿ
+6
+java:S1170L"!Make this final field static too.(¡‰â
+G
+java:S2629•"$Invoke method(s) only conditionally.(©ßàÉûÿÿÿÿ8¿–‚å.
+Q
+java:S1854¢"5Remove this useless assignment to local variable "j".(å½„Öøÿÿÿÿ
+m
+java:S1192Ä"VDefine a constant instead of duplicating this literal "ç¼ºå°‘ä¼˜æƒ åˆ¸æ ‡è¯†" 6 times.(ïâÌÌ
+p
+java:S2293ƒ"YReplace the type specification in this constructor call with the diamond operator ("<>").(å…—ç
+W	java:S125¾"<This block of commented-out lines of code should be removed.(Õ¼ä…øÿÿÿÿ
+6
+java:S1170G"!Make this final field static too.(Ï­“
+R	java:S125˜"<This block of commented-out lines of code should be removed.(ÿ‰„°
+u
+java:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(†˜’úÿÿÿÿ
+U
+java:S1128"?Remove this unused import 'com.alibaba.fastjson.TypeReference'.(ÿÖóò

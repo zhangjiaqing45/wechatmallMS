@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsGroupGameSku.mapper.SmsGroupGameSkuMapper">
+    <!--批量插入团购商品sku信息-->
+    <insert id="batchInsertGroupGameSku" parameterType="com.fante.project.business.smsGroupGameSku.domain.SmsGroupGameSku">
+        INSERT INTO sms_group_game_sku
+        (
+        group_game_id,
+        product_id,
+        sku_code,
+        sku_id,
+        sku_sp_data,
+        sku_pic,
+        group_price,
+        group_stock,
+        create_by,
+        create_time,
+        remark
+        ) VALUES
+        <foreach collection="skus" separator="," item="item" index="index">
+            (
+            #{item.groupGameId},
+            #{item.productId},
+            #{item.skuCode},
+            #{item.skuId},
+            #{item.skuSpData},
+            #{item.skuPic},
+            #{item.groupPrice},
+            #{item.groupStock},
+            #{item.createBy},
+            #{item.createTime},
+            #{item.remark}
+            )
+        </foreach>
+    </insert>
+    <!--批量更新团购商品sku信息-->
+    <update id="batchUpdateGameSku" parameterType="com.fante.project.business.smsGroupGameSku.domain.SmsGroupGameSku">
+        UPDATE sms_group_game_sku
+        SET
+        update_by = CASE id
+        <foreach collection="skus" item="item">
+            WHEN #{item.id} THEN #{item.updateBy}
+        </foreach>
+        END,
+        update_time = CASE id
+        <foreach collection="skus" item="item">
+            WHEN #{item.id} THEN #{item.updateTime}
+        </foreach>
+        END,
+        group_price = CASE id
+        <foreach collection="skus" item="item">
+            WHEN #{item.id} THEN #{item.groupPrice}
+        </foreach>
+        END,
+        group_stock = CASE id
+        <foreach collection="skus" item="item">
+            WHEN #{item.id} THEN #{item.groupStock}
+        </foreach>
+        END
+        WHERE
+        id IN
+        <foreach collection="skus" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+        AND `del_flag` = '0'
+    </update>
+    <delete id="realDelSmsGroupGameSkuByGGid">
+        delete from sms_group_game_sku where group_game_id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteSmsGroupGameSkuByGGid">
+        update sms_group_game_sku set del_flag = '1' where group_game_id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="getCartSkuDtoBySkuId" resultType="com.fante.project.api.omsOrderProcess.domain.CartSkuDto">
+        SELECT
+            sku.id,
+            sku.product_id,
+            sku.shop_id,
+            sku.sku_code,
+            sku.price,
+            gsku.group_price as promotion_price,
+            gsku.group_stock as stock,
+            gsku.id as game_sku_id,
+            sku.pic,
+            sku.sale,
+            sku.lock_stock,
+            sku.sp_data,
+            sku.STATUS,
+            sku.create_by,
+            sku.create_time,
+            sku.update_by,
+            sku.update_time,
+            sku.remark,
+            g.product_name
+        FROM
+            sms_group_game_sku gsku
+            LEFT JOIN pms_sku_stock sku ON gsku.sku_id = sku.id
+            LEFT JOIN sms_group_game g ON g.id = gsku.group_game_id
+        WHERE
+            g.end_time > NOW()
+            AND g.STATUS = '1'
+            AND gsku.del_flag = '0'
+            AND sku.del_flag = '0'
+            AND sku.id = #{productSkuId}
+    </select>
+    <select id="validateStock" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            sms_group_game_sku sggs
+            LEFT JOIN sms_group_game sgg ON sggs.group_game_id = sgg.id
+        WHERE
+            sggs.id = #{id}
+            AND sggs.group_stock &gt;=#{quantity}
+            AND sgg.end_time &gt;= now()
+            AND sgg.STATUS = '1'
+            AND sggs.del_flag = '0'
+            AND sgg.del_flag = '0'
+    </select>
+    <!--扣减库存 -->
+    <update id="subStockOfgroupSuccess">
+        update
+            sms_group_game_sku
+        set
+            group_stock = CASE id
+            <foreach collection="records" item="item">
+                WHEN #{item.groupGameSkuId} THEN group_stock-#{item.quantity}
+            </foreach>
+            END
+        where id in
+        <foreach item="item" collection="records" open="(" separator="," close=")">
+            #{item.groupGameSkuId}
+        </foreach>
+    </update>
+    <!--
+         * 1.团购中所有sku扣减库存
+         * 2.团购记录中:团购状态改为成功
+         * 3.更改团中的所有成员的订单为待发货
+         * 4.团购活动的成团数量 + 1
+     -->
+    <select id="notifyGroupSuccess">
+        CALL notifyGroupSuccess(#{recordId})
+    </select>
+</mapper>

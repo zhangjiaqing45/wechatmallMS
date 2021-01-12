@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('积分商品列表')" />
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: bootstrap-editable-css"/>
+    <style type="text/css" >
+        del {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>商品货号：</p>
+                                <input type="text" name="productSn"/>
+                            </li>
+                            <li>
+                                <p>商品分类：</p>
+                                <select name="productCategoryId" class="form-control" th:with="type=${@custom.pmsIntegralProductCategories()}" >
+                                    <option value="">请选择</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.name}" th:value="${dict.id}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>商品名称：</p>
+                                <input type="text" name="name"/>
+                            </li>
+                            <li>
+                                <p>上架状态：</p>
+                                <select name="publishStatus" th:with="type=${@custom.allPublicStatus()}">
+                                    <option value="">请选择</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.value}" th:value="${dict.key}"></option>
+                                </select>
+                            </li>
+                            <li class="select-time">
+                                <p>创建时间：</p>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCreateTime]" readonly/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCreateTime]" readonly/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="pmsIpReset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.addTab()" shiro:hasPermission="business:pmsIntegralProduct:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <!--<a class="btn btn-primary single disabled" onclick="$.operate.editTab()" shiro:hasPermission="business:pmsIntegralProduct:edit">-->
+                    <!--<i class="fa fa-edit"></i> 修改-->
+                <!--</a>-->
+                <!--<a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="business:pmsIntegralProduct:remove">-->
+                    <!--<i class="fa fa-remove"></i> 删除-->
+                <!--</a>-->
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:pmsIntegralProduct:export">-->
+                    <!--<i class="fa fa-download"></i> 导出-->
+                 <!--</a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: select2-js"/>
+    <th:block th:include="include :: bootstrap-table-editable-js"/>
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('business:pmsIntegralProduct:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('business:pmsIntegralProduct:remove')}]];
+        var publishStatus = [[${@custom.allPublicStatusPlus()}]];
+        var prefix = ctx + "business/pmsIntegralProduct";
+        var sortRexExp = ftConsts.regExp.sort;
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                sortName: "createTime",
+                sortOrder: "desc",
+                onEditableSave: onEditableSave,
+                modalName: "积分商品",
+                columns: [
+                //     {
+                //     checkbox: true
+                // },
+                {
+                    field : 'id', 
+                    title : '主键',
+                    visible: false
+                },
+                {
+                    field : 'productSn', 
+                    title : '商品货号'
+                },
+                {
+                    field : 'name',
+                    title : '商品名称',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value, 20, "open");
+                    }
+                },
+                {
+                    field : 'productCategoryName',
+                    title : '商品分类'
+                },
+                {
+                    field : 'pic',
+                    title : '商品主图',
+                    formatter: function(value, row, index) {
+                        return $.table.imageView(respath + value);
+                    }
+                },
+                {
+                    field : 'publishStatus', 
+                    title : '上架状态',
+                    formatter: function(value, row, index) {
+                        if (publishStatus[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", publishStatus[value].style, publishStatus[value].desc);
+                        }
+                    }
+                },
+                {
+                    field : 'price', 
+                    title : '兑换积分',
+                    sortable: true,
+                },
+                {
+                    field : 'sale', 
+                    title : '销量',
+                    sortable: true,
+                },
+                {
+                    field : 'stock', 
+                    title : '库存',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        if (value > row.lowStock) {
+                            return $.common.sprintf("<span class='%s'>%s</span>","text-navy", value);
+                        } else {
+                            return $.common.sprintf("<span class='%s'>%s</span>","text-danger", value);
+                        }
+                    }
+                },
+
+                {
+                    field : 'sort', 
+                    title : '排序',
+                    sortable: true,
+                    editable: {
+                        type: 'text',
+                        title: '数字越小排序越靠前',
+                        emptytext: "0",
+                        validate: function (value) {
+                            if (!(sortRexExp.test(value))) {
+                                return '请输入5位以内正整数';
+                            }
+                        }
+                    }
+                },
+                {
+                    field : 'createTime',
+                    title : '创建时间'
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if (row.btns && row.btns.length > 0) {
+                            var btns = row.btns;
+                            for (var i in btns) {
+                                actions.push(buildBtn(btns[i], row.id, row.name));
+                            }
+                        }
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+
+        /**
+         * 操作按钮
+         */
+        var OPT_BTNS = {
+            "btn-eidt": '<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editTab(\'{id}\')"><i class="fa fa-edit"></i>编辑</a> ',
+            "btn-putaway": '<a class="btn btn-info btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="pmsIpPutaway(\'{id}\', \'{name}\')"><i class="fa fa-edit"></i>上架</a> ',
+            "btn-soldout": '<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="pmsIpSoldout(\'{id}\', \'{name}\')"><i class="fa fa-edit"></i>下架</a> ',
+            "btn-delete": '<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'{id}\')"><i class="fa fa-remove"></i>删除</a>'
+        }
+
+        /**
+         * 构建按钮
+         */
+        function buildBtn(sign, id, name) {
+            return OPT_BTNS[sign].replace(/{id}/g, id).replace(/{name}/, name);
+        }
+
+
+        function pmsIpReset() {
+            $("select[name='productCategoryId']").select2("val", [""]);
+            $.form.reset();
+        }
+
+        function pmsIpPutaway(id, name){
+            $.modal.confirm("确认上架商品：" + name, function(){
+                $.operate.post(prefix + "/putaway", {"id": id});
+            });
+        }
+
+        function pmsIpSoldout(id, name){
+            $.modal.confirm("确认下架商品：" + name, function(){
+                $.operate.post(prefix + "/soldout", {"id": id});
+            });
+        }
+
+        function onEditableSave(field, row, oldValue, $el) {
+            $.operate.post(prefix + "/changeSort", {"id": row.id, "sort": row[field]}, function (result) {
+                if (result.code === web_status.SUCCESS) {
+                    $.modal.msgSuccess(result.msg);
+                } else {
+                    $el.html(oldValue);
+                    $.modal.msgWarning(result.msg);
+                }
+            });
+        }
+
+
+    </script>
+</body>
+</html>

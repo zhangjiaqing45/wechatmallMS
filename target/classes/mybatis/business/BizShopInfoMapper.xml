@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.bizShopInfo.mapper.BizShopInfoMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="BizShopInfoResultExt" type="扩展类全包名" extends="BizShopInfoResult">
+
+    </resultMap>
+     -->
+
+    <sql id="selectJoinListVo">
+        <!-- s.longitude, s.latitude, s.license, s.sfz_front, s.sfz_back, s.submit_info, -->
+        select s.id, s.pic,s.recommend,s.ishot,s.payment_display,s.tag,s.code, s.category_id, c.category, s.status, s.audit, s.company_name, s.province, s.city, s.district, s.address,
+        s.legal_person, s.tel, s.service_tel, s.account_type, s.bind_name, s.account,s.org_id, s.cash, s.brokerage,
+        s.create_by, s.create_time, s.update_by, s.update_time, s.remark, s.del_flag
+        from biz_shop_info s
+        left join biz_main_category c on s.category_id=c.id
+    </sql>
+
+    <select id="selectJoinList"
+            parameterType="com.fante.project.business.bizShopInfo.domain.BizShopInfoDTO"
+            resultType="com.fante.project.business.bizShopInfo.domain.BizShopInfoDTO">
+        <include refid="selectJoinListVo"/>
+        <where>
+            s.del_flag = '0'
+            <if test="code != null and code != '' "> and s.code = #{code}</if>
+            <if test="recommend != null and recommend != '' "> and s.recommend = #{recommend}</if>
+            <if test="ishot != null and ishot != '' "> and s.ishot = #{ishot}</if>
+            <if test="paymentDisplay != null and paymentDisplay != '' "> and s.payment_display = #{paymentDisplay}</if>
+            <if test="categoryId != null "> and s.category_id = #{categoryId}</if>
+            <if test="status != null  and status != ''"> and s.status = #{status}</if>
+            <if test="audit != null  and audit != ''"> and s.audit = #{audit}</if>
+            <if test="companyName != null  and companyName != ''"> and s.company_name like concat('%', #{companyName}, '%')</if>
+            <if test="province != null  and province != ''"> and s.province = #{province}</if>
+            <if test="city != null  and city != ''"> and s.city = #{city}</if>
+            <if test="district != null  and district != ''"> and s.district = #{district}</if>
+            <if test="legalPerson != null  and legalPerson != ''"> and s.legal_person like concat('%', #{legalPerson}, '%')</if>
+            <if test="tel != null  and tel != ''"> and s.tel like concat('%', #{tel}, '%')</if>
+            <if test="serviceTel != null  and serviceTel != ''"> and s.service_tel like concat('%', #{serviceTel}, '%')</if>
+            <if test="accountType != null  and accountType != ''"> and s.account_type = #{accountType}</if>
+            <if test="bindName != null  and bindName != ''"> and s.bind_name like concat('%', #{bindName}, '%')</if>
+            <if test="account != null  and account != ''"> and s.account like concat('%', #{account}, '%')</if>
+            <if test="orgId != null  and orgId != ''"> and s.org_id = #{orgId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(s.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(s.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectJoinSigle"
+            parameterType="com.fante.project.business.bizShopInfo.domain.BizShopInfoDTO"
+            resultType="com.fante.project.business.bizShopInfo.domain.BizShopInfoDTO">
+        <include refid="selectJoinListVo"/>
+        <where>
+            s.del_flag = '0'
+            <if test="code != null and code != '' "> and s.code = #{code}</if>
+            <if test="recommend != null and recommend != '' "> and s.recommend = #{recommend}</if>
+            <if test="ishot != null and ishot != '' "> and s.ishot = #{ishot}</if>
+            <if test="paymentDisplay != null and paymentDisplay != '' "> and s.payment_display = #{paymentDisplay}</if>
+            <if test="categoryId != null "> and s.category_id = #{categoryId}</if>
+            <if test="status != null  and status != ''"> and s.status = #{status}</if>
+            <if test="audit != null  and audit != ''"> and s.audit = #{audit}</if>
+            <if test="companyName != null  and companyName != ''"> and s.company_name like concat('%', #{companyName}, '%')</if>
+            <if test="province != null  and province != ''"> and s.province = #{province}</if>
+            <if test="city != null  and city != ''"> and s.city = #{city}</if>
+            <if test="district != null  and district != ''"> and s.district = #{district}</if>
+            <if test="legalPerson != null  and legalPerson != ''"> and s.legal_person like concat('%', #{legalPerson}, '%')</if>
+            <if test="tel != null  and tel != ''"> and s.tel like concat('%', #{tel}, '%')</if>
+            <if test="serviceTel != null  and serviceTel != ''"> and s.service_tel like concat('%', #{serviceTel}, '%')</if>
+            <if test="accountType != null  and accountType != ''"> and s.account_type = #{accountType}</if>
+            <if test="bindName != null  and bindName != ''"> and s.bind_name like concat('%', #{bindName}, '%')</if>
+            <if test="account != null  and account != ''"> and s.account like concat('%', #{account}, '%')</if>
+            <if test="orgId != null  and orgId != ''"> and s.org_id = #{orgId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(s.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(s.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="selectBizShopInfoByCode" parameterType="String" resultMap="BizShopInfoResult">
+        <include refid="selectBizShopInfoVo"/>
+        where code = #{code}
+        and del_flag = '0'
+    </select>
+
+    <select id="checkShopUnique" parameterType="BizShopInfo" resultType="int">
+        select count(*) from biz_shop_info
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="companyName != null  and companyName != ''"> and company_name = #{companyName}</if>
+            <if test="account != null  and account != ''"> and account like concat('%', #{account}, '%')</if>
+        </where>
+    </select>
+    <!--(app)查询店铺-->
+    <select id="selectBizShopInfoForApp" resultType="com.fante.project.business.bizShopInfo.domain.BizShopInfo">
+        select
+            id,
+            tag,
+            pic,
+            company_name,
+            province,
+            city,
+            district,
+            address,
+            longitude,
+            latitude
+        from
+            biz_shop_info
+        where
+            del_flag = '0'
+            and
+            audit = #{audit}
+            <if test="recommend!=null and recommend!=''">
+                and recommend = #{recommend}
+            </if>
+            <if test="name!=null and name!=''">
+            and
+            (
+                company_name like concat(#{name},'%')
+                or
+                province like concat(#{name},'%')
+                or
+                city like concat(#{name},'%')
+                or
+                district like concat(#{name},'%')
+                or
+                address like concat(#{name},'%')
+            )
+            </if>
+        order by create_time desc
+    </select>
+    <!--(app)查询热门店铺-->
+    <select id="selectBizShopInfoForAppByIshot" resultType="com.fante.project.business.bizShopInfo.domain.BizShopInfo">
+        select
+        id,
+        tag,
+        pic,
+        company_name,
+        province,
+        city,
+        district,
+        address,
+        longitude,
+        latitude
+        from
+        biz_shop_info
+        where
+        del_flag = '0'
+        and
+        audit = #{audit}
+        <if test="ishot!=null and ishot!=''">
+            and ishot = #{ishot}
+        </if>
+        order by create_time desc
+    </select>
+    <!--插入现金 到平台现金账户-->
+    <update id="addCashToAccount">
+        update biz_shop_info set cash = cash + #{money} where id = #{shopId}
+    </update>
+    <!--插入佣金 到平台佣金账户-->
+    <update id="addCommissionToAccount">
+         update biz_shop_info set brokerage = brokerage + #{money} where id = #{shopId}
+    </update>
+
+    <!--从平台现金账户中去除@退货-->
+    <update id="subCashToAccount">
+        update biz_shop_info set cash = cash - #{money} where id = #{shopId} and cash &gt;=#{money}
+    </update>
+    <!--从平台佣金账户中去除@退货-->
+    <update id="subCommissionToAccount">
+         update biz_shop_info set brokerage = brokerage - #{money} where id = #{shopId} and brokerage &gt;=#{money}
+    </update>
+
+    <resultMap id="ShopAndCouponInfoMap" type="com.fante.project.api.appView.domain.ShopAndCouponInfo">
+        <result property="shopId"    column="id"    />
+        <result property="pSum"    column="pSum"    />
+        <result property="distance"    column="distance"    />
+        <result property="tag"    column="tag"    />
+        <result property="pic"    column="pic"    />
+        <result property="shopName"    column="company_name"    />
+        <result property="province"    column="province"    />
+        <result property="city"    column="city"    />
+        <result property="district"    column="district"    />
+        <result property="address"    column="address"    />
+        <result property="longitude"    column="longitude"    />
+        <result property="latitude"    column="latitude"    />
+        <collection property="couponList"
+                    resultMap="com.fante.project.business.smsCoupon.mapper.SmsCouponMapper.SmsCouponResult"
+                    columnPrefix="coupon_" />
+    </resultMap>
+
+    <!--查询店铺推荐及优惠券信息-->
+    <select id="selectJoinCouponList" resultMap="ShopAndCouponInfoMap" >
+        select
+        <!--店铺信息-->
+           bsi.id,
+           bsi.tag,
+           bsi.pic,
+           bsi.company_name,
+           bsi.province,
+           bsi.city,
+           bsi.district,
+           bsi.address,
+           bsi.longitude,
+           bsi.latitude,
+        <!--优惠券信息-->
+        sc.id as coupon_id,
+        sc.shop_id as coupon_shop_id,
+        sc.name as coupon_name,
+        sc.type as coupon_type,
+        sc.status as coupon_status,
+        sc.use_type as coupon_use_type,
+        sc.amount as coupon_amount,
+        sc.min_point as coupon_min_point,
+        sc.start_time as coupon_start_time,
+        sc.end_time as coupon_end_time,
+        sc.count as coupon_count,
+        sc.use_count as coupon_use_count,
+        sc.receive_count as coupon_receive_count,
+        sc.code as coupon_code,
+        sc.create_by as coupon_create_by,
+        sc.create_time as coupon_create_time,
+        sc.update_by as coupon_update_by,
+        sc.update_time as coupon_update_time,
+        sc.remark as coupon_remark,
+        sc.del_flag as coupon_del_flag,
+        sc.enable_time as coupon_enable_time,
+        sc.publish_count as coupon_publish_count,
+        sc.per_limit as coupon_per_limit,
+        sc.member_level as coupon_member_level,
+        sc.coupon_type as coupon_coupon_type,
+        sc.discount as coupon_discount
+        from
+        (
+            select * from biz_shop_info where
+            id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        ) bsi
+        left join
+        (
+            select * from sms_coupon where
+            del_flag = '0'
+            <!-- 结束时间 大于等于 现在 -->
+            and end_time &gt;= now()
+            <!-- 自己领取类型 -->
+            and `type` = '1'
+            <!-- 上架状态 -->
+            and STATUS = '1'
+            <!-- 总数量大于领取数量 -->
+            and `count` &gt; receive_count
+        ) sc on sc.shop_id = bsi.id
+        order by sc.create_time desc
+    </select>
+
+    <!--查询店铺推荐及优惠券信息-->
+    <select id="selectJoinCouponListRemake" resultMap="ShopAndCouponInfoMap" >
+        select
+            <!--店铺信息-->
+            bsi.id,
+            IFNULL(bsi.pSum, '0') pSum,
+            IFNULL(ROUND(bsi.distance), '0') distance,
+            bsi.tag,
+            bsi.pic,
+            bsi.company_name,
+            bsi.province,
+            bsi.city,
+            bsi.district,
+            bsi.address,
+            bsi.longitude,
+            bsi.latitude,
+            <!--优惠券信息-->
+            sc.id as coupon_id,
+            sc.shop_id as coupon_shop_id,
+            sc.name as coupon_name,
+            sc.type as coupon_type,
+            sc.status as coupon_status,
+            sc.use_type as coupon_use_type,
+            sc.amount as coupon_amount,
+            sc.min_point as coupon_min_point,
+            sc.start_time as coupon_start_time,
+            sc.end_time as coupon_end_time,
+            sc.count as coupon_count,
+            sc.use_count as coupon_use_count,
+            sc.receive_count as coupon_receive_count,
+            sc.code as coupon_code,
+            sc.create_by as coupon_create_by,
+            sc.create_time as coupon_create_time,
+            sc.update_by as coupon_update_by,
+            sc.update_time as coupon_update_time,
+            sc.remark as coupon_remark,
+            sc.del_flag as coupon_del_flag,
+            sc.enable_time as coupon_enable_time,
+            sc.publish_count as coupon_publish_count,
+            sc.per_limit as coupon_per_limit,
+            sc.member_level as coupon_member_level,
+            sc.coupon_type as coupon_coupon_type,
+            sc.discount as coupon_discount
+        from (
+            select
+                a.*,
+                (
+                    SELECT
+                        SUM(d.product_quantity)
+                    FROM oms_order c
+                    LEFT JOIN oms_order_item d ON d.order_id = c.id
+                    WHERE c.shop_id = a.id
+                ) pSum,
+                (
+                    6378138 * 2 * ASIN(
+                        SQRT(
+                            POW(SIN((#{lat} * PI() / 180 - a.latitude * PI() / 180) / 2), 2)
+                            + COS(#{lat} * PI() / 180)
+                            * COS(a.latitude * PI() / 180)
+                            * POW(SIN((#{lng} * PI() / 180 - a.longitude * PI() / 180) / 2), 2)
+                        )
+                    )
+                ) distance
+            from biz_shop_info a
+            LEFT JOIN pms_shop_category_relation b ON b.shop_id = a.id
+            where
+                a.del_flag = '0'
+                and a.status = '0'
+                and b.del_flag = '0'
+                and a.audit = #{audit}
+                <if test="recommend!=null and recommend!=''">
+                    and a.recommend = #{recommend}
+                </if>
+                <if test="name!=null and name!=''">
+                    and (
+                        a.company_name like concat(#{name},'%')
+                        or a.province like concat(#{name},'%')
+                        or a.city like concat(#{name},'%')
+                        or a.district like concat(#{name},'%')
+                        or a.address like concat(#{name},'%')
+                    )
+                </if>
+                <if test="categoryId != null and categoryId != ''">
+                    AND (
+                        b.product_category_id IN (
+                            SELECT id FROM pms_product_category WHERE `level` = #{categoryId}
+                        )
+                        OR b.product_category_id = #{categoryId}
+                    )
+                </if>
+                <if test="distance != null and distance != ''">
+                    AND (
+                        6378138 * 2 * ASIN(
+                            SQRT(
+                                POW(SIN((#{lat} * PI() / 180 - a.latitude * PI() / 180) / 2), 2)
+                                + COS(#{lat} * PI() / 180)
+                                * COS(a.latitude * PI() / 180)
+                                * POW(SIN((#{lng} * PI() / 180 - a.longitude * PI() / 180) / 2), 2)
+                            )
+                        )
+                    ) &lt;= #{distance}
+                </if>
+                GROUP BY a.id
+        ) bsi
+        left join (
+            select * from sms_coupon where
+            del_flag = '0'
+            <!-- 结束时间 大于等于 现在 -->
+            and end_time &gt;= now()
+            <!-- 自己领取类型 -->
+            and `type` = '1'
+            <!-- 上架状态 -->
+            and STATUS = '1'
+            <!-- 总数量大于领取数量 -->
+            and `count` &gt; receive_count
+        ) sc on sc.shop_id = bsi.id
+        <if test='orderByCondition != null and orderByCondition == "distance"'>
+            ORDER BY bsi.distance ASC
+        </if>
+        <if test="orderByCondition != null and orderByCondition == 'sum'">
+            ORDER BY bsi.pSum DESC
+        </if>
+    </select>
+
+</mapper>

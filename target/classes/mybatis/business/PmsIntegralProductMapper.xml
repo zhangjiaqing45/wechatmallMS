@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsIntegralProduct.mapper.PmsIntegralProductMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="PmsIntegralProductResultExt" type="扩展类全包名" extends="PmsIntegralProductResult">
+
+    </resultMap>
+     -->
+
+   <select id="selectJoinList"
+           parameterType="com.fante.project.business.pmsIntegralProduct.domain.PmsIntegralProduct"
+           resultType="com.fante.project.business.pmsIntegralProduct.domain.PmsIntegralProduct">
+      <include refid="selectJoinListVo" />
+      <where>
+         p.del_flag = '0'
+         <if test="productSn != null  and productSn != ''"> and p.product_sn like concat('%', #{productSn}, '%') </if>
+         <if test="shopId != null "> and p.shop_id = #{shopId}</if>
+         <if test="brandId != null "> and p.brand_id = #{brandId}</if>
+         <if test="productCategoryId != null "> and p.product_category_id = #{productCategoryId}</if>
+         <if test="feightFee != null "> and p.feight_fee = #{feightFee}</if>
+         <if test="productAttributeCategoryId != null "> and p.product_attribute_category_id = #{productAttributeCategoryId}</if>
+         <if test="productCategoryName != null  and productCategoryName != ''"> and p.product_category_name like concat('%', #{productCategoryName}, '%')</if>
+         <if test="brandName != null  and brandName != ''"> and p.brand_name like concat('%', #{brandName}, '%')</if>
+         <if test="name != null  and name != ''"> and p.name like concat('%', #{name}, '%')</if>
+         <if test="publishStatus != null  and publishStatus != ''"> and p.publish_status = #{publishStatus}</if>
+         <if test="verifyStatus != null  and verifyStatus != ''"> and p.verify_status = #{verifyStatus}</if>
+         <if test="price != null "> and p.price = #{price}</if>
+         <if test="originalPrice != null "> and p.original_price = #{originalPrice}</if>
+         <if test="sale != null "> and p.sale = #{sale}</if>
+         <if test="stock != null "> and p.stock = #{stock}</if>
+         <if test="lowStock != null "> and p.low_stock = #{lowStock}</if>
+         <if test="keywords != null  and keywords != ''"> and p.keywords = #{keywords}</if>
+         <if test="subTitle != null  and subTitle != ''"> and p.sub_title = #{subTitle}</if>
+         <if test="auditMsg != null  and auditMsg != ''"> and p.audit_msg = #{auditMsg}</if>
+         <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+            and date_format(p.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+         </if>
+         <if test="params.endCreateTime != null and params.endCreateTime != ''">
+            and date_format(p.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+         </if>
+      </where>
+   </select>
+
+
+
+    <sql id="selectJoinListVo">
+        select
+           p.id,
+           p.product_sn,
+           p.shop_id,
+           p.brand_id,
+           p.product_category_id,
+           p.feight_fee,
+           p.product_attribute_category_id,
+           c.name as product_category_name,
+           p.brand_name,
+           p.name,
+           p.del_flag,
+           p.publish_status,
+           p.verify_status,
+           p.price,
+           p.original_price,
+           p.sale,
+           p.stock,
+           p.low_stock,
+           p.pic,
+           p.album_pics,
+           p.param_data,
+           p.keywords,
+           p.sub_title,
+           p.description,
+           p.detail_title,
+           p.detail_desc,
+           p.detail_html,
+           p.sort,
+           p.create_by,
+           p.create_time,
+           p.update_by,
+           p.update_time,
+           p.audit_msg,
+           p.remark,
+           p.unit,
+           p.weight,
+           p.platform_category,
+           p.gift_growth,
+           p.gift_point,
+           p.use_point_limit,
+           p.service_ids
+        from pms_integral_product p
+        left join pms_integral_product_category c on p.product_category_id=c.id
+    </sql>
+   <update id="subStrock">
+      update pms_integral_product set stock = stock - #{quantity}
+      ,sale = sale + #{quantity}
+      where
+         id =#{id}
+         and stock &gt;= #{quantity}
+         and del_flag ='0'
+         and publish_status = '1'
+   </update>
+   <!--（app）获取积分商品列表-->
+<!--   <select id="getPmsIntegralProductListForDisplay" resultType="com.fante.project.business.pmsIntegralProduct.domain.PmsIntegralProduct">
+      <include refid="selectPmsIntegralProductVo"/>
+      <where>
+         del_flag = '0'
+         and publish_status = '1'
+         <if test="name != null  and name != ''"> and `name` like concat('%', #{name}, '%')</if>
+         <if test="categoryId != null "> and product_category_id = #{categoryId}</if>
+      </where>
+   </select>-->
+   <sql id="selectPmsIntegralProductVoGet">
+        select
+          ps.id as id, ps.product_sn as product_sn, ps.shop_id as shop_id, ps.brand_id as brand_id, ps.product_category_id as product_category_id, ps.feight_fee as feight_fee,
+          ps.product_attribute_category_id as product_attribute_category_id, ps.product_category_name as product_category_name, ps.brand_name as brand_name, ps.name as name,
+          ps.del_flag as del_flag, ps.publish_status as publish_status, ps.verify_status as verify_status, ps.price as price, ps.original_price as original_price, ps.sale as sale, ps.stock as stock,
+          ps.low_stock as low_stock, ps.pic as pic, ps.album_pics as album_pics, ps.param_data as param_data, ps.keywords as keywords, ps.sub_title as sub_title, ps.description as description, ps.detail_title as detail_title,
+          ps.detail_desc as detail_desc, ps.detail_html as detail_html, ps.sort as sort, ps.create_by as create_by, ps.create_time as create_time, ps.update_by as update_by, ps.update_time as update_time, ps.audit_msg as audit_msg,
+          ps.remark as remark, ps.unit as unit, ps.weight as weight, ps.platform_category as platform_category, ps.gift_growth as gift_growth, ps.gift_point as gift_point, ps.use_point_limit as use_point_limit, ps.service_ids  as service_ids
+        from
+          pms_integral_product ps,
+        (
+        SELECT
+          id,shop_id,name,show_status,del_flag
+        FROM
+          pms_integral_product_category
+        WHERE
+          del_flag = '0'
+        and show_status = '0'
+        GROUP BY id
+        ) pc
+    </sql>
+
+   <select id="getPmsIntegralProductListForDisplay" resultType="com.fante.project.business.pmsIntegralProduct.domain.PmsIntegralProduct">
+      <include refid="selectPmsIntegralProductVoGet"/>
+      <where>
+         ps.product_category_id = pc.id
+         and ps.del_flag = '0'
+         and ps.publish_status = '1'
+         <if test="name != null  and name != ''"> and `ps.name` like concat('%', #{name}, '%')</if>
+         <if test="categoryId != null "> and ps.product_category_id = #{categoryId}</if>
+      </where>
+   </select>
+
+
+   <!--（app）获取积分商品详情-->
+   <select id="getPmsIntegralProductDetailById" resultType="com.fante.project.business.pmsIntegralProduct.domain.PmsIntegralProduct">
+      <include refid="selectPmsIntegralProductVo"/>
+      <where>
+        id = #{id}
+        and del_flag = '0'
+        and publish_status = '1'
+      </where>
+   </select>
+</mapper>

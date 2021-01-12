@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <th:block th:include="include :: header('店铺入驻')"/>
+    <link th:href="@{/css/reg.css}" rel="stylesheet"/>
+    <script>
+        if (window.top !== window.self) {
+            window.top.location = window.location
+        }
+    </script>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="ibox">
+                <!--<div class="ibox-title">-->
+                <!--<h5></h5>-->
+                <!--</div>-->
+                <div class="ibox-content">
+                    <h2>店铺入驻</h2>
+                    <p>请仔细阅读入驻须知</p>
+                    <div class="reg">
+                        <div class="reg-a">
+                            <a class="active" href="javascript:void(0);">入驻须知</a>
+                            <a href="javascript:void(0);">注册账号</a>
+                            <a href="javascript:void(0);">信息完善</a>
+                        </div>
+                        <div class="reg-b">
+                            <div class="reg-b1">
+                                <div class="reg-b1-a notice-content" id="contract">
+
+                                </div>
+                            </div>
+                            <div class="reg-b2">
+                                <div class="reg-b2-a">
+                                    <label class="check-box">
+                                        <input type="checkbox" id="agree" />已查看《入驻须知》
+                                    </label>
+                                </div>
+                                <div class="reg-b2-b">
+                                    <a href="javascript:void(0);" id="agreeBtn">同意</a>
+                                    <a href="javascript:void(0);" id="cancelBtn" style="background-color: #DB1C21;">不同意</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script>
+
+    var prefix = ctx + "business/bizShopReg";
+
+    $(document).ready(function () {
+        var isAgreed = false;
+        $("#agree").iCheck('uncheck');
+
+        $("#agree").on("ifClicked", function(e) {
+            isAgreed = true;
+            $("#agreeBtn").css({"background-color":"#41A863"})
+        });
+
+        $("#agree").on("ifUnchecked", function(e) {
+            isAgreed = false;
+            $("#agreeBtn").css({"background-color":"#999999"})
+        });
+
+        $("#agreeBtn").on("click", function(e) {
+            if (isAgreed) {
+                window.location.href = prefix + "/userReg";
+            }
+        });
+
+        $("#cancelBtn").on("click", function(e) {
+            window.location.replace("/login");
+        });
+
+        contract();
+    });
+
+    /**
+     * 获取富文本内容
+     */
+    function contract() {
+        $.operate.post(prefix + "/entryNotice", {}, function(result) {
+            if (result.code === web_status.SUCCESS) {
+                var doc = result.doc;
+                if (doc && doc.docContent) {
+                    $("#contract").html(doc.docContent);
+                }
+            } else {
+                $.modal.msgWarning(result.msg);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

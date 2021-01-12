@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsShopCategoryRelation.mapper.PmsShopCategoryRelationMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="PmsShopCategoryRelationResultExt" type="扩展类全包名" extends="PmsShopCategoryRelationResult">
+
+    </resultMap>
+     -->
+    <!--查询店铺从平台选择的分类列表-->
+    <select id="selectPmsShopCategoryList" parameterType="com.fante.project.business.pmsShopCategoryRelation.domain.PmsShopCategoryRelationParam" resultType="com.fante.project.business.pmsShopCategoryRelation.domain.PmsShopCategoryRelationResult">
+      SELECT
+            c.ppc_id as id,
+            c.id as pscrId,
+            c.shop_id,
+            c.`name`,
+            c.icon,
+            c.del_flag,
+            c.show_status,
+            c.description,
+            c.shop_status,
+            c.sort,
+            c.remark,
+            count( p.id ) AS product_count
+      FROM
+            (
+            SELECT
+                ppc.id as ppc_id,
+                ppc.show_status,
+                ppc.`name`,
+                ppc.del_flag,
+                ppc.icon,
+                ppc.description,
+                pscr.id,
+                pscr.shop_id,
+                pscr.shop_status,
+                pscr.create_time,
+                pscr.sort,
+                pscr.remark
+            FROM
+                pms_product_category ppc
+                JOIN pms_shop_category_relation pscr
+                ON ppc.id = pscr.product_category_id
+                <if test="shopDelFlag != null  and shopDelFlag != ''">  AND ppc.del_flag = #{shopDelFlag} </if>
+                <if test="name != null  and name != ''"> AND ppc.name like concat('%', #{name}, '%')</if>
+                <if test="showStatus != null  and showStatus != ''"> AND ppc.show_status = #{showStatus} </if>
+                <if test="shopStatus != null  and shopStatus != ''">AND pscr.shop_status = #{shopStatus} </if>
+            WHERE
+                pscr.shop_id = #{shopId}
+                AND pscr.del_flag = '0'
+            ) c
+            LEFT JOIN pms_product p
+            ON  c.ppc_id = p.product_category_id
+            AND p.del_flag = '0'
+            AND p.shop_id = #{shopId}
+        GROUP BY
+            c.id,
+            c.`name`
+        ORDER BY
+            c.sort ASC,
+            c.create_time DESC
+    </select>
+    <!--批量插入店铺选择的商品分类-->
+    <insert id="insertPmsShopCategoryRelationByIds">
+        insert into  pms_shop_category_relation (shop_id, product_category_id,create_by,create_time) VALUES
+        <foreach item="id" collection="ids" separator=",">
+            (#{shopId} , #{id} , #{userName} , now())
+        </foreach>
+    </insert>
+    <!--通过关系表获取对应店铺的商品分类-->
+    <select id="selectPmsShopCategoryByRelationId" resultMap="com.fante.project.business.pmsProductCategory.mapper.PmsProductCategoryMapper.PmsProductCategoryResult">
+        select
+            pscr.id,
+            pscr.shop_id,
+            ppc.name,
+            ppc.icon,
+            pscr.shop_product_count as product_count,
+            pscr.shop_status as show_status,
+            ppc.description,
+            pscr.sort,
+            pscr.remark
+        from
+            pms_product_category ppc
+        join
+            pms_shop_category_relation pscr
+        on
+            ppc.id = pscr.product_category_id
+        where
+            pscr.id=#{id}
+    </select>
+
+
+
+    <select id="countShopCategoryRelationByPmsCateId" resultType="int">
+        select count(*) from pms_shop_category_relation
+        where del_flag = '0'
+        and shop_id= #{shopId}
+        and product_category_id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

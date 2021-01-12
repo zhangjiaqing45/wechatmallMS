@@ -1,0 +1,227 @@
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为80
+  port: 8099
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+
+
+# 数据源配置
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      # 主库数据源
+      master:
+        url: jdbc:mysql://localhost:3306/fante-mall?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: root
+      # 从库数据源
+      slave:
+        # 从数据源开关/默认关闭
+        enabled: false
+        url:
+        username:
+        password:
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      webStatFilter:
+        enabled: true
+      statViewServlet:
+        enabled: true
+        # 设置白名单，不填则允许所有访问
+        allow:
+        url-pattern: /druid/*
+        # 控制台管理用户名和密码
+        login-username:
+        login-password:
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+  servlet:
+    multipart:
+      # 上传的临时文件夹，需先创建
+      #location: /www/wwwroot/fante-mall/fante_midea_upload/temp
+      location: C:\凡特\驻马店积分商城\ZMDimage\installed
+  redis:
+    # Redis数据库索引（默认为0）
+    database: 3
+    # Redis服务器地址
+    host: localhost
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password:
+    jedis:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 20
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1ms
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 0
+    # 连接超时时间（毫秒）
+    timeout: 2000ms
+  rabbitmq:
+    # RabbitMQ主机地址
+    host: localhost
+    # RabbitMQ端口号
+    port: 5672
+    # RabbitMQ用户名
+    username: guest
+    # RabbitMQ密码
+    password: guest
+    # 支持发布确认
+    publisher-confirms: true
+    # 支持发布返回
+    publisher-returns: true
+    # 虚拟主机名称
+    virtual-host: /
+    listener:
+      simple:
+        # 设置当前消费者数量(线程数)
+        concurrency: 5
+        # 设置消费者最大并发数量
+        max-concurrency: 10
+        # 每个消费者可能未完成的最大未确认消息数量
+        prefetch: 1
+
+
+# 项目相关配置
+fante:
+  # 名称
+  name: zeji
+  # 版本
+  version: 1.0.0
+  # 版权年份
+  copyrightYear: 2020
+  # 开发模式演示开关
+  demoEnabled: false
+  # 文件路径 示例（ Windows配置D:/fante/uploadPath，Linux配置 /home/fante/uploadPath）
+  #profile: /www/wwwroot/fante-mall/fante_midea_upload
+  profile: C:\凡特\驻马店积分商城\ZMDimage\installed
+  # 获取ip地址开关
+  addressEnabled: true
+  # 项目名称
+  projectName: 生活圈
+  # 项目编码（也作为资源映射路径前缀）
+  projectCode: profile
+
+jwt:
+  # 启用/停用，需开启Redis服务
+  jwtEnable: true
+  # 密匙：自定义
+  jwtSecretKey: 5dd2fb175ae2a439ab280d681048f56f
+  # 过期时间（秒）
+  jwtExpireTime: 7200
+  # 请求Header的KEY
+  jwtHeader: Authorization
+  # Token缓存前缀
+  jwtPrefix: JWT-
+  # 排除链接（多个用逗号分隔，中间不可有空格）测试：/demo/jwt/login,/demo/jwt/testInfo
+  jwtAnonPaths: /wechat/access,/wechat/auth/**,/wechat/notify,/wechat/pay/notify,/api/user/login,/api/user/resPath,/api/test/**
+  # 匹配链接（多个用逗号分隔，中间不可有空格）测试：/demo/jwt/**
+  jwtChainPaths: /wechat/**,/api/**
+
+# 微信公众号配置
+wechat:
+  # 服务器配置，启用/停用
+  wxServConfig: false
+  # 系统微信网页授权链接
+  accessTokenUrl: /#/pages/assist/auth/auth
+  # 公众号页面首页
+  indexPage: /wechat/page/index
+  # 商品描述 (公众号支付: 商家名称-销售商品类目)
+  wxPayBody: 生活圈
+  # 金额元转换为分的系数
+  transYuanToFen: 100
+
+# 短信服务配置
+sms:
+  # 是否启用
+  enabled: true
+  # 在短信宝注册的用户名
+  smsUserName: 13529800221
+  # 在短信宝注册的密码
+  smsPassword: liu13560000121
+  # 请求地址
+  smsUrl: http://api.smsbao.com/sms
+  # 公司签名
+  coSign: 生活圈
+
+# 腾讯地图
+qqmap:
+  # 密匙
+  key: I5RBZ-WSZK6-LTGSD-EW5XD-XCR2F-KRBUD
+  # 地图选点组件
+  locpicker: https://apis.map.qq.com/tools/locpicker?search=1&type=1&key={}&coord={}&referer=mdjdc
+  # 地址解析（地址转坐标）
+  geocoder: https://apis.map.qq.com/ws/geocoder/v1/?key={}&address={}
+  # 逆地址解析（坐标位置描述）
+  geocoderOp: https://apis.map.qq.com/ws/geocoder/v1/?key={}&location={}
+  # API服务
+  api: https://map.qq.com/api/js?v=2.exp&key={}
+
+# 阿里云物流查询
+aliyunwl:
+  #API签名认证调用方法（AppKey & AppSecret）
+  AppKey: 2023
+  AppSecret: nc678i23yuk8ue25ki17fmmkrd5urm9n
+  #API 简单身份认证调用方法（APPCODE)
+  AppCode: e1ef223f325ab945d0b04c7d9175924a3e
+  #服务器请求地址
+  host: https://wuliu.market.alicloudapi.com
+  #请求路径
+  path: /kdi
+  #请求方法
+  method: get
+  #自定义请求接口间隔时间（秒）
+  interval: 300
+
+# 阿里云存储
+aliyunoss:
+  # 是否启用
+  enabled: false
+  # 用户AccessKey ID
+  accessKeyID: LTAI6FcW8mxzvaVzAvHSE75d
+  # 用户AccessKey Secret
+  accessKeySecret: J3tDYnJADgHaaCFfuIt8NsOVhrtb6q
+  # 地域节点(外网访问)
+  endPoint: oss-cn-beijing.aliyuncs.com
+  # Bucket 名称
+  bucketName: java-test-123

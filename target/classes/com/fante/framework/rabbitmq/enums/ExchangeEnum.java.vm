@@ -1,0 +1,39 @@
+//package com.fante.framework.rabbitmq.enums;
+//
+///**
+// * @program: Fante
+// * @Date:
+// * @Author: Mr.Z
+// * @Description: 交换机枚举配置
+// */
+//public enum ExchangeEnum {
+//
+//    /**
+//     * 测试直连交换机名称
+//     */
+//    EX_DIRECT_TEST("ex.driect.test"),
+//    /**
+//     * 测试主题交换机名称
+//     */
+//    EX_TOPIC_TEST("ex.topic.test"),
+//    /**
+//     * 测试主题交换机名称
+//     */
+//    EX_FANOUT_TEST("ex.fanout.test"),
+//
+//
+//    ;
+//
+//    /**
+//     * 交换机名称
+//     */
+//    private String name;
+//
+//    ExchangeEnum(String name) {
+//        this.name = name;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//}

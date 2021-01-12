@@ -1,0 +1,49 @@
+
+Y	java:S125Ì"<This block of commented-out lines of code should be removed.(ô‚´á8ƒ¿àçâ.
+O
+java:S1172­"1Remove this unused method parameter "productIds".(ìË±ñ8•¾ç‘â.
+l	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ø„·şÿÿÿÿ
+l	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ø„·şÿÿÿÿ
+_
+java:S1854Á"<Remove this useless assignment to local variable "province".(¢º‡ßüÿÿÿÿ8•¾ç‘â.
+H
+java:S1612”",Replace this lambda with a method reference.(‹Ø´Ãıÿÿÿÿ
+B
+java:S10686"'Remove this unused "log" private field.(«À…İıÿÿÿÿ
+b
+java:S1128"GRemove this unused import 'com.fante.common.business.enums.OrderConst'.(Â£Êğûÿÿÿÿ
+a
+java:S1128"FRemove this unused import 'com.fante.framework.web.domain.AjaxResult'.(ã¥îïşÿÿÿÿ
+v
+java:S1128$"[Remove this unused import 'com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg'.(‘´Ò›üÿÿÿÿ
+l	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Õ…¼¨úÿÿÿÿ
+]
+java:S1128	"BRemove this unused import 'com.fante.common.utils.bean.BeanUtils'.(ˆ‡Ï’øÿÿÿÿ
+S
+java:S3655"7Call "totalOpt.isPresent()" before accessing the value.(ƒĞ¤Éøÿÿÿÿ
+F
+java:S5411ş"*Use the primitive boolean expression here.(‚Ø¬šûÿÿÿÿ
+_
+java:S5361ˆ"HReplace this call to "replaceAll()" by a call to the "replace()" method.(ù£À¥
+^	java:S125Ã"<This block of commented-out lines of code should be removed.(øÙş™ÿÿÿÿÿ8•¾ç‘â.
+^	java:S125ã"<This block of commented-out lines of code should be removed.(Ğ¯Ôºøÿÿÿÿ8•¾ç‘â.
+P
+java:S1481Á"-Remove this unused "province" local variable.(¢º‡ßüÿÿÿÿ8•¾ç‘â.
+P
+java:S1191$"5Use classes from the Java API instead of Sun classes.(‘´Ò›üÿÿÿÿ
+x
+java:S1128"bRemove this unused import 'com.fante.project.business.smsFlashPromotion.domain.SmsFlashPromotion'.(æ«ÿ–
+e
+java:S1128"JRemove this unused import 'com.fante.common.business.enums.SmsFlashConst'.(ö†„éıÿÿÿÿ
+l	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Õ…¼¨úÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Çè¿ˆ
+S
+java:S1128-"8Remove this unused import 'java.util.stream.Collectors'.(Óóº´úÿÿÿÿ
+_
+java:S1128"IRemove this unused import 'com.fante.common.exception.BusinessException'.(€îƒ¡
+…
+java:S1128"pRemove this unused import 'com.fante.project.business.smsFlashPromotionProduct.domain.SmsFlashPromotionProduct'.(Õ˜ß^
+f
+java:S3252½"JUse static access with "org.apache.commons.lang3.StringUtils" for "EMPTY".(‚§³Õúÿÿÿÿ
+F
+java:S5411›"*Use the primitive boolean expression here.(çš¬êøÿÿÿÿ

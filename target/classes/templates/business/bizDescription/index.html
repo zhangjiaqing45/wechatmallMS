@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>帮助文档</title>
+    <link rel="alternate" type="application/rss+xml" title="" href="feed/index.html">
+    <th:block th:include="include :: description-css"/>
+    <style>
+        .docs-content{
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <header>
+        <div class="container">
+            <h2 class="lone-header">系统帮助文档</h2>
+        </div>
+    </header>
+    <section>
+        <div class="container">
+            <ul class="docs-nav">
+                <!-- 菜单 -->
+            </ul>
+            <div class="docs-content">
+                <!-- 内容 -->
+                <h3 id="welcome"> 欢迎使用帮助文档</h3>
+                <p> 点击左边菜单，查看相应的说明内容</p>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="">
+            <p> &copy; 2019 Fante Copyright</p>
+        </div>
+    </footer>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<th:block th:include="include :: description-js"/>
+<script th:inline="javascript"> var ctx = [[@{/}]]; </script>
+<script th:src="@{/ajax/libs/layer/layer.min.js}"></script>
+<script th:inline="javascript">
+    var prefix = ctx + "business/bizDescription";
+    var list = [[${list}]];
+
+    $(function () {
+        buildMenu(list);
+    });
+
+    function buildMenu(list) {
+        if (list && list.length > 0) {
+            var tpl = "";
+            for (var i in list) {
+                var item = list[i];
+                tpl += "<li><a href=\"#welcome\" class=\"cc-active\" data-id=\"" + item.id + "\" ><strong>" + item.descTitle + "</strong></a></li>";
+                var children = item.children;
+                if (children && children.length > 0) {
+                    for (var j in children) {
+                        var subItem = children[j];
+                        tpl += "<li><a href=\"javascript:;\" class=\"cc-active\" data-id=\"" + subItem.id + "\" >" + subItem.descTitle + "</a></li>";
+                    }
+                }
+            }
+            $(".docs-nav").html(tpl);
+            menuEvents();
+        }
+    }
+
+    function menuEvents() {
+        $(".cc-active").on("click", function () {
+            var id = $(this).attr("data-id"), tpl = "";
+            layer.load();
+            $(".docs-content").html(tpl);
+            $.getJSON(prefix + "/get", {id: id}, function (res, status, xhr) {
+                layer.closeAll("loading");
+                if (res.code === 200) {
+                    if (res.doc) {
+                        tpl += "<h4> " + res.doc.descTitle + "</h4>";
+                        tpl += "<div>" + res.doc.descText + "</div>";
+                        $(".docs-content").html(tpl);
+                    } else {
+                        layer.msg("未获取到文档内容");
+                    }
+                } else {
+                    layer.msg(res.msg);
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

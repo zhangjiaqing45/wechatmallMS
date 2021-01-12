@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改会员')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-umsMember-edit" th:object="${umsMember}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <input name="pid" th:field="*{pid}" class="form-control" type="hidden">
+
+            <h4 class="form-header h4">基本信息</h4>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">用户头像：</label>
+                <div class="col-sm-8">
+                    <input name="headimgurl" th:field="*{headimgurl}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">用户账号：</label>
+                <div class="col-sm-8">
+                    <input th:field="*{username}" class="form-control" type="text" disabled>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">用户来源：</label>
+                <div class="col-sm-8">
+                    <select class="form-control" th:with="type=${@custom.memberSource()}" disabled>
+                        <option value="">请选择</option>
+                        <option th:each="t : ${type}" th:text="${t.value}" th:value="${t.key}" th:field="*{sourceType}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">帐号状态：</label>
+                <div class="col-sm-8">
+                    <select name="status" class="form-control" th:with="type=${@custom.commonUseStatus()}">
+                        <option value="">请选择</option>
+                        <option th:each="t : ${type}" th:text="${t.value}" th:value="${t.key}" th:field="*{status}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">用户手机：</label>
+                <div class="col-sm-8">
+                    <input name="phone" th:field="*{phone}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">用户昵称：</label>
+                <div class="col-sm-8">
+                    <input name="nickname" th:field="*{nickname}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">用户性别：</label>
+                <div class="col-sm-8">
+                    <select name="sex" class="form-control" th:with="type=${@dict.getType('sys_user_sex')}">
+                        <option value="">请选择</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{sex}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">公众号openid：</label>
+                <div class="col-sm-8">
+                    <input name="openid" th:field="*{openid}" class="form-control" type="text">
+                </div>
+            </div>
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-2 control-label is-required">微信unionid：</label>-->
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="unionid" th:field="*{unionid}" class="form-control" type="text">-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">订阅标识：</label>
+                <div class="col-sm-8">
+                    <select name="subscribe" class="form-control" th:with="type=${@custom.memberSubscribe()}">
+                        <option value="">请选择</option>
+                        <option th:each="t : ${type}" th:text="${t.value}" th:value="${t.key}" th:field="*{subscribe}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <h4 class="form-header h4">账户信息</h4>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">结算账户类型：</label>
+                <div class="col-sm-8">
+                    <select name="accountType" class="form-control " th:with="type=${@dict.getType('biz_account_type')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{accountType}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">结算账户：</label>
+                <div class="col-sm-8">
+                    <input name="account" th:field="*{account}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">现金余额：</label>
+                <div class="col-sm-8">
+                    <input name="cash" th:field="*{cash}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">积分余额：</label>
+                <div class="col-sm-8">
+                    <input name="integration" th:field="*{integration}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">历史积分：</label>
+                <div class="col-sm-8">
+                    <input name="historyIntegration" th:field="*{historyIntegration}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">待入佣金：</label>
+                <div class="col-sm-8">
+                    <input name="commissionWait" th:field="*{commissionWait}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">佣金余额：</label>
+                <div class="col-sm-8">
+                    <input name="commission" th:field="*{commission}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">历史佣金：</label>
+                <div class="col-sm-8">
+                    <input name="historyCommission" th:field="*{historyCommission}" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/umsMember";
+        $("#form-umsMember-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-umsMember-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

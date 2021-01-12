@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsOrder.mapper.OmsOrderMapper">
+    
+    <resultMap type="OmsOrder" id="OmsOrderResult">
+        <result property="id"    column="id"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="payOrderId"    column="pay_order_id"    />
+        <result property="orderSn"    column="order_sn"    />
+        <result property="memberId"    column="member_id"    />
+        <result property="payAmount"    column="pay_amount"    />
+        <result property="productTotalAmount"    column="product_total_amount"    />
+        <result property="freightAmount"    column="freight_amount"    />
+        <result property="couponAmount"    column="coupon_amount"    />
+        <result property="couponType"    column="coupon_type"    />
+        <result property="couponData"    column="coupon_data"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="gameId"    column="game_id"    />
+        <result property="gameInfo"    column="game_info"    />
+        <result property="billType"    column="bill_type"    />
+        <result property="billHeader"    column="bill_header"    />
+        <result property="billContent"    column="bill_content"    />
+        <result property="billReceiverPhone"    column="bill_receiver_phone"    />
+        <result property="billReceiverEmail"    column="bill_receiver_email"    />
+        <result property="receiverName"    column="receiver_name"    />
+        <result property="receiverPhone"    column="receiver_phone"    />
+        <result property="receiverPostCode"    column="receiver_post_code"    />
+        <result property="receiverProvince"    column="receiver_province"    />
+        <result property="receiverCity"    column="receiver_city"    />
+        <result property="receiverRegion"    column="receiver_region"    />
+        <result property="receiverDetailAddress"    column="receiver_detail_address"    />
+        <result property="note"    column="note"    />
+        <result property="payStatus"    column="pay_status"    />
+        <result property="paymentType"    column="payment_type"    />
+        <result property="status"    column="status"    />
+        <result property="writeOffStatus"    column="write_off_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="paymentTime"    column="payment_time"    />
+        <result property="deliveryTime"    column="delivery_time"    />
+        <result property="receiveTime"    column="receive_time"    />
+        <result property="autoConfirmDay"    column="auto_confirm_day"    />
+        <result property="commentTime"    column="comment_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="integration"    column="integration"    />
+        <result property="growth"    column="growth"    />
+        <result property="confirmStatus"    column="confirm_status"    />
+        <result property="deliveryCompany"    column="delivery_company"    />
+        <result property="deliverySn"    column="delivery_sn"    />
+    </resultMap>
+
+    <sql id="selectOmsOrderVo">
+        select id, shop_id, pay_order_id, order_sn, member_id, pay_amount, product_total_amount, freight_amount, coupon_amount, coupon_type, coupon_data, order_type, game_id, game_info, bill_type, bill_header, bill_content, bill_receiver_phone, bill_receiver_email, receiver_name, receiver_phone, receiver_post_code, receiver_province, receiver_city, receiver_region, receiver_detail_address, note, pay_status,payment_type, status,write_off_status, create_time, payment_time, delivery_time, receive_time, auto_confirm_day, comment_time, create_by, update_by, update_time, remark, del_flag, integration, growth, confirm_status, delivery_company, delivery_sn from oms_order
+    </sql>
+
+    <select id="selectOmsOrderList" parameterType="OmsOrder" resultMap="OmsOrderResult">
+        <include refid="selectOmsOrderVo"/>
+        <where>
+           del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="payOrderId != null "> and pay_order_id = #{payOrderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="payAmount != null "> and pay_amount = #{payAmount}</if>
+            <if test="productTotalAmount != null "> and product_total_amount = #{productTotalAmount}</if>
+            <if test="freightAmount != null "> and freight_amount = #{freightAmount}</if>
+            <if test="couponAmount != null "> and coupon_amount = #{couponAmount}</if>
+            <if test="couponType != null  and couponType != ''"> and coupon_type = #{couponType}</if>
+            <if test="couponData != null  and couponData != ''"> and coupon_data = #{couponData}</if>
+            <if test="orderType != null  and orderType != ''"> and order_type = #{orderType}</if>
+            <if test="gameId != null "> and game_id = #{gameId}</if>
+            <if test="gameInfo != null  and gameInfo != ''"> and game_info = #{gameInfo}</if>
+            <if test="billType != null  and billType != ''"> and bill_type = #{billType}</if>
+            <if test="billHeader != null  and billHeader != ''"> and bill_header = #{billHeader}</if>
+            <if test="billContent != null  and billContent != ''"> and bill_content = #{billContent}</if>
+            <if test="billReceiverPhone != null  and billReceiverPhone != ''"> and bill_receiver_phone = #{billReceiverPhone}</if>
+            <if test="billReceiverEmail != null  and billReceiverEmail != ''"> and bill_receiver_email = #{billReceiverEmail}</if>
+            <if test="receiverName != null  and receiverName != ''"> and receiver_name like concat('%', #{receiverName}, '%')</if>
+            <if test="receiverPhone != null  and receiverPhone != ''"> and receiver_phone = #{receiverPhone}</if>
+            <if test="receiverPostCode != null  and receiverPostCode != ''"> and receiver_post_code = #{receiverPostCode}</if>
+            <if test="receiverProvince != null  and receiverProvince != ''"> and receiver_province = #{receiverProvince}</if>
+            <if test="receiverCity != null  and receiverCity != ''"> and receiver_city = #{receiverCity}</if>
+            <if test="receiverRegion != null  and receiverRegion != ''"> and receiver_region = #{receiverRegion}</if>
+            <if test="receiverDetailAddress != null  and receiverDetailAddress != ''"> and receiver_detail_address = #{receiverDetailAddress}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="payStatus != null  and payStatus != ''"> and pay_status = #{payStatus}</if>
+            <if test="paymentType != null  and paymentType != ''"> and payment_type = #{paymentType}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="writeOffStatus != null  and writeOffStatus != ''"> and write_off_status = #{writeOffStatus}</if>
+            <if test="paymentTime != null "> and payment_time = #{paymentTime}</if>
+            <if test="deliveryTime != null "> and delivery_time = #{deliveryTime}</if>
+            <if test="receiveTime != null "> and receive_time = #{receiveTime}</if>
+            <if test="autoConfirmDay != null "> and auto_confirm_day = #{autoConfirmDay}</if>
+            <if test="commentTime != null "> and comment_time = #{commentTime}</if>
+            <if test="integration != null "> and integration = #{integration}</if>
+            <if test="growth != null "> and growth = #{growth}</if>
+            <if test="confirmStatus != null  and confirmStatus != ''"> and confirm_status = #{confirmStatus}</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''"> and delivery_company = #{deliveryCompany}</if>
+            <if test="beginCreateTime != null  and beginCreateTime != ''"> and create_time &gt;= #{beginCreateTime}</if>
+            <if test="endCreateTime != null  and endCreateTime != ''"> and create_time &lt;= #{endCreateTime}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="countOmsOrder" parameterType="OmsOrder" resultType="int">
+        select count(*) from oms_order
+        <where>
+            del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="payOrderId != null "> and pay_order_id = #{payOrderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="payAmount != null "> and pay_amount = #{payAmount}</if>
+            <if test="productTotalAmount != null "> and product_total_amount = #{productTotalAmount}</if>
+            <if test="freightAmount != null "> and freight_amount = #{freightAmount}</if>
+            <if test="couponAmount != null "> and coupon_amount = #{couponAmount}</if>
+            <if test="couponType != null  and couponType != ''"> and coupon_type = #{couponType}</if>
+            <if test="couponData != null  and couponData != ''"> and coupon_data = #{couponData}</if>
+            <if test="orderType != null  and orderType != ''"> and order_type = #{orderType}</if>
+            <if test="gameId != null "> and game_id = #{gameId}</if>
+            <if test="gameInfo != null  and gameInfo != ''"> and game_info = #{gameInfo}</if>
+            <if test="billType != null  and billType != ''"> and bill_type = #{billType}</if>
+            <if test="billHeader != null  and billHeader != ''"> and bill_header = #{billHeader}</if>
+            <if test="billContent != null  and billContent != ''"> and bill_content = #{billContent}</if>
+            <if test="billReceiverPhone != null  and billReceiverPhone != ''"> and bill_receiver_phone = #{billReceiverPhone}</if>
+            <if test="billReceiverEmail != null  and billReceiverEmail != ''"> and bill_receiver_email = #{billReceiverEmail}</if>
+            <if test="receiverName != null  and receiverName != ''"> and receiver_name like concat('%', #{receiverName}, '%')</if>
+            <if test="receiverPhone != null  and receiverPhone != ''"> and receiver_phone = #{receiverPhone}</if>
+            <if test="receiverPostCode != null  and receiverPostCode != ''"> and receiver_post_code = #{receiverPostCode}</if>
+            <if test="receiverProvince != null  and receiverProvince != ''"> and receiver_province = #{receiverProvince}</if>
+            <if test="receiverCity != null  and receiverCity != ''"> and receiver_city = #{receiverCity}</if>
+            <if test="receiverRegion != null  and receiverRegion != ''"> and receiver_region = #{receiverRegion}</if>
+            <if test="receiverDetailAddress != null  and receiverDetailAddress != ''"> and receiver_detail_address = #{receiverDetailAddress}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="payStatus != null  and payStatus != ''"> and pay_status = #{payStatus}</if>
+            <if test="paymentType != null  and paymentType != ''"> and payment_type = #{paymentType}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="writeOffStatus != null  and writeOffStatus != ''"> and write_off_status = #{writeOffStatus}</if>
+            <if test="paymentTime != null "> and payment_time = #{paymentTime}</if>
+            <if test="deliveryTime != null "> and delivery_time = #{deliveryTime}</if>
+            <if test="receiveTime != null "> and receive_time = #{receiveTime}</if>
+            <if test="autoConfirmDay != null "> and auto_confirm_day = #{autoConfirmDay}</if>
+            <if test="commentTime != null "> and comment_time = #{commentTime}</if>
+            <if test="integration != null "> and integration = #{integration}</if>
+            <if test="growth != null "> and growth = #{growth}</if>
+            <if test="confirmStatus != null  and confirmStatus != ''"> and confirm_status = #{confirmStatus}</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''"> and delivery_company = #{deliveryCompany}</if>
+            <if test="deliverySn != null  and deliverySn != ''"> and delivery_sn = #{deliverySn}</if>
+        </where>
+    </select>
+
+    <select id="checkOmsOrderUnique" parameterType="OmsOrder" resultType="int">
+        select count(*) from oms_order
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="payOrderId != null "> and pay_order_id = #{payOrderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="payAmount != null "> and pay_amount = #{payAmount}</if>
+            <if test="productTotalAmount != null "> and product_total_amount = #{productTotalAmount}</if>
+            <if test="freightAmount != null "> and freight_amount = #{freightAmount}</if>
+            <if test="couponAmount != null "> and coupon_amount = #{couponAmount}</if>
+            <if test="couponType != null  and couponType != ''"> and coupon_type = #{couponType}</if>
+            <if test="couponData != null  and couponData != ''"> and coupon_data = #{couponData}</if>
+            <if test="orderType != null  and orderType != ''"> and order_type = #{orderType}</if>
+            <if test="gameId != null "> and game_id = #{gameId}</if>
+            <if test="gameInfo != null  and gameInfo != ''"> and game_info = #{gameInfo}</if>
+            <if test="billType != null  and billType != ''"> and bill_type = #{billType}</if>
+            <if test="billHeader != null  and billHeader != ''"> and bill_header = #{billHeader}</if>
+            <if test="billContent != null  and billContent != ''"> and bill_content = #{billContent}</if>
+            <if test="billReceiverPhone != null  and billReceiverPhone != ''"> and bill_receiver_phone = #{billReceiverPhone}</if>
+            <if test="billReceiverEmail != null  and billReceiverEmail != ''"> and bill_receiver_email = #{billReceiverEmail}</if>
+            <if test="receiverName != null  and receiverName != ''"> and receiver_name = #{receiverName}</if>
+            <if test="receiverPhone != null  and receiverPhone != ''"> and receiver_phone = #{receiverPhone}</if>
+            <if test="receiverPostCode != null  and receiverPostCode != ''"> and receiver_post_code = #{receiverPostCode}</if>
+            <if test="receiverProvince != null  and receiverProvince != ''"> and receiver_province = #{receiverProvince}</if>
+            <if test="receiverCity != null  and receiverCity != ''"> and receiver_city = #{receiverCity}</if>
+            <if test="receiverRegion != null  and receiverRegion != ''"> and receiver_region = #{receiverRegion}</if>
+            <if test="receiverDetailAddress != null  and receiverDetailAddress != ''"> and receiver_detail_address = #{receiverDetailAddress}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="payStatus != null  and payStatus != ''"> and pay_status = #{payStatus}</if>
+            <if test="paymentType != null  and paymentType != ''"> and payment_type = #{paymentType}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="writeOffStatus != null  and writeOffStatus != ''"> and write_off_status = #{writeOffStatus}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="paymentTime != null "> and payment_time = #{paymentTime}</if>
+            <if test="deliveryTime != null "> and delivery_time = #{deliveryTime}</if>
+            <if test="receiveTime != null "> and receive_time = #{receiveTime}</if>
+            <if test="autoConfirmDay != null "> and auto_confirm_day = #{autoConfirmDay}</if>
+            <if test="commentTime != null "> and comment_time = #{commentTime}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="integration != null "> and integration = #{integration}</if>
+            <if test="growth != null "> and growth = #{growth}</if>
+            <if test="confirmStatus != null  and confirmStatus != ''"> and confirm_status = #{confirmStatus}</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''"> and delivery_company = #{deliveryCompany}</if>
+            <if test="deliverySn != null  and deliverySn != ''"> and delivery_sn = #{deliverySn}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOmsOrderById" parameterType="Long" resultMap="OmsOrderResult">
+        <include refid="selectOmsOrderVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertOmsOrder" parameterType="OmsOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">shop_id,</if>
+            <if test="payOrderId != null ">pay_order_id,</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn,</if>
+            <if test="memberId != null ">member_id,</if>
+            <if test="payAmount != null ">pay_amount,</if>
+            <if test="productTotalAmount != null ">product_total_amount,</if>
+            <if test="freightAmount != null ">freight_amount,</if>
+            <if test="couponAmount != null ">coupon_amount,</if>
+            <if test="couponType != null  and couponType != ''">coupon_type,</if>
+            <if test="couponData != null  and couponData != ''">coupon_data,</if>
+            <if test="orderType != null  and orderType != ''">order_type,</if>
+            <if test="gameId != null ">game_id,</if>
+            <if test="gameInfo != null  and gameInfo != ''">game_info,</if>
+            <if test="billType != null  and billType != ''">bill_type,</if>
+            <if test="billHeader != null  and billHeader != ''">bill_header,</if>
+            <if test="billContent != null  and billContent != ''">bill_content,</if>
+            <if test="billReceiverPhone != null  and billReceiverPhone != ''">bill_receiver_phone,</if>
+            <if test="billReceiverEmail != null  and billReceiverEmail != ''">bill_receiver_email,</if>
+            <if test="receiverName != null  and receiverName != ''">receiver_name,</if>
+            <if test="receiverPhone != null  and receiverPhone != ''">receiver_phone,</if>
+            <if test="receiverPostCode != null  and receiverPostCode != ''">receiver_post_code,</if>
+            <if test="receiverProvince != null  and receiverProvince != ''">receiver_province,</if>
+            <if test="receiverCity != null  and receiverCity != ''">receiver_city,</if>
+            <if test="receiverRegion != null  and receiverRegion != ''">receiver_region,</if>
+            <if test="receiverDetailAddress != null  and receiverDetailAddress != ''">receiver_detail_address,</if>
+            <if test="note != null  and note != ''">note,</if>
+            <if test="payStatus != null  and payStatus != ''">pay_status,</if>
+            <if test="paymentType != null  and paymentType != ''">payment_type,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="writeOffStatus != null  and writeOffStatus != ''">write_off_status,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="paymentTime != null ">payment_time,</if>
+            <if test="deliveryTime != null ">delivery_time,</if>
+            <if test="receiveTime != null ">receive_time,</if>
+            <if test="autoConfirmDay != null ">auto_confirm_day,</if>
+            <if test="commentTime != null ">comment_time,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="integration != null ">integration,</if>
+            <if test="growth != null ">growth,</if>
+            <if test="confirmStatus != null  and confirmStatus != ''">confirm_status,</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''">delivery_company,</if>
+            <if test="deliverySn != null  and deliverySn != ''">delivery_sn,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="payOrderId != null ">#{payOrderId},</if>
+            <if test="orderSn != null  and orderSn != ''">#{orderSn},</if>
+            <if test="memberId != null ">#{memberId},</if>
+            <if test="payAmount != null ">#{payAmount},</if>
+            <if test="productTotalAmount != null ">#{productTotalAmount},</if>
+            <if test="freightAmount != null ">#{freightAmount},</if>
+            <if test="couponAmount != null ">#{couponAmount},</if>
+            <if test="couponType != null  and couponType != ''">#{couponType},</if>
+            <if test="couponData != null  and couponData != ''">#{couponData},</if>
+            <if test="orderType != null  and orderType != ''">#{orderType},</if>
+            <if test="gameId != null ">#{gameId},</if>
+            <if test="gameInfo != null  and gameInfo != ''">#{gameInfo},</if>
+            <if test="billType != null  and billType != ''">#{billType},</if>
+            <if test="billHeader != null  and billHeader != ''">#{billHeader},</if>
+            <if test="billContent != null  and billContent != ''">#{billContent},</if>
+            <if test="billReceiverPhone != null  and billReceiverPhone != ''">#{billReceiverPhone},</if>
+            <if test="billReceiverEmail != null  and billReceiverEmail != ''">#{billReceiverEmail},</if>
+            <if test="receiverName != null  and receiverName != ''">#{receiverName},</if>
+            <if test="receiverPhone != null  and receiverPhone != ''">#{receiverPhone},</if>
+            <if test="receiverPostCode != null  and receiverPostCode != ''">#{receiverPostCode},</if>
+            <if test="receiverProvince != null  and receiverProvince != ''">#{receiverProvince},</if>
+            <if test="receiverCity != null  and receiverCity != ''">#{receiverCity},</if>
+            <if test="receiverRegion != null  and receiverRegion != ''">#{receiverRegion},</if>
+            <if test="receiverDetailAddress != null  and receiverDetailAddress != ''">#{receiverDetailAddress},</if>
+            <if test="note != null  and note != ''">#{note},</if>
+            <if test="payStatus != null  and payStatus != ''">#{payStatus},</if>
+            <if test="paymentType != null  and paymentType != ''">#{paymentType},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="writeOffStatus != null  and writeOffStatus != ''">#{writeOffStatus},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="paymentTime != null ">#{paymentTime},</if>
+            <if test="deliveryTime != null ">#{deliveryTime},</if>
+            <if test="receiveTime != null ">#{receiveTime},</if>
+            <if test="autoConfirmDay != null ">#{autoConfirmDay},</if>
+            <if test="commentTime != null ">#{commentTime},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="integration != null ">#{integration},</if>
+            <if test="growth != null ">#{growth},</if>
+            <if test="confirmStatus != null  and confirmStatus != ''">#{confirmStatus},</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''">#{deliveryCompany},</if>
+            <if test="deliverySn != null  and deliverySn != ''">#{deliverySn},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOmsOrder" parameterType="OmsOrder">
+        update oms_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="payOrderId != null ">pay_order_id = #{payOrderId},</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn = #{orderSn},</if>
+            <if test="memberId != null ">member_id = #{memberId},</if>
+            <if test="payAmount != null ">pay_amount = #{payAmount},</if>
+            <if test="productTotalAmount != null ">product_total_amount = #{productTotalAmount},</if>
+            <if test="freightAmount != null ">freight_amount = #{freightAmount},</if>
+            <if test="couponAmount != null ">coupon_amount = #{couponAmount},</if>
+            <if test="couponType != null  and couponType != ''">coupon_type = #{couponType},</if>
+            <if test="couponData != null  and couponData != ''">coupon_data = #{couponData},</if>
+            <if test="orderType != null  and orderType != ''">order_type = #{orderType},</if>
+            <if test="gameId != null ">game_id = #{gameId},</if>
+            <if test="gameInfo != null  and gameInfo != ''">game_info = #{gameInfo},</if>
+            <if test="billType != null  and billType != ''">bill_type = #{billType},</if>
+            <if test="billHeader != null  and billHeader != ''">bill_header = #{billHeader},</if>
+            <if test="billContent != null  and billContent != ''">bill_content = #{billContent},</if>
+            <if test="billReceiverPhone != null  and billReceiverPhone != ''">bill_receiver_phone = #{billReceiverPhone},</if>
+            <if test="billReceiverEmail != null  and billReceiverEmail != ''">bill_receiver_email = #{billReceiverEmail},</if>
+            <if test="receiverName != null  and receiverName != ''">receiver_name = #{receiverName},</if>
+            <if test="receiverPhone != null  and receiverPhone != ''">receiver_phone = #{receiverPhone},</if>
+            <if test="receiverPostCode != null  and receiverPostCode != ''">receiver_post_code = #{receiverPostCode},</if>
+            <if test="receiverProvince != null  and receiverProvince != ''">receiver_province = #{receiverProvince},</if>
+            <if test="receiverCity != null  and receiverCity != ''">receiver_city = #{receiverCity},</if>
+            <if test="receiverRegion != null  and receiverRegion != ''">receiver_region = #{receiverRegion},</if>
+            <if test="receiverDetailAddress != null  and receiverDetailAddress != ''">receiver_detail_address = #{receiverDetailAddress},</if>
+            <if test="note != null  and note != ''">note = #{note},</if>
+            <if test="payStatus != null  and payStatus != ''">pay_status = #{payStatus},</if>
+            <if test="paymentType != null  and paymentType != ''">payment_type = #{paymentType},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="writeOffStatus != null  and writeOffStatus != ''">write_off_status = #{writeOffStatus},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="paymentTime != null ">payment_time = #{paymentTime},</if>
+            <if test="deliveryTime != null ">delivery_time = #{deliveryTime},</if>
+            <if test="receiveTime != null ">receive_time = #{receiveTime},</if>
+            <if test="autoConfirmDay != null ">auto_confirm_day = #{autoConfirmDay},</if>
+            <if test="commentTime != null ">comment_time = #{commentTime},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="integration != null ">integration = #{integration},</if>
+            <if test="growth != null ">growth = #{growth},</if>
+            <if test="confirmStatus != null  and confirmStatus != ''">confirm_status = #{confirmStatus},</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''">delivery_company = #{deliveryCompany},</if>
+            <if test="deliverySn != null  and deliverySn != ''">delivery_sn = #{deliverySn},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOmsOrderById" parameterType="Long">
+        <!-- update oms_order set del_flag = '1' where id = #{id} -->
+        delete from oms_order where id = #{id}
+    </delete>
+
+    <delete id="deleteOmsOrderByIds" parameterType="String">
+        update oms_order set del_flag = '1' where id in
+        <!-- delete from oms_order where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

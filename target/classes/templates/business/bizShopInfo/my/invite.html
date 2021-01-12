@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <th:block th:include="include :: header('店铺邀请二维码')"/>
+    <style type="text/css">
+        .app-tip{
+            margin-left: 10px;
+            margin-right: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <h3>我的店铺邀请码 </h3>
+    <p class="small">请使用<span class="app-tip">截图或拍照后 <i class="fa fa-hand-o-down"></i></span>发送给被邀请人</p>
+    <div style="text-align: center;" id="qrcode"></div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: qrcode-js"/>
+<script th:inline="javascript">
+    var url = [[${url}]],
+        HOST = "http://" + window.location.host;
+
+    $(function () {
+        url = escape2Html(url);
+        console.log(url);
+        $("#qrcode").qrcode(url);
+    });
+
+    function escape2Html(str) {
+        var arrEntities={'lt':'<','gt':'>','nbsp':' ','amp':'&','quot':'"'};
+        return str.replace(/&(lt|gt|nbsp|amp|quot);/ig,function(all,t){return arrEntities[t];});
+    }
+
+</script>
+</body>
+
+</html>

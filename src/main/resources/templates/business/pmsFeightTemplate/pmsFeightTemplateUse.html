@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('优惠券指定商品')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <!--<input type="hidden" name="shopId" th:value="${shopId}" />-->
+                <div class="select-list">
+                    <input type="hidden" name="feightTemplateId" th:value="${templateId}">
+                    <ul>
+                        <li>
+                            <p>商品货号：</p>
+                            <input type="text" name="productSn"/>
+                        </li>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="productName"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i> 搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i> 重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var prefix = ctx + "business/pmsFeightTemplate";
+    var publishStatus = [[${@custom.allPublicStatusPlus()}]];
+
+    $(function() {
+        var options = {
+            url: prefix + "/templateUse",
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            // rememberSelected: true,
+            // clickToSelect: true,
+            modalName: "运费模板使用情况",
+            columns: [
+                // {
+                //     field: 'state',
+                //     checkbox: true
+                // },
+                {
+                    field : 'productId',
+                    title : '商品ID',
+                    visible: false
+                },
+                {
+                    field : 'productSn',
+                    title : '商品货号'
+                },
+                {
+                    field : 'productName',
+                    title : '商品名称'
+                },
+                {
+                    field: 'publishStatus',
+                    title: '上架状态',
+                    formatter: function(value, row, index) {
+                        if (publishStatus[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", publishStatus[value].style, publishStatus[value].desc);
+                        }
+                    }
+
+                }
+            ]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('微信支付日志列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>日志状态：</p>
+                                <select name="status">
+                                    <option value="">所有</option>
+                                    <option value="0">调用成功</option>
+                                    <option value="1">调用失败</option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>日志类型：</p>
+                                <select name="type" th:with="type=${@custom.wxPayLogTypes()}">
+                                    <option value="">所有</option>
+                                    <option th:each="t : ${type}" th:text="${t.value}" th:value="${t.key}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>用户标识：</p>
+                                <input type="text" name="openid"/>
+                            </li>
+                            <li>
+                                <p>商户订单号：</p>
+                                <input type="text" name="outTradeNo"/>
+                            </li>
+<!--                            <li>-->
+<!--                                <p>标价金额：</p>-->
+<!--                                <input type="text" name="totalFee"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <p>提示信息：</p>-->
+<!--                                <input type="text" name="msg"/>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <p>调用信息：</p>-->
+<!--                                <input type="text" name="content"/>-->
+<!--                            </li>-->
+                            <li class="select-time">
+                                <label>创建时间： </label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间"
+                                       name="params[beginTime]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间"
+                                       name="params[endTime]"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+<!--            <div class="btn-group-sm" id="toolbar" role="group">-->
+<!--                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="business:wxPayLog:add">-->
+<!--                    <i class="fa fa-plus"></i> 添加-->
+<!--                </a>-->
+<!--                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="business:wxPayLog:edit">-->
+<!--                    <i class="fa fa-edit"></i> 修改-->
+<!--                </a>-->
+<!--                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="business:wxPayLog:remove">-->
+<!--                    <i class="fa fa-remove"></i> 删除-->
+<!--                </a>-->
+<!--                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:wxPayLog:export">-->
+<!--                    <i class="fa fa-download"></i> 导出-->
+<!--                 </a>-->
+<!--            </div>-->
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('business:wxPayLog:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('business:wxPayLog:remove')}]];
+        var prefix = ctx + "business/wxPayLog";
+        var logTypes = [[${@custom.wxPayLogTypes()}]];
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                // createUrl: prefix + "/add",
+                detailUrl: prefix + "/edit/{id}",
+                // removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "微信支付日志",
+                sortName: "createTime",
+                sortOrder: "desc",
+                columns: [
+                //     {
+                //     checkbox: true
+                // },
+                {
+                    field : 'id', 
+                    title : '主键',
+                    visible: false
+                },
+                {
+                    field : 'outTradeNo',
+                    title : '商户订单号'
+                },
+                {
+                    field : 'openid',
+                    title : '用户标识',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value, 20, "open");
+                    }
+                },
+                {
+                    field : 'status', 
+                    title : '日志状态',
+                    formatter: function(value, row, index){
+                        return value == '0' ? "调用成功" : "调用失败";
+                    }
+                },
+                {
+                    field : 'type', 
+                    title : '日志类型',
+                    formatter: function (value, row, index) {
+                        return logTypes[value];
+                    }
+                },
+                {
+                    field : 'totalFee', 
+                    title : '标价金额(分)'
+                },
+                {
+                    field : 'msg', 
+                    title : '提示信息',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value, 20, "open");
+                    }
+                },
+                // {
+                //     field : 'content',
+                //     title : '调用信息'
+                // },
+                {
+                    field : 'createTime',
+                    title : '创建时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

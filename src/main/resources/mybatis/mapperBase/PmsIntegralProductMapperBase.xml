@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsIntegralProduct.mapper.PmsIntegralProductMapper">
+    
+    <resultMap type="PmsIntegralProduct" id="PmsIntegralProductResult">
+        <result property="id"    column="id"    />
+        <result property="productSn"    column="product_sn"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="brandId"    column="brand_id"    />
+        <result property="productCategoryId"    column="product_category_id"    />
+        <result property="feightFee"    column="feight_fee"    />
+        <result property="productAttributeCategoryId"    column="product_attribute_category_id"    />
+        <result property="productCategoryName"    column="product_category_name"    />
+        <result property="brandName"    column="brand_name"    />
+        <result property="name"    column="name"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="publishStatus"    column="publish_status"    />
+        <result property="verifyStatus"    column="verify_status"    />
+        <result property="price"    column="price"    />
+        <result property="originalPrice"    column="original_price"    />
+        <result property="sale"    column="sale"    />
+        <result property="stock"    column="stock"    />
+        <result property="lowStock"    column="low_stock"    />
+        <result property="pic"    column="pic"    />
+        <result property="albumPics"    column="album_pics"    />
+        <result property="paramData"    column="param_data"    />
+        <result property="keywords"    column="keywords"    />
+        <result property="subTitle"    column="sub_title"    />
+        <result property="description"    column="description"    />
+        <result property="detailTitle"    column="detail_title"    />
+        <result property="detailDesc"    column="detail_desc"    />
+        <result property="detailHtml"    column="detail_html"    />
+        <result property="sort"    column="sort"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="auditMsg"    column="audit_msg"    />
+        <result property="remark"    column="remark"    />
+        <result property="unit"    column="unit"    />
+        <result property="weight"    column="weight"    />
+        <result property="platformCategory"    column="platform_category"    />
+        <result property="giftGrowth"    column="gift_growth"    />
+        <result property="giftPoint"    column="gift_point"    />
+        <result property="usePointLimit"    column="use_point_limit"    />
+        <result property="serviceIds"    column="service_ids"    />
+    </resultMap>
+
+    <sql id="selectPmsIntegralProductVo">
+        select id, product_sn, shop_id, brand_id, product_category_id, feight_fee, product_attribute_category_id, product_category_name, brand_name, name, del_flag, publish_status, verify_status, price, original_price, sale, stock, low_stock, pic, album_pics, param_data, keywords, sub_title, description, detail_title, detail_desc, detail_html, sort, create_by, create_time, update_by, update_time, audit_msg, remark, unit, weight, platform_category, gift_growth, gift_point, use_point_limit, service_ids from pms_integral_product
+    </sql>
+
+    <select id="selectPmsIntegralProductList" parameterType="PmsIntegralProduct" resultMap="PmsIntegralProductResult">
+        <include refid="selectPmsIntegralProductVo"/>
+        <where>
+           del_flag = '0'
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="brandId != null "> and brand_id = #{brandId}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="feightFee != null "> and feight_fee = #{feightFee}</if>
+            <if test="productAttributeCategoryId != null "> and product_attribute_category_id = #{productAttributeCategoryId}</if>
+            <if test="productCategoryName != null  and productCategoryName != ''"> and product_category_name like concat('%', #{productCategoryName}, '%')</if>
+            <if test="brandName != null  and brandName != ''"> and brand_name like concat('%', #{brandName}, '%')</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="publishStatus != null  and publishStatus != ''"> and publish_status = #{publishStatus}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''"> and verify_status = #{verifyStatus}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="originalPrice != null "> and original_price = #{originalPrice}</if>
+            <if test="sale != null "> and sale = #{sale}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="lowStock != null "> and low_stock = #{lowStock}</if>
+            <if test="keywords != null  and keywords != ''"> and keywords = #{keywords}</if>
+            <if test="subTitle != null  and subTitle != ''"> and sub_title = #{subTitle}</if>
+            <if test="auditMsg != null  and auditMsg != ''"> and audit_msg = #{auditMsg}</if>
+        </where>
+    </select>
+
+    <select id="countPmsIntegralProduct" parameterType="PmsIntegralProduct" resultType="int">
+        select count(*) from pms_integral_product
+        <where>
+            del_flag = '0'
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="brandId != null "> and brand_id = #{brandId}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="feightFee != null "> and feight_fee = #{feightFee}</if>
+            <if test="productAttributeCategoryId != null "> and product_attribute_category_id = #{productAttributeCategoryId}</if>
+            <if test="productCategoryName != null  and productCategoryName != ''"> and product_category_name like concat('%', #{productCategoryName}, '%')</if>
+            <if test="brandName != null  and brandName != ''"> and brand_name like concat('%', #{brandName}, '%')</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="publishStatus != null  and publishStatus != ''"> and publish_status = #{publishStatus}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''"> and verify_status = #{verifyStatus}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="originalPrice != null "> and original_price = #{originalPrice}</if>
+            <if test="sale != null "> and sale = #{sale}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="lowStock != null "> and low_stock = #{lowStock}</if>
+            <if test="keywords != null  and keywords != ''"> and keywords = #{keywords}</if>
+            <if test="subTitle != null  and subTitle != ''"> and sub_title = #{subTitle}</if>
+            <if test="auditMsg != null  and auditMsg != ''"> and audit_msg = #{auditMsg}</if>
+        </where>
+    </select>
+
+    <select id="checkPmsIntegralProductUnique" parameterType="PmsIntegralProduct" resultType="int">
+        select count(*) from pms_integral_product
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="brandId != null "> and brand_id = #{brandId}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="feightFee != null "> and feight_fee = #{feightFee}</if>
+            <if test="productAttributeCategoryId != null "> and product_attribute_category_id = #{productAttributeCategoryId}</if>
+            <if test="productCategoryName != null  and productCategoryName != ''"> and product_category_name = #{productCategoryName}</if>
+            <if test="brandName != null  and brandName != ''"> and brand_name = #{brandName}</if>
+            <if test="name != null  and name != ''"> and name = #{name}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="publishStatus != null  and publishStatus != ''"> and publish_status = #{publishStatus}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''"> and verify_status = #{verifyStatus}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="originalPrice != null "> and original_price = #{originalPrice}</if>
+            <if test="sale != null "> and sale = #{sale}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="lowStock != null "> and low_stock = #{lowStock}</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="albumPics != null  and albumPics != ''"> and album_pics = #{albumPics}</if>
+            <if test="paramData != null  and paramData != ''"> and param_data = #{paramData}</if>
+            <if test="keywords != null  and keywords != ''"> and keywords = #{keywords}</if>
+            <if test="subTitle != null  and subTitle != ''"> and sub_title = #{subTitle}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="detailTitle != null  and detailTitle != ''"> and detail_title = #{detailTitle}</if>
+            <if test="detailDesc != null  and detailDesc != ''"> and detail_desc = #{detailDesc}</if>
+            <if test="detailHtml != null  and detailHtml != ''"> and detail_html = #{detailHtml}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="auditMsg != null  and auditMsg != ''"> and audit_msg = #{auditMsg}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="weight != null "> and weight = #{weight}</if>
+            <if test="platformCategory != null "> and platform_category = #{platformCategory}</if>
+            <if test="giftGrowth != null "> and gift_growth = #{giftGrowth}</if>
+            <if test="giftPoint != null "> and gift_point = #{giftPoint}</if>
+            <if test="usePointLimit != null "> and use_point_limit = #{usePointLimit}</if>
+            <if test="serviceIds != null  and serviceIds != ''"> and service_ids = #{serviceIds}</if>
+        </where>
+    </select>
+
+
+    <select id="selectPmsIntegralProductById" parameterType="Long" resultMap="PmsIntegralProductResult">
+        <include refid="selectPmsIntegralProductVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertPmsIntegralProduct" parameterType="PmsIntegralProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into pms_integral_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productSn != null  and productSn != ''">product_sn,</if>
+            <if test="shopId != null ">shop_id,</if>
+            <if test="brandId != null ">brand_id,</if>
+            <if test="productCategoryId != null ">product_category_id,</if>
+            <if test="feightFee != null ">feight_fee,</if>
+            <if test="productAttributeCategoryId != null ">product_attribute_category_id,</if>
+            <if test="productCategoryName != null  and productCategoryName != ''">product_category_name,</if>
+            <if test="brandName != null  and brandName != ''">brand_name,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="publishStatus != null  and publishStatus != ''">publish_status,</if>
+            <if test="verifyStatus != null  and verifyStatus != ''">verify_status,</if>
+            <if test="price != null ">price,</if>
+            <if test="originalPrice != null ">original_price,</if>
+            <if test="sale != null ">sale,</if>
+            <if test="stock != null ">stock,</if>
+            <if test="lowStock != null ">low_stock,</if>
+            <if test="pic != null  and pic != ''">pic,</if>
+            <if test="albumPics != null  and albumPics != ''">album_pics,</if>
+            <if test="paramData != null  and paramData != ''">param_data,</if>
+            <if test="keywords != null  and keywords != ''">keywords,</if>
+            <if test="subTitle != null  and subTitle != ''">sub_title,</if>
+            <if test="description != null  and description != ''">description,</if>
+            <if test="detailTitle != null  and detailTitle != ''">detail_title,</if>
+            <if test="detailDesc != null  and detailDesc != ''">detail_desc,</if>
+            <if test="detailHtml != null  and detailHtml != ''">detail_html,</if>
+            <if test="sort != null ">sort,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="auditMsg != null  and auditMsg != ''">audit_msg,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="unit != null  and unit != ''">unit,</if>
+            <if test="weight != null ">weight,</if>
+            <if test="platformCategory != null ">platform_category,</if>
+            <if test="giftGrowth != null ">gift_growth,</if>
+            <if test="giftPoint != null ">gift_point,</if>
+            <if test="usePointLimit != null ">use_point_limit,</if>
+            <if test="serviceIds != null  and serviceIds != ''">service_ids,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productSn != null  and productSn != ''">#{productSn},</if>
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="brandId != null ">#{brandId},</if>
+            <if test="productCategoryId != null ">#{productCategoryId},</if>
+            <if test="feightFee != null ">#{feightFee},</if>
+            <if test="productAttributeCategoryId != null ">#{productAttributeCategoryId},</if>
+            <if test="productCategoryName != null  and productCategoryName != ''">#{productCategoryName},</if>
+            <if test="brandName != null  and brandName != ''">#{brandName},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="publishStatus != null  and publishStatus != ''">#{publishStatus},</if>
+            <if test="verifyStatus != null  and verifyStatus != ''">#{verifyStatus},</if>
+            <if test="price != null ">#{price},</if>
+            <if test="originalPrice != null ">#{originalPrice},</if>
+            <if test="sale != null ">#{sale},</if>
+            <if test="stock != null ">#{stock},</if>
+            <if test="lowStock != null ">#{lowStock},</if>
+            <if test="pic != null  and pic != ''">#{pic},</if>
+            <if test="albumPics != null  and albumPics != ''">#{albumPics},</if>
+            <if test="paramData != null  and paramData != ''">#{paramData},</if>
+            <if test="keywords != null  and keywords != ''">#{keywords},</if>
+            <if test="subTitle != null  and subTitle != ''">#{subTitle},</if>
+            <if test="description != null  and description != ''">#{description},</if>
+            <if test="detailTitle != null  and detailTitle != ''">#{detailTitle},</if>
+            <if test="detailDesc != null  and detailDesc != ''">#{detailDesc},</if>
+            <if test="detailHtml != null  and detailHtml != ''">#{detailHtml},</if>
+            <if test="sort != null ">#{sort},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="auditMsg != null  and auditMsg != ''">#{auditMsg},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="unit != null  and unit != ''">#{unit},</if>
+            <if test="weight != null ">#{weight},</if>
+            <if test="platformCategory != null ">#{platformCategory},</if>
+            <if test="giftGrowth != null ">#{giftGrowth},</if>
+            <if test="giftPoint != null ">#{giftPoint},</if>
+            <if test="usePointLimit != null ">#{usePointLimit},</if>
+            <if test="serviceIds != null  and serviceIds != ''">#{serviceIds},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePmsIntegralProduct" parameterType="PmsIntegralProduct">
+        update pms_integral_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productSn != null  and productSn != ''">product_sn = #{productSn},</if>
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="brandId != null ">brand_id = #{brandId},</if>
+            <if test="productCategoryId != null ">product_category_id = #{productCategoryId},</if>
+            <if test="feightFee != null ">feight_fee = #{feightFee},</if>
+            <if test="productAttributeCategoryId != null ">product_attribute_category_id = #{productAttributeCategoryId},</if>
+            <if test="productCategoryName != null  and productCategoryName != ''">product_category_name = #{productCategoryName},</if>
+            <if test="brandName != null  and brandName != ''">brand_name = #{brandName},</if>
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="publishStatus != null  and publishStatus != ''">publish_status = #{publishStatus},</if>
+            <if test="verifyStatus != null  and verifyStatus != ''">verify_status = #{verifyStatus},</if>
+            <if test="price != null ">price = #{price},</if>
+            <if test="originalPrice != null ">original_price = #{originalPrice},</if>
+            <if test="sale != null ">sale = #{sale},</if>
+            <if test="stock != null ">stock = #{stock},</if>
+            <if test="lowStock != null ">low_stock = #{lowStock},</if>
+            <if test="pic != null  and pic != ''">pic = #{pic},</if>
+            <if test="albumPics != null  and albumPics != ''">album_pics = #{albumPics},</if>
+            <if test="paramData != null  and paramData != ''">param_data = #{paramData},</if>
+            <if test="keywords != null  and keywords != ''">keywords = #{keywords},</if>
+            <if test="subTitle != null  and subTitle != ''">sub_title = #{subTitle},</if>
+            <if test="description != null  and description != ''">description = #{description},</if>
+            <if test="detailTitle != null  and detailTitle != ''">detail_title = #{detailTitle},</if>
+            <if test="detailDesc != null  and detailDesc != ''">detail_desc = #{detailDesc},</if>
+            <if test="detailHtml != null  and detailHtml != ''">detail_html = #{detailHtml},</if>
+            <if test="sort != null ">sort = #{sort},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="auditMsg != null  and auditMsg != ''">audit_msg = #{auditMsg},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="unit != null  and unit != ''">unit = #{unit},</if>
+            <if test="weight != null ">weight = #{weight},</if>
+            <if test="platformCategory != null ">platform_category = #{platformCategory},</if>
+            <if test="giftGrowth != null ">gift_growth = #{giftGrowth},</if>
+            <if test="giftPoint != null ">gift_point = #{giftPoint},</if>
+            <if test="usePointLimit != null ">use_point_limit = #{usePointLimit},</if>
+            <if test="serviceIds != null  and serviceIds != ''">service_ids = #{serviceIds},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePmsIntegralProductById" parameterType="Long">
+        <!-- update pms_integral_product set del_flag = '1' where id = #{id} -->
+        delete from pms_integral_product where id = #{id}
+    </delete>
+
+    <delete id="deletePmsIntegralProductByIds" parameterType="String">
+        update pms_integral_product set del_flag = '1' where id in
+        <!-- delete from pms_integral_product where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

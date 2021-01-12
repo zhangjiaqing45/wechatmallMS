@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsShopCategoryRelation.mapper.PmsShopCategoryRelationMapper">
+
+    <resultMap type="PmsShopCategoryRelation" id="PmsShopCategoryRelationResult">
+        <result property="id"    column="id"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="productCategoryId"    column="product_category_id"    />
+        <result property="shopProductCount"    column="shop_product_count"    />
+        <result property="shopStatus"    column="shop_status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="sort"    column="sort"    />
+    </resultMap>
+
+    <sql id="selectPmsShopCategoryRelationVo">
+        select id, shop_id, product_category_id, shop_product_count, shop_status, create_by, create_time, update_by, update_time, remark, del_flag, sort from pms_shop_category_relation
+    </sql>
+
+    <select id="selectPmsShopCategoryRelationList" parameterType="PmsShopCategoryRelation" resultMap="PmsShopCategoryRelationResult">
+        <include refid="selectPmsShopCategoryRelationVo"/>
+        <where>
+            del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="shopProductCount != null "> and shop_product_count = #{shopProductCount}</if>
+            <if test="shopStatus != null  and shopStatus != ''"> and shop_status = #{shopStatus}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+        </where>
+    </select>
+
+    <select id="countPmsShopCategoryRelation" parameterType="PmsShopCategoryRelation" resultType="int">
+        select count(*) from pms_shop_category_relation
+        <where>
+            del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="shopProductCount != null "> and shop_product_count = #{shopProductCount}</if>
+            <if test="shopStatus != null  and shopStatus != ''"> and shop_status = #{shopStatus}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+        </where>
+    </select>
+
+    <select id="checkPmsShopCategoryRelationUnique" parameterType="PmsShopCategoryRelation" resultType="int">
+        select count(*) from pms_shop_category_relation
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="shopProductCount != null "> and shop_product_count = #{shopProductCount}</if>
+            <if test="shopStatus != null  and shopStatus != ''"> and shop_status = #{shopStatus}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+        </where>
+    </select>
+
+
+    <select id="selectPmsShopCategoryRelationById" parameterType="Long" resultMap="PmsShopCategoryRelationResult">
+        <include refid="selectPmsShopCategoryRelationVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+
+    <insert id="insertPmsShopCategoryRelation" parameterType="PmsShopCategoryRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into pms_shop_category_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">shop_id,</if>
+            <if test="productCategoryId != null ">product_category_id,</if>
+            <if test="shopProductCount != null ">shop_product_count,</if>
+            <if test="shopStatus != null  and shopStatus != ''">shop_status,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="sort != null ">sort,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="productCategoryId != null ">#{productCategoryId},</if>
+            <if test="shopProductCount != null ">#{shopProductCount},</if>
+            <if test="shopStatus != null  and shopStatus != ''">#{shopStatus},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="sort != null ">#{sort},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePmsShopCategoryRelation" parameterType="PmsShopCategoryRelation">
+        update pms_shop_category_relation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="productCategoryId != null ">product_category_id = #{productCategoryId},</if>
+            <if test="shopProductCount != null ">shop_product_count = #{shopProductCount},</if>
+            <if test="shopStatus != null  and shopStatus != ''">shop_status = #{shopStatus},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="sort != null ">sort = #{sort},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePmsShopCategoryRelationById" parameterType="Long">
+        <!-- update pms_shop_category_relation set del_flag = '1' where id = #{id} -->
+        delete from pms_shop_category_relation where id = #{id}
+    </delete>
+
+    <delete id="deletePmsShopCategoryRelationByIds" parameterType="String">
+        update pms_shop_category_relation set del_flag = '1' where id in
+        <!-- delete from pms_shop_category_relation where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

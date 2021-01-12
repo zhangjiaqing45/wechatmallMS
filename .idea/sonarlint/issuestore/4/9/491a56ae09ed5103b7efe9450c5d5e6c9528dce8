@@ -1,0 +1,23 @@
+
+g
+java:S3252 "KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(¶èÁîûÿÿÿÿ
+o
+java:S1128"TRemove this unused import 'com.fante.project.api.appView.service.UmsAddressService'.(şÿ—üÿÿÿÿ
+R	java:S125“"<This block of commented-out lines of code should be removed.(äı²à
+d
+java:S1128"NRemove this unused import 'com.fante.common.business.enums.SmsGroupGameConst'.(üß°
+l
+java:S1128"QRemove this unused import 'com.fante.project.api.appView.service.BizShopService'.(†ì…»şÿÿÿÿ
+T	java:S106Ë"9Replace this use of System.out or System.err by a logger.(¡··¼şÿÿÿÿ
+x
+java:S1128"]Remove this unused import 'com.fante.project.api.umsProcess.service.UmsMemberProcessService'.(­§Ğşÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(âŞâù
+W	java:S125Ş"<This block of commented-out lines of code should be removed.(îºûåşÿÿÿÿ
+O	java:S106”"9Replace this use of System.out or System.err by a logger.(Ñ’›å
+n
+java:S1128"XRemove this unused import 'com.fante.project.business.omsOrderItem.domain.OmsOrderItem'.(©×Âª
+R	java:S125ï"<This block of commented-out lines of code should be removed.(ğÑ­õ
+=
+java:S1068;"'Remove this unused "log" private field.( §‹
+c
+java:S3252é"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(™½­ª

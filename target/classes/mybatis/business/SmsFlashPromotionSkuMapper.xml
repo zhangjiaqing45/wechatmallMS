@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsFlashPromotionSku.mapper.SmsFlashPromotionSkuMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SmsFlashPromotionSkuResultExt" type="扩展类全包名" extends="SmsFlashPromotionSkuResult">
+
+    </resultMap>
+     -->
+
+    <insert id="batchinsertSmsFlashPromotionSku" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_flash_promotion_sku
+        (
+            promotion_priduct_id,
+            sku_id,
+            sku_sp_data,
+            sku_pic,
+            sku_price,
+            flash_promotion_price,
+            flash_promotion_count,
+            flash_promotion_limit,
+            sort
+        )
+        values
+        <foreach collection="skus" item="item" index="index" separator=",">
+            (
+                #{item.promotionPriductId},
+                #{item.skuId},
+                #{item.skuSpData},
+                #{item.skuPic},
+                #{item.skuPrice},
+                #{item.flashPromotionPrice},
+                #{item.flashPromotionCount},
+                #{item.flashPromotionLimit},
+                #{item.sort}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteSmsFlashPromotionSkuByPromotionPriductId" parameterType="Long">
+        delete from sms_flash_promotion_sku where promotion_priduct_id = #{promotionPriductId}
+    </delete>
+
+
+    <select id="selectSmsFlashPromotionSkuByPromotionPriductId" resultMap="SmsFlashPromotionSkuResult">
+        <include refid="selectSmsFlashPromotionSkuVo"/>
+        where promotion_priduct_id = #{promotionProductId}
+    </select>
+
+
+    <select id="selectProductSkuInSet" resultMap="SmsFlashPromotionSkuResult">
+        select
+        s.id as sku_id, s.sp_data as sku_sp_data, s.pic as sku_pic, s.price as sku_price,
+        ifnull(ps.flash_promotion_price, 0) as flash_promotion_price,
+        ifnull(ps.flash_promotion_count, 0) as flash_promotion_count,
+        ifnull(ps.flash_promotion_limit, 0) as flash_promotion_limit,
+        ifnull(ps.sort, 99999) as sort,
+        ifnull(ps.sales, 0) as sales
+        from sms_flash_promotion_product p
+        inner join pms_sku_stock s on s.product_id = p.product_id
+        left join sms_flash_promotion_sku ps on ps.promotion_priduct_id = p.id and s.id = ps.sku_id
+        <where>
+            s.del_flag = '0'
+            and p.id = #{promotionProductId}
+        </where>
+    </select>
+
+        <select id="getCartSkuDtoBySkuId" resultType="com.fante.project.api.omsOrderProcess.domain.CartSkuDto">
+            <!-- SELECT
+                sku.id,
+                sku.product_id,
+                sku.shop_id,
+                sku.sku_code,
+                sku.price,
+                gsku.group_price as promotion_price,
+                gsku.group_stock as stock,
+                sku.pic,
+                sku.sale,
+                sku.lock_stock,
+                sku.sp_data,
+                sku.STATUS,
+                sku.create_by,
+                sku.create_time,
+                sku.update_by,
+                sku.update_time,
+                sku.remark,
+                g.product_name
+            FROM
+                sms_flash_promotion_sku fsku
+                LEFT JOIN pms_sku_stock sku ON fsku.sku_id = sku.id
+                LEFT JOIN sms_flash_promotion f ON f.id = fsku.group_game_id
+            WHERE
+                g.end_time > NOW()
+                AND g.STATUS = '1'
+                AND gsku.del_flag = '0'
+                AND sku.del_flag = '0'
+                AND sku.id = #{productSkuId}-->
+        </select>
+        <!--秒杀订单 减锁定库存-->
+    <update id="recoverFlashOrderStock">
+        UPDATE sms_flash_promotion_sku
+        SET lock_stock =
+        CASE id
+        <foreach collection = "list" item = "item" >
+            WHEN #{item.gameSkuId}
+            THEN lock_stock - #{item.productQuantity}
+        </foreach >
+        END
+        WHERE
+        id IN
+        <foreach collection="list" item ="item" separator= "," open="(" close=")" >
+            #{item.gameSkuId}
+        </foreach>
+    </update>
+    <select id="validateGameTimeOut" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            sms_flash_promotion_sku sku
+            LEFT JOIN sms_flash_promotion_product p ON p.id = sku.promotion_priduct_id
+            LEFT JOIN sms_flash_promotion f on f.id = p.flash_promotion_id
+            LEft join sms_flash_promotion_session s on s.id = p.flash_promotion_session_id
+        WHERE
+            sku.id = #{promotionId}
+            and f.start_date &lt;= #{nowDate}
+            and f.end_date &gt;= #{nowDate}
+            and s.start_time &lt;= #{nowTime}
+            and s.end_time &gt;= #{nowTime}
+            and sku.flash_promotion_count-sku.lock_stock &gt;= #{quantity}
+            and sku.sku_id = #{skuId}
+    </select>
+    <!--增加锁定库存-->
+    <update id="addLockStock">
+        update sms_flash_promotion_sku set lock_stock = lock_stock+#{quantity}
+        where id = #{promotionId}
+        and flash_promotion_count-lock_stock &gt; #{quantity}
+    </update>
+    <!--支付成功:扣减库存 和 锁定库存-->
+    <update id="subtractStock">
+        update sms_flash_promotion_sku
+        set lock_stock = lock_stock-#{productQuantity},
+            flash_promotion_count = flash_promotion_count-#{productQuantity}
+        where id = #{gameSkuId}
+    </update>
+</mapper>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('团购商品列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li th:if="${isAdmin}">
+                            <p>店铺：</p>
+                            <input type="hidden" name="shopId"/>
+                            <input type="text" name="shop" readonly placeholder="请选择店铺" onclick="selectShop();" />
+                        </li>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="productName"/>
+                        </li>
+                        <li>
+                            <p>活动状态：</p>
+                            <select class="form-control " name="status" th:with="type=${@custom.groupGameStatus()}">
+                                <option value="" >所有</option>
+                                <option  th:each="dict : ${type}" th:text="${dict.value}" th:value="${dict.key}"></option>
+                            </select>
+                        </li>
+                        <li class="select-time">
+                            <p>创建时间：</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCreateTime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCreateTime]"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="business:smsGroupGame:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-warning" onclick="batchStart()" shiro:hasPermission="business:smsGroupGame:edit">
+                <i class="fa fa-play"></i> 批量开始
+            </a>
+<!--            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:smsGroupGame:export">-->
+<!--                <i class="fa fa-download"></i> 导出-->
+<!--            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:smsGroupGame:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:smsGroupGame:remove')}]];
+    //前缀
+    var prefix = ctx + "business/smsGroupGame";
+    var prefixShop = ctx + "business/bizShopInfo";
+    /**
+     * 按钮组
+     * {params} ：按钮触发的函数参数
+    */
+    var btns={
+        "detail":'<a class="btn btn-info btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detail(\'%s\',($(window).width() - 80),($(window).height() - 50))"><i class="fa fa-file-text-o"></i> 详情</a> ',
+        "start":'<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="startGroupGame(\'%s\')"><i class="fa fa-play"></i> 开始</a> ',
+        "edit":'<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'%s\')"><i class="fa fa-edit"></i> 编辑</a> ',
+        "stop":'<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="stopGroupGame(\'%s\')"><i class="fa fa-stop-circle-o"></i> 结束</a> ',
+        "del":'<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'%s\')"><i class="fa fa-remove"></i> 删除</a> '
+    };
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='shopId']").val(shop.id);
+            $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+    /**
+     *  开始活动
+     */
+    function startGroupGame(id) {
+        $.modal.confirm("开始活动后将无法再次修改信息,是否继续?",function () {
+            $.operate.post(prefix+"/start",{ids:id});
+        })
+    }
+    /**
+     *  批量开始活动
+     */
+    function batchStart() {
+        var rows = $.common.isEmpty(table.options.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns(table.options.uniqueId);
+        if (rows.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        $.modal.confirm("开始活动后将无法再次修改信息,是否继续?", function () {
+            $.operate.post(prefix+"/start",{"ids": rows.join()});
+        });
+    }
+    /**
+     *  结束活动
+     */
+    function stopGroupGame(id) {
+        $.modal.confirm("结束活动后将无法再次开启,是否继续?",function () {
+            $.operate.post(prefix+"/stop",{id:id});
+        })
+    }
+
+    /**
+     * 团购活动状态
+     * @type {Array[]}
+     */
+    var groupStatus = [[${@custom.groupGameStatusPlus()}]];
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            detailUrl: prefix + "/detail/{id}",
+            sortName:  'createTime',                         // 排序列名称
+            sortOrder:  'desc',
+            modalName: "团购商品",
+            columns: [
+            {
+                checkbox: true
+            },
+            {
+                field : 'id',
+                title : '商品编号',
+                visible:false,
+            },
+            {
+                field : 'productSn',
+                title : '商品货号',
+                align: 'center',
+            },
+            {
+                field : 'productName',
+                title : '商品名称',
+                align: 'center',
+            },
+            {
+                field : 'productPic',
+                title : '商品图片',
+                align: 'center',
+                formatter: function(value, row, index){
+                    return $.table.imageView(respath+value);
+                }
+            },
+            {
+                field : 'targetMemberCount',
+                title : '成团人数',
+                align: 'center',
+            },
+            {
+                field : 'createTime',
+                title : '创建时间',
+                align: 'center',
+                visible: false,
+            },
+            {
+                field : 'endTime',
+                title : '截至时间',
+                align: 'center',
+            },
+            {
+                field : 'aging',
+                title : '开团时效',
+                visible: false,
+                align: 'center',
+            },
+            {
+                field : 'virtualCount',
+                title : '虚拟团购数量',
+                visible: false,
+                align: 'center',
+            },
+            {
+                field : 'successCount',
+                title : '拼团数量',
+                align: 'center',
+            },
+            {
+                field : 'status',
+                title : '活动状态',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    if (groupStatus[value]) {
+                        return $.common.sprintf("<span class='badge badge-%s'>%s</span>", groupStatus[value].style, groupStatus[value].desc);
+                    }
+                }
+            },
+            {
+                field : 'productPublishStatus',
+                title : '商品状态',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    if(row.productPublishStatus==1&&row.productDelFlag==0){
+                        return $.common.sprintf("<span class='badge badge-%s'>%s</span>",'success',"可用");
+                    }else{
+                        return $.common.sprintf("<span class='badge badge-%s'>%s</span>",'danger',"不可用");
+                    }
+                }
+
+            },
+            {
+                field : 'sort',
+                title : '排序',
+                align: 'center',
+            },
+            {
+                field : 'remark',
+                title : '备注',
+                align: 'center',
+            },
+            {
+                title: '操作',
+                formatter: function(value, row, index) {
+                    var actions = [];
+                    row.btns.forEach(function (item, i,array) {
+                        if(item=='start'){
+                            if(row.productPublishStatus==1&&row.productDelFlag==0){
+                                actions.push($.common.sprintf(btns[item],row.id))
+                            }
+                        }else{
+                            actions.push($.common.sprintf(btns[item],row.id))
+                        }
+                    })
+                    return actions.join('');
+                }
+            }]
+    };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

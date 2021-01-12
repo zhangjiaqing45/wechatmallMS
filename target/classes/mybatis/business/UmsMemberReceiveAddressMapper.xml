@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.umsMemberReceiveAddress.mapper.UmsMemberReceiveAddressMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="UmsMemberReceiveAddressResultExt" type="扩展类全包名" extends="UmsMemberReceiveAddressResult">
+
+    </resultMap>
+     -->
+    <!--获取用户的收货地址-->
+    <select id="getUmsMemberReceiveAddressList" parameterType="UmsMemberReceiveAddress" resultMap="UmsMemberReceiveAddressResult">
+        <include refid="selectUmsMemberReceiveAddressVo"/>
+        <where>
+            del_flag = '0'
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+        order by `status` desc, create_time desc
+    </select>
+    <select id="countMemberAddress" parameterType="UmsMemberReceiveAddress" resultType="int">
+        select count(*) from ums_member_receive_address
+        <where>
+            del_flag = '0'
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    <!--删除地址-->
+    <delete id="realDelUmsMemberReceiveAddressById">
+        delete from ums_member_receive_address where id=#{id} and member_id = #{memberId}
+    </delete>
+    <!--设置默认收货地址-->
+    <update id="setDefaultAddress">
+        UPDATE ums_member_receive_address
+        SET `status` =
+                CASE
+                id
+                WHEN #{id} THEN
+                 '1' ELSE'0'
+            END
+        WHERE
+        member_id = #{memberId}
+    </update>
+</mapper>

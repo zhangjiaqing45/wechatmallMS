@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改文档')" />
+    <th:block th:include="include :: summernote-css"/>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-cmsDocument-edit" th:object="${cmsDocument}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group" th:if="${isAdmin}">
+                <label class="col-sm-3 control-label is-required">文档键值：</label>
+                <div class="col-sm-8">
+                    <input name="docKey" th:field="*{docKey}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">文档标题：</label>
+                <div class="col-sm-8" th:if="${isAdmin}">
+                    <input name="docTitle" th:field="*{docTitle}" class="form-control" type="text">
+                </div>
+                <div class="col-sm-8" th:unless="${isAdmin}">
+                    <input th:value="${cmsDocument.docTitle}" class="form-control" readonly type="text">
+                </div>
+            </div>
+            <div class="form-group" th:if="${isAdmin}">
+                <label class="col-sm-3 control-label is-required">文档状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('biz_status')}">
+                        <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:field="*{status}">
+                        <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">文档备注：</label>
+                <div class="col-sm-8" th:if="${isAdmin}">
+                    <input name="remark" th:field="*{remark}" class="form-control" type="text">
+                </div>
+                <div class="col-sm-8" th:unless="${isAdmin}">
+                    <input th:value="${cmsDocument.remark}" class="form-control" readonly type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">文档内容：</label>
+                <div class="col-sm-8">
+                    <input id="docContent" name="docContent" th:field="*{docContent}" class="form-control" type="hidden">
+                    <div class="summernote"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: summernote-js"/>
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/cmsDocument";
+
+        $(function () {
+            $('.summernote').summernote({
+                placeholder: '请输入文档内容',
+                height: 320,
+                lang: 'zh-CN',
+                followingToolbar: false,
+                dialogsInBody: true,
+                callbacks: {
+                    onImageUpload: function (files) {
+                        var len = files.length;
+                        for (var i = 0; i < len; i++) {
+                            $.operate.summernoteImageUpload(files[i], this);
+                        }
+                    }
+                }
+            });
+            var content = $("#docContent").val();
+            $('.summernote').summernote('code', content);
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                if ($('.summernote').summernote('isEmpty')) {
+                    $.modal.msgWarning("请填写文档内容");
+                    return false;
+                }
+                $("#docContent").val($('.summernote').summernote('code'));
+                $.operate.save(prefix + "/edit", $('#form-cmsDocument-edit').serialize());
+            }
+        }
+
+        $("#form-cmsDocument-edit").validate({
+            focusCleanup: true,
+            rules: {
+                docKey: {
+                    required: true,
+                    rangelength: [2, 50],
+                    remote: {
+                        url: prefix + "/checkUnique",
+                        type: "post",
+                        dataType: "json",
+                        data: {
+                            "id": function() {
+                                return $.common.trim($("input[name='id']").val());
+                            },
+                            "docKey": function () {
+                                return $.common.trim($("input[name='docKey']").val());
+                            }
+                        },
+                        dataFilter: function (data, type) {
+                            return $.validate.unique(data);
+                        }
+                    }
+                },
+                docTitle: {
+                    required: true,
+                    rangelength: [2, 30],
+                },
+                remark: {
+                    required: true,
+                    rangelength: [2, 30],
+                },
+            },
+            messages: {
+                docKey: {
+                    rangelength: $.validator.format("文档键值长度在 {0} 到 {1} 之间"),
+                    remote: "文档键值已存在",
+                },
+                docTitle: {
+                    rangelength: $.validator.format("文档标题长度在 {0} 到 {1} 之间"),
+                },
+                remark: {
+                    rangelength: $.validator.format("文档备注长度在 {0} 到 {1} 之间"),
+                },
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsOrderReturnApply.mapper.OmsOrderReturnApplyMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="OmsOrderReturnApplyResultExt" type="扩展类全包名" extends="OmsOrderReturnApplyResult">
+
+    </resultMap>
+     -->
+
+    <select id="getOmsOrderReturnApplyList" parameterType="OmsOrderReturnApply" resultMap="OmsOrderReturnApplyResult">
+        <include refid="selectOmsOrderReturnApplyVo"/>
+        <where>
+            del_flag = '0'
+            <if test="id != null and id != '' "> and id = #{id}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="productCount != null "> and product_count = #{productCount}</if>
+            <if test="productPrice != null "> and product_price = #{productPrice}</if>
+            <if test="productRealPrice != null "> and product_real_price = #{productRealPrice}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="memberNickName != null  and memberNickName != ''"> and member_nick_name like concat('%', #{memberNickName}, '%')</if>
+            <if test="returnName != null  and returnName != ''"> and return_name like concat('%', #{returnName}, '%')</if>
+            <if test="returnPhone != null  and returnPhone != ''"> and return_phone = #{returnPhone}</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="proofPics != null  and proofPics != ''"> and proof_pics = #{proofPics}</if>
+            <if test="returnAmount != null "> and return_amount = #{returnAmount}</if>
+            <if test="companyAddressId != null "> and company_address_id = #{companyAddressId}</if>
+            <if test="receiveName != null  and receiveName != ''"> and receive_name like concat('%', #{receiveName}, '%')</if>
+            <if test="receivePhone != null  and receivePhone != ''"> and receive_phone = #{receivePhone}</if>
+            <if test="receiveArea != null  and receiveArea != ''"> and receive_area = #{receiveArea}</if>
+            <if test="receiveAddr != null  and receiveAddr != ''"> and receive_addr = #{receiveAddr}</if>
+            <if test="handleNote != null  and handleNote != ''"> and handle_note = #{handleNote}</if>
+            <if test="handleTime != null "> and handle_time = #{handleTime}</if>
+            <if test="handleMan != null  and handleMan != ''"> and handle_man = #{handleMan}</if>
+            <if test="receiveMan != null  and receiveMan != ''"> and receive_man = #{receiveMan}</if>
+            <if test="receiveTime != null "> and receive_time = #{receiveTime}</if>
+            <if test="receiveNote != null  and receiveNote != ''"> and receive_note = #{receiveNote}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    <delete id="realDelOmsOrderReturnApplyByIds"  parameterType="String">
+        update oms_order_return_apply set del_flag = '1' where id in
+        <!-- delete from oms_order_return_apply where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        where status = '3'
+    </delete>
+</mapper>

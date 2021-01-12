@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsSetting.mapper.SmsSettingMapper">
+    
+    <resultMap type="SmsSetting" id="SmsSettingResult">
+        <result property="id"    column="id"    />
+        <result property="couponStatus"    column="coupon_status"    />
+        <result property="groupStatus"    column="group_status"    />
+        <result property="signStatus"    column="sign_status"    />
+        <result property="flashStatus"    column="flash_status"    />
+        <result property="integralStatus"    column="integral_status"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectSmsSettingVo">
+        select id, coupon_status, group_status, sign_status, flash_status, integral_status, status, create_by, create_time, update_by, update_time, remark, del_flag from sms_setting
+    </sql>
+
+    <select id="selectSmsSettingList" parameterType="SmsSetting" resultMap="SmsSettingResult">
+        <include refid="selectSmsSettingVo"/>
+        <where>
+           <!-- del_flag = '0' -->
+            <if test="couponStatus != null  and couponStatus != ''"> and coupon_status = #{couponStatus}</if>
+            <if test="groupStatus != null  and groupStatus != ''"> and group_status = #{groupStatus}</if>
+            <if test="signStatus != null  and signStatus != ''"> and sign_status = #{signStatus}</if>
+            <if test="flashStatus != null  and flashStatus != ''"> and flash_status = #{flashStatus}</if>
+            <if test="integralStatus != null  and integralStatus != ''"> and integral_status = #{integralStatus}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectSmsSettingById" parameterType="Long" resultMap="SmsSettingResult">
+        <include refid="selectSmsSettingVo"/>
+        where id = #{id}
+        <!-- and del_flag = '0' -->
+    </select>
+        
+    <insert id="insertSmsSetting" parameterType="SmsSetting" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_setting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="couponStatus != null  and couponStatus != ''">coupon_status,</if>
+            <if test="groupStatus != null  and groupStatus != ''">group_status,</if>
+            <if test="signStatus != null  and signStatus != ''">sign_status,</if>
+            <if test="flashStatus != null  and flashStatus != ''">flash_status,</if>
+            <if test="integralStatus != null  and integralStatus != ''">integral_status,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="couponStatus != null  and couponStatus != ''">#{couponStatus},</if>
+            <if test="groupStatus != null  and groupStatus != ''">#{groupStatus},</if>
+            <if test="signStatus != null  and signStatus != ''">#{signStatus},</if>
+            <if test="flashStatus != null  and flashStatus != ''">#{flashStatus},</if>
+            <if test="integralStatus != null  and integralStatus != ''">#{integralStatus},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSmsSetting" parameterType="SmsSetting">
+        update sms_setting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="couponStatus != null  and couponStatus != ''">coupon_status = #{couponStatus},</if>
+            <if test="groupStatus != null  and groupStatus != ''">group_status = #{groupStatus},</if>
+            <if test="signStatus != null  and signStatus != ''">sign_status = #{signStatus},</if>
+            <if test="flashStatus != null  and flashStatus != ''">flash_status = #{flashStatus},</if>
+            <if test="integralStatus != null  and integralStatus != ''">integral_status = #{integralStatus},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsSettingById" parameterType="Long">
+        <!-- update sms_setting set del_flag = '1' where id = #{id} -->
+        delete from sms_setting where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsSettingByIds" parameterType="String">
+        <!-- update sms_setting set del_flag = '1' where id in -->
+        delete from sms_setting where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

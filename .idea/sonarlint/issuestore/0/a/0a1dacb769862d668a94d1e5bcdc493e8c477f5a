@@ -1,0 +1,14 @@
+
+c
+java:S3252„"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(¹ýÜÛ
+n
+java:S3252¾"RUse static access with "org.apache.commons.lang3.StringUtils" for "defaultString".(¾ÂÒ×ýÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(‘ƒÜà
+Y	java:S125»"<This block of commented-out lines of code should be removed.(¡­®ÿ8úúåâ.
+g
+java:S3252s"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(‚•øÿÿÿÿÿ
+n
+java:S3252½"RUse static access with "org.apache.commons.lang3.StringUtils" for "defaultString".(˜¸ ûÿÿÿÿ
+n
+java:S3252¿"RUse static access with "org.apache.commons.lang3.StringUtils" for "defaultString".(½çìŠøÿÿÿÿ
+W	java:S125Î"<This block of commented-out lines of code should be removed.(¸î‰Øøÿÿÿÿ

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.wxPayConfig.mapper.WxPayConfigMapper">
+    
+    <resultMap type="WxPayConfig" id="WxPayConfigResult">
+        <result property="id"    column="id"    />
+        <result property="partnerId"    column="partner_id"    />
+        <result property="partnerKey"    column="partner_key"    />
+        <result property="notifyUrl"    column="notify_url"    />
+        <result property="certPath"    column="cert_path"    />
+        <result property="certSecret"    column="cert_secret"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectWxPayConfigVo">
+        select id, partner_id, partner_key, notify_url, cert_path, cert_secret, create_by, create_time, update_by, update_time, remark, del_flag from wx_pay_config
+    </sql>
+
+    <select id="selectWxPayConfigList" parameterType="WxPayConfig" resultMap="WxPayConfigResult">
+        <include refid="selectWxPayConfigVo"/>
+        <where>
+           del_flag = '0'
+            <if test="partnerId != null  and partnerId != ''"> and partner_id = #{partnerId}</if>
+            <if test="partnerKey != null  and partnerKey != ''"> and partner_key = #{partnerKey}</if>
+            <if test="notifyUrl != null  and notifyUrl != ''"> and notify_url = #{notifyUrl}</if>
+            <if test="certPath != null  and certPath != ''"> and cert_path = #{certPath}</if>
+        </where>
+    </select>
+
+    <select id="countWxPayConfig" parameterType="WxPayConfig" resultType="int">
+        select count(*) from wx_pay_config
+        <where>
+            del_flag = '0'
+            <if test="partnerId != null  and partnerId != ''"> and partner_id = #{partnerId}</if>
+            <if test="partnerKey != null  and partnerKey != ''"> and partner_key = #{partnerKey}</if>
+            <if test="notifyUrl != null  and notifyUrl != ''"> and notify_url = #{notifyUrl}</if>
+            <if test="certPath != null  and certPath != ''"> and cert_path = #{certPath}</if>
+        </where>
+    </select>
+
+    <select id="checkWxPayConfigUnique" parameterType="WxPayConfig" resultType="int">
+        select count(*) from wx_pay_config
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="partnerId != null  and partnerId != ''"> and partner_id = #{partnerId}</if>
+            <if test="partnerKey != null  and partnerKey != ''"> and partner_key = #{partnerKey}</if>
+            <if test="notifyUrl != null  and notifyUrl != ''"> and notify_url = #{notifyUrl}</if>
+            <if test="certPath != null  and certPath != ''"> and cert_path = #{certPath}</if>
+            <if test="certSecret != null  and certSecret != ''"> and cert_secret = #{certSecret}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectWxPayConfigById" parameterType="Long" resultMap="WxPayConfigResult">
+        <include refid="selectWxPayConfigVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertWxPayConfig" parameterType="WxPayConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into wx_pay_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="partnerId != null  and partnerId != ''">partner_id,</if>
+            <if test="partnerKey != null  and partnerKey != ''">partner_key,</if>
+            <if test="notifyUrl != null  and notifyUrl != ''">notify_url,</if>
+            <if test="certPath != null  and certPath != ''">cert_path,</if>
+            <if test="certSecret != null  and certSecret != ''">cert_secret,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="partnerId != null  and partnerId != ''">#{partnerId},</if>
+            <if test="partnerKey != null  and partnerKey != ''">#{partnerKey},</if>
+            <if test="notifyUrl != null  and notifyUrl != ''">#{notifyUrl},</if>
+            <if test="certPath != null  and certPath != ''">#{certPath},</if>
+            <if test="certSecret != null  and certSecret != ''">#{certSecret},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWxPayConfig" parameterType="WxPayConfig">
+        update wx_pay_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="partnerId != null  and partnerId != ''">partner_id = #{partnerId},</if>
+            <if test="partnerKey != null  and partnerKey != ''">partner_key = #{partnerKey},</if>
+            <if test="notifyUrl != null  and notifyUrl != ''">notify_url = #{notifyUrl},</if>
+            <if test="certPath != null  and certPath != ''">cert_path = #{certPath},</if>
+            <if test="certSecret != null  and certSecret != ''">cert_secret = #{certSecret},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWxPayConfigById" parameterType="Long">
+        <!-- update wx_pay_config set del_flag = '1' where id = #{id} -->
+        delete from wx_pay_config where id = #{id}
+    </delete>
+
+    <delete id="deleteWxPayConfigByIds" parameterType="String">
+        update wx_pay_config set del_flag = '1' where id in
+        <!-- delete from wx_pay_config where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

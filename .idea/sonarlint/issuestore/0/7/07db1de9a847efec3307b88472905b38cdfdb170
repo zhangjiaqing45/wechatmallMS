@@ -1,0 +1,50 @@
+
+`	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(ıŒˆ­ÿÿÿÿÿ
+Y
+java:S11550">Use isEmpty() to check whether the collection is empty or not.(ùÅê¦úÿÿÿÿ
+b
+java:S2259"L"NullPointerException" will be thrown when invoking method "invokeMethod()".(»Èê
+b
+java:S2259""L"NullPointerException" will be thrown when invoking method "invokeMethod()".(»Èê
+P
+java:S1118":Add a private constructor to hide the implicit public one.(†§ÇÆ
+N
+java:S1874!"3Remove this use of "newInstance"; it is deprecated.(ŠêşÌøÿÿÿÿ
+|
+java:S1130."fRemove the declaration of thrown exception 'java.lang.SecurityException' which is a runtime exception.(»«°Ó
+ƒ
+java:S1130."mRemove the declaration of thrown exception 'java.lang.IllegalArgumentException' which is a runtime exception.(»«°Ó
+l
+java:S3252@"QUse static access with "org.apache.commons.lang3.StringUtils" for "countMatches".(ìÕı øÿÿÿÿ
+j
+java:S3252J"TUse static access with "org.apache.commons.lang3.StringUtils" for "substringBefore".(ØÂ–
+n
+java:S3252K"XUse static access with "org.apache.commons.lang3.StringUtils" for "substringBeforeLast".(Éõã‚
+o
+java:S3252U"TUse static access with "org.apache.commons.lang3.StringUtils" for "substringBefore".(š´¯‚úÿÿÿÿ
+r
+java:S3252V"WUse static access with "org.apache.commons.lang3.StringUtils" for "substringAfterLast".(‰í”¼ıÿÿÿÿ
+p
+java:S3252`"UUse static access with "org.apache.commons.lang3.StringUtils" for "substringBetween".(ıœ·øÿÿÿÿ
+A
+java:S1168b"+Return an empty collection instead of null.(¥¹ï
+k
+java:S3252g"PUse static access with "org.apache.commons.lang3.StringUtils" for "trimToEmpty".(¿„Ôïÿÿÿÿÿ
+h
+java:S3252i"MUse static access with "org.apache.commons.lang3.StringUtils" for "contains".(ûµåüÿÿÿÿ
+b
+java:S3252j"LUse static access with "org.apache.commons.lang3.StringUtils" for "replace".(·½
+a
+java:S3252m"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(ÙúıÌ
+k
+java:S3252m"UUse static access with "org.apache.commons.lang3.StringUtils" for "equalsIgnoreCase".(ÙúıÌ
+m
+java:S3252q"WUse static access with "org.apache.commons.lang3.StringUtils" for "containsIgnoreCase".(ÖĞ†Û
+l
+java:S3252r"VUse static access with "org.apache.commons.lang3.StringUtils" for "replaceIgnoreCase".(ÉêÙç
+m
+java:S3252u"WUse static access with "org.apache.commons.lang3.StringUtils" for "containsIgnoreCase".(¬„¬‘
+l
+java:S3252v"VUse static access with "org.apache.commons.lang3.StringUtils" for "replaceIgnoreCase".(Ùü£À
+E
+java:S1905š")Remove this unnecessary cast to "Object".(„Æ¿Ïøÿÿÿÿ

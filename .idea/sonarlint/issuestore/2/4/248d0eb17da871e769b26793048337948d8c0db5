@@ -1,0 +1,10 @@
+
+b
+java:S1192P"LDefine a constant instead of duplicating this literal "pmsSkuStock" 3 times.(šÿ¯ä
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ı£«Üşÿÿÿÿ
+N
+java:S1874!"3Remove this use of "description"; it is deprecated.(‘ £Èùÿÿÿÿ
+o
+java:S2293O"YReplace the type specification in this constructor call with the diamond operator ("<>").(³ÇÌ
+B
+java:S1068&"'Remove this unused "log" private field.(À½í‹şÿÿÿÿ

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改优惠券')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: select2-css" />
+    <style type="text/css">
+        .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+            background-color: #FFF;
+            opacity: 1;
+        }
+        .Validform_error, input.error, select.error, textarea.error {
+            background-color: unset;
+            border-color: #c66161;
+            color: #c00;
+        }
+    </style>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content" th:if="${smsCoupon}">
+        <form class="form-horizontal m" id="form-smsCoupon-edit" th:object="${smsCoupon}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <input name="shopId" th:field="*{shopId}" type="hidden">
+            <input name="perLimit" th:field="*{perLimit}" type="hidden" value="1">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">优惠券类型：</label>
+                        <div class="col-sm-8">
+                            <select id="coupon-type-select" name="couponType" th:with="type=${@custom.couponType()}" class="form-control" th:field="*{couponType}" required>
+                                <option value="">请选择</option>
+                                <option th:each="type,key : ${type}" th:text="${key.current.value}" th:value="${key.current.key}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">优惠券名称：</label>
+                        <div class="col-sm-8">
+                            <input name="name" class="form-control" type="text" autocomplete="off" th:field="*{name}" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">总发行量：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input name="count" class="form-control" th:field="*{count}" type="text" required>
+                                <span class="input-group-addon">张</span>
+                            </div>
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 优惠券的实际发行数量</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group" id="coupon-type-0">
+                        <label class="col-sm-4 control-label is-required">优惠券面额：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group" >
+                                <input name="amount" class="form-control" th:field="*{amount}" type="text" required>
+                                <span class="input-group-addon">元</span>
+                            </div>
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 优惠券可抵用的金额</span>
+                        </div>
+                    </div>
+                    <div class="form-group hidden"  id="coupon-type-1">
+                        <label class="col-sm-4 control-label is-required">优惠券折扣：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input name="discount" th:field="*{discount}" maxlength="3" class="form-control" type="text" required>
+                                <span class="input-group-addon">折</span>
+                            </div>
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 商品折扣.范围:0到10保留一位小数</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">有效期：</label>
+                        <div class="col-sm-8">
+                            <div class="input-daterange input-group">
+                                <input type="text" class="input-sm form-control" id="startTime" name="startTime" th:value="${#dates.format(smsCoupon.startTime, 'yyyy-MM-dd')}" readonly placeholder="选择开始时间" required/>
+                                <span class="input-group-addon">至</span>
+                                <input type="text" class="input-sm form-control" id="endTime" name="endTime" th:value="${#dates.format(smsCoupon.endTime, 'yyyy-MM-dd')}" readonly placeholder="选择截止时间" required/>
+                            </div>
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 优惠券可使用的开始和截止时间</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">使用门槛：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <span class="input-group-addon">满</span>
+                                <input name="minPoint" class="form-control" th:field="*{minPoint}" type="text" required>
+                                <span class="input-group-addon">元</span>
+                            </div>
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 0 表示无门槛（只能填写正整数）</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">使用对象：</label>
+                        <div class="col-sm-8">
+                            <div class="input-daterange input-group">
+                                <select th:field="*{memberLevel}"   id="member-level-select" name="memberLevel" th:with="type=${@custom.memberLevel()}" class="form-control" required>
+                                    <option th:each="type,key : ${type}" th:text="${key.current.value}" th:value="${key.current.key}"></option>
+                                </select>
+                            </div>
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 可领取的会员等级</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">选择店铺：</label>
+                        <div class="col-sm-10">
+                            <input type="text" th:value="${shopName}" class="form-control" name="shop" required readonly  onclick="selectShop();" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="row">-->
+                <!--<div class="col-sm-6">-->
+                    <!--<div class="form-group">-->
+                        <!--<label class="col-sm-4 control-label is-required">每人限领：</label>-->
+                        <!--<div class="col-sm-8">-->
+                            <!--<div class="input-group">-->
+                                <!--<input name="perLimit" class="form-control" th:field="*{perLimit}" type="text" value="0" required>-->
+                                <!--<span class="input-group-addon">张</span>-->
+                            <!--</div>-->
+                            <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 0 表示不限制领取数量</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-sm-6">-->
+                    <!--<div class="form-group">-->
+                        <!--<label class="col-sm-4 control-label">截止领取：</label>-->
+                        <!--<div class="col-sm-8">-->
+                            <!--<div class="input-group date">-->
+                                <!--<span class="input-group-addon"><i class="fa fa-calendar"></i></span>-->
+                                <!--<input type="text" class="form-control" id="enableTime" name="enableTime" th:value="${#dates.format(smsCoupon.enableTime, 'yyyy-MM-dd')}" readonly placeholder="选择截止领取时间">-->
+                            <!--</div>-->
+                            <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 优惠券截止领取日期（未填写默认为有效期截止时间）</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label is-required">使用范围：</label>
+                        <div class="col-sm-10" >
+                            <input type="hidden" name="useType" th:field="*{useType}" required>
+                            <div class="btn-group useTypeBtnArea">
+
+                            </div>
+                            <div class="hidden tabSel category">
+                                <div class="btn-group-sm" id="toolbar-category" role="group">
+                                    <a class="btn-sm btn-success" id="categoryBtn"><i class="fa fa-plus"></i> 添加分类</a>
+                                </div>
+                                <div class="col-sm-12 select-table table-striped">
+                                    <table id="coupon-category-table"></table>
+                                </div>
+                            </div>
+                            <div class="hidden tabSel product">
+                                <div class="btn-group-sm" id="toolbar-product" role="group">
+                                    <a class="btn-sm btn-success" id="productBtn"><i class="fa fa-plus"></i> 添加商品</a>
+                                </div>
+                                <div class="col-sm-12 select-table table-striped">
+                                    <table id="coupon-product-table"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">备注：</label>
+                        <div class="col-sm-10">
+                            <textarea name="remark" class="form-control" th:field="*{remark}" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: select2-js"/>
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/smsCoupon";
+        var cateRelations = [[${smsCoupon?.cateRelations}]];
+        var couponType = [[${smsCoupon?.couponType}]];
+        var productRelations = [[${smsCoupon?.productRelations}]];
+        var couponUseType = [[${@custom.couponUseTypeAll()}]];
+        var prefixShop = ctx + "business/bizShopInfo";
+        /**
+         * 选择店铺
+         */
+        function selectShop(){
+            $.modal.open("选择店铺", prefixShop + "/select");
+        }
+
+        /**
+         * 选择店铺回调
+         * @param shop
+         */
+        function shopSelectCallback(shop) {
+            if (shop && shop.id) {
+                $("input[name='shopId']").val(shop.id);
+                $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+                //清空指定分类或者商品列表
+              /*  $('.useTypeBtnArea').empty();
+                $("#productBtn").off("click");
+                $("#categoryBtn").off("click");
+                cateRelations = [];
+                productRelations = [];
+                buildUserTypeBtn();*/
+                $("#coupon-category-table").bootstrapTable('removeAll');
+                $("#coupon-product-table").bootstrapTable('removeAll');
+            } else {
+                $.modal.msgWarning("未选择店铺");
+            }
+        }
+
+        $(function () {
+            buildUserTypeBtn();
+            //优惠券类型的监听事件
+            $("#coupon-type-select").on("change",function(e){
+                changeCoupon();
+            })
+            changeCoupon();
+        });
+        function changeCoupon() {
+            var couponType = $("#coupon-type-select").select2("val");
+            if(couponType ==='1'){
+                //折扣券
+                $('#coupon-type-1').removeClass("hidden");
+                $('#coupon-type-0').addClass("hidden");
+                //清空满减金额
+                $('input[name="amount"]').val("");
+            }else{
+                //满减券
+                $('#coupon-type-0').removeClass("hidden");
+                $('#coupon-type-1').addClass("hidden");
+                //清空折扣值
+                $('input[name="discount"]').val("");
+            }
+        }
+        /**
+         * 构建使用范围按钮组
+         */
+        function buildUserTypeBtn() {
+            if (!$.common.isEmptyObject(couponUseType)) {
+                var $useTypeBtnArea = $(".useTypeBtnArea"),
+                    tpl = "<button class=\"btn btn-white useTypeBtn\" type=\"button\" data-type=\"%s\" data-sign=\"%s\" >%s</button>";
+                for (var key in couponUseType) {
+                    $useTypeBtnArea.append($.common.sprintf(tpl, key, couponUseType[key].sign, couponUseType[key].desc));
+                }
+                initUseTypeBtn();
+                initCategoryTable();
+                initProductTable();
+            }
+        }
+
+        /**
+         * 使用范围显示初始化
+         */
+        function initUseTypeBtn() {
+            var $useType = $("input[name='useType']"),
+                $useTypeBtn = $(".useTypeBtn"),
+                $useTypeBtn1st = $(".useTypeBtn:eq(0)");
+
+            if ($useType.val()) {
+                $useTypeBtn.each(function(index, elem) {
+                    if ($(elem).attr("data-type") == $useType.val()){
+                        $(elem).removeClass("btn-white").addClass("btn-success");
+                        $(".tabSel").addClass("hidden");
+                        $(".tabSel." + couponUseType[$useType.val()].sign).removeClass("hidden");
+                        return false;
+                    }
+                })
+            } else {
+                $useType.val($useTypeBtn1st.attr("data-type"));
+                $useTypeBtn1st.removeClass("btn-white").addClass("btn-success");
+            }
+            // 使用类型按钮组点击监听
+            $useTypeBtn.on("click", function() {
+                var type = $(this).attr("data-type"), sign = $(this).attr("data-sign");
+                $useType.val(type);
+                $(this).removeClass("btn-white").addClass("btn-success").siblings().removeClass("btn-success").addClass("btn-white");
+                $(".tabSel").addClass("hidden");
+                $(".tabSel." + sign).removeClass("hidden");
+            })
+        }
+
+        /**
+         * 选择table数据中指定列数据并返回数组
+         */
+        function collectTableColumn(tableId, column) {
+            var data = $("#" + tableId).bootstrapTable('getData')
+            return $.map(data, function(row) {
+                return row[column];
+            })
+        }
+
+        /**
+         * 初始化分类选择列表
+         */
+        function initCategoryTable() {
+            var options = {
+                id: "coupon-category-table",
+                toolbar: "toolbar-category",
+                data: [],
+                showSearch: false,
+                showRefresh: false,
+                showColumns: false,
+                showToggle: false,
+                pagination: false,
+                modalName: "优惠券和商品分类关系",
+                uniqueId: "categoryId",
+                columns: [
+                    {
+                        field : 'categoryId',
+                        title : '商品分类ID',
+                        visible: false
+                    },
+                    {
+                        field : 'categoryName',
+                        title : '商品分类',
+                    },
+                    {
+                        field : 'description',
+                        title : '描述'
+                    },
+                    {
+                        title: '操作',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a href="javascript:void(0)" onclick="cateTabRemove(\'' + row.categoryId + '\', \'' + row.categoryName + '\')">删除</a>');
+                            return actions.join('');
+                        }
+                    }]
+            };
+            $.table.init(options);
+
+            initCategoryTableData(cateRelations);
+
+            // 绑定选择事件
+            $("#categoryBtn").on("click", categorySel);
+        }
+
+        /**
+         * 初始化分类选择列表数据
+         */
+        function initCategoryTableData(cateRelations) {
+            if (cateRelations && cateRelations.length > 0) {
+                var single = null, datas = [];
+                for (var i in cateRelations) {
+                    single = {};
+                    single["categoryId"] = cateRelations[i].productCategoryId;
+                    single["categoryName"] = cateRelations[i].productCategoryName;
+                    single["description"] = cateRelations[i].description;
+                    datas.push(single);
+                }
+                $("#coupon-category-table").bootstrapTable('append', datas);
+            }
+        }
+
+        /**
+         * 选择分类
+         */
+        function categorySel(){
+            var shopId = $('input[name="shopId"]').val();
+            if(!shopId){
+                $.modal.msgWarning("请先选择店铺");
+                return
+            }
+            var width = $(window).width() > 800 ? 800 : "",
+                height = $(window).height() > 500 ? 500 : "";
+            $.modal.open("选择分类", prefix + "/selectCategory/"+shopId, width, height);
+        }
+
+        /**
+         * 选择分类回调
+         * @param cateIds
+         * @param cateNames
+         */
+        function couponCateSelectCallback(cateIds, cateNames, descriptions) {
+            var curIds = collectTableColumn("coupon-category-table", "categoryId"),
+                newData = [],
+                single = null;
+            for(var i in cateIds) {
+                if (curIds.includes(cateIds[i])) {
+                    // 跳过已选择的分类
+                    continue;
+                }
+                single = {};
+                single["categoryId"] = cateIds[i];
+                single["categoryName"] = cateNames[i];
+                single["description"] = descriptions[i];
+                newData.push(single);
+            }
+            $("#coupon-category-table").bootstrapTable('append', newData);
+            $.modal.msgSuccess($.common.sprintf("成功添加 <b>%s</b> 条分类记录", newData.length));
+        }
+
+        /**
+         * 移除已选择的分类
+         */
+        function cateTabRemove(cateId, cateName) {
+            $.modal.confirm("确认移除分类 [<b> " + cateName + " </b>] ", function () {
+                $("#coupon-category-table").bootstrapTable('removeByUniqueId', cateId);
+            });
+        }
+
+        /**
+         * 初始化商品选择列表
+         */
+        function initProductTable() {
+            var options = {
+                id: "coupon-product-table",
+                toolbar: "toolbar-product",
+                data: [],
+                showSearch: false,
+                showRefresh: false,
+                showColumns: false,
+                showToggle: false,
+                pagination: false,
+                modalName: "优惠券和产品的关系",
+                uniqueId: "productId",
+                columns: [
+                    {
+                        field : 'productId',
+                        title : '商品ID',
+                        visible: false
+                    },
+                    {
+                        field : 'productSn',
+                        title : '商品货号'
+                    },
+                    {
+                        field : 'productName',
+                        title : '商品名称',
+                    },
+                    {
+                        title: '操作',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a href="javascript:void(0)" onclick="productTabRemove(\'' + row.productId + '\', \'' + row.productName + '\')">删除</a>');
+                            return actions.join('');
+                        }
+                    }]
+            };
+            $.table.init(options);
+
+            initProductTableData(productRelations);
+
+            $("#productBtn").on("click", productSel);
+        }
+
+        /**
+         * 初始化商品选择列表数据
+         */
+        function initProductTableData(productRelations) {
+            if (productRelations && productRelations.length > 0) {
+                var single = null, datas = [];
+                for (var i in productRelations) {
+                    single = {};
+                    single["productId"] = productRelations[i].productId;
+                    single["productSn"] = productRelations[i].productSn;
+                    single["productName"] = productRelations[i].productName;
+                    datas.push(single);
+                }
+                $("#coupon-product-table").bootstrapTable('append', datas);
+            }
+        }
+
+        /**
+         * 选择商品
+         */
+        function productSel() {
+            var shopId = $('input[name="shopId"]').val();
+            if(!shopId){
+                $.modal.msgWarning("请先选择店铺");
+                return
+            }
+            var width = $(window).width() > 800 ? 800 : "",
+                height = $(window).height() > 500 ? 500 : "";
+            $.modal.open("选择商品", prefix + "/selectProduct/"+shopId, width, height);
+        }
+
+        /**
+         * 选择商品回调
+         * @param productIds
+         * @param productSns
+         * @param productNames
+         */
+        function couponProductSelectCallback(productIds, productSns, productNames) {
+            var curIds = collectTableColumn("coupon-product-table", "productId"),
+                newData = [],
+                single = null;
+            for (var i in productIds) {
+                if (curIds.includes(productIds[i])) {
+                    // 跳过已选择的商品
+                    continue;
+                }
+                single = {};
+                single["productId"] = productIds[i];
+                single["productSn"] = productSns[i];
+                single["productName"] = productNames[i];
+                newData.push(single);
+            }
+            $("#coupon-product-table").bootstrapTable('append', newData);
+            $.modal.msgSuccess($.common.sprintf("成功添加 <b>%s</b> 条商品记录", newData.length));
+        }
+
+        /**
+         * 移除已选择的商品
+         * @param productId
+         * @param productName
+         */
+        function productTabRemove(productId, productName){
+            $.modal.confirm("确认移除商品 [<b> " + productName + " </b>] ", function () {
+                $("#coupon-product-table").bootstrapTable('removeByUniqueId', productId);
+            });
+        }
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                var $useType = $("input[name='useType']"),
+                    chooseType = couponUseType[$useType.val()],
+                    tableId = $.common.sprintf("coupon-%s-table", chooseType.sign),
+                    needSel = false,
+                    selectIds = [],
+                    tip = $.common.sprintf("确认提交？(使用范围：<b> %s </b>).", chooseType.desc);
+
+                $.modal.confirm(tip, function () {
+                    if (document.getElementById(tableId)) {
+                        // 选择的使用范围需要关联信息
+                        needSel = true;
+                        selectIds = collectTableColumn(tableId, chooseType.sign + "Id");
+                    }
+
+                    if (needSel && selectIds.length === 0) {
+                        $.modal.alertWarning("请选择" + chooseType.desc);
+                        return false;
+                    }
+
+                    var data = $('#form-smsCoupon-edit').serializeArray();
+                    data.push({"name": "selectIds", "value": selectIds.join()});
+                    $.operate.save(prefix + "/edit", data);
+                });
+            }
+        }
+
+        $("#form-smsCoupon-edit").validate({
+            focusCleanup: true,
+            rules:{
+                name:{
+                    rangelength: [2, 20],
+                },
+                count:{
+                    positiveInteger: true,
+                    maxlength: 5,
+                },
+                amount:{
+                    isPrice:true
+                },
+                discount:{
+                    isDiscount:true,
+                },
+                perLimit:{
+                    positiveIntegerZero: true,
+                    maxlength: 5,
+                },
+                minPoint:{
+                    positiveIntegerZero: true,
+                    maxlength: 9,
+                },
+            },
+            messages: {
+                name:{
+                    rangelength: $.validator.format("优惠券名称长度在 {0} 到 {1} 之间"),
+                },
+                count:{
+                    maxlength: $.validator.format( "总发行量数值最长 {0} 位" ),
+                },
+                perLimit:{
+                    maxlength: $.validator.format( "每人限领数值最长 {0} 位" ),
+                },
+                minPoint: {
+                    maxlength: $.validator.format( "使用门槛数值最长 {0} 位" ),
+                }
+            },
+        });
+
+        $("#startTime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: "month",
+            todayBtn: true,
+            autoclose: true,
+            startDate: new Date(),
+        }).on('changeDate', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var startTime = event.date;
+            $('#endTime').datetimepicker('setStartDate', startTime);
+        });
+
+        $("#endTime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: "month",
+            todayBtn: true,
+            autoclose: true,
+            startDate: new Date(),
+        }).on('changeDate', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var endTime = event.date;
+            $("#startTime").datetimepicker('setEndDate', endTime);
+            $("#enableTime").datetimepicker('setEndDate', endTime);
+            if ($("#enableTime").val()) {
+                $("#enableTime").val("");
+                $.modal.msgWarning("请重新选择可领取日期")
+            }
+        });
+
+        $("#enableTime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: "month",
+            todayBtn: true,
+            autoclose: true,
+            startDate: new Date(),
+        });
+        $("#enableTime").datetimepicker('setEndDate', $("#endTime").val());
+    </script>
+</body>
+</html>

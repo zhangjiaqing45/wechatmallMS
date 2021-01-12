@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('秒杀活动产品列表')" />
+    <th:block th:include="include :: bootstrap-editable-css"/>
+    <style type="text/css">
+        .time-btn {
+            margin-right: 5px;
+            margin-bottom: 2px;
+            min-width: 100px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse" >
+            <h4>秒杀时间段</h4>
+            <div class="timeBtns">
+                <!--秒杀时间段按钮-->
+            </div>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <form id="formId">
+                <div class="select-list">
+                    <input type="hidden" name="flashPromotionSessionId" />
+                    <ul>
+                        <li>
+                            <p>商品货号：</p>
+                            <input type="text" name="productSn"/>
+                        </li>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="productName"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="promotionProductSelect();"><i class="fa fa-search"></i> 搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i> 重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+
+<div id="productSkuTableDiv" class="col-sm-12 select-table table-striped" style="display: none;">
+    <table id="product-sku-table"></table>
+</div>
+
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: bootstrap-table-editable-js"/>
+<script th:inline="javascript">
+    var detailFlag = [[${@permission.hasPermi('business:smsFlashPromotionProduct:detail')}]];
+    var blockFlag = [[${@permission.hasPermi('business:smsFlashPromotionProduct:block')}]];
+    var prefix = ctx + "business/smsFlashPromotion";
+    var shopId = [[${shopId}]];
+    var flashPromotionId = [[${gameId}]];
+    var sessions = [[${sessions}]];
+    var publishStatus = [[${@custom.allPublicStatusPlus()}]];
+    var commonUseStatus = [[${@custom.commonUseStatusAll()}]];
+    var enable = [[${enable}]];
+    var sortRexExp = ftConsts.regExp.sort;
+
+    $(function() {
+        buildTimeBtns();
+        initTable();
+        $.modal.alertSuccess("已上架且参与状态为[启用]的商品，开启活动后用户可见");
+    });
+
+    /**
+     * 构建时间段按钮
+     */
+    function buildTimeBtns() {
+        if (sessions && sessions.length > 0) {
+            var html = "", tpl = "<button type=\"button\" class=\"btn btn-white time-btn\" data-id=\"%s\" data-range=\"%s ~ %s\" onmouseover=\"shopTips(this);\" onmouseout=\"closeTips();\" >%s</button>";
+            for (var i in sessions) {
+                html += $.common.sprintf(tpl, sessions[i].id, sessions[i].startTime, sessions[i].endTime, sessions[i].title);
+            }
+            $(".timeBtns").html(html);
+            $button1st = $(".time-btn:first");
+            $button1st.removeClass("btn-white").addClass("btn-success");
+            setPromotionSessionId($button1st.attr("data-id"));
+            timeBtnsEvent();
+        }
+    }
+
+    /**
+     * 时间段按钮事件
+     */
+    function timeBtnsEvent() {
+        $(".time-btn").on("click", function() {
+            $(this).removeClass("btn-white").addClass("btn-success").siblings().addClass("btn-white").removeClass("btn-success");
+            setPromotionSessionId($(this).attr("data-id"));
+            promotionProductSelect();
+        });
+    }
+
+    /**
+     * 设置已选择的时间段ID
+     */
+    function setPromotionSessionId(val) {
+        $("input[name='flashPromotionSessionId']").val(val);
+    }
+
+
+    /**
+     * 时间段活动时间提示
+     * @param dom
+     */
+    function shopTips(dom) {
+        layer.tips("活动时间：" + $(dom).attr("data-range"), dom, {
+            tips: 3,
+            time: 0,
+        });
+    }
+
+    /**
+     * 关闭提示
+     */
+    function closeTips() {
+        layer.closeAll('tips');
+    }
+
+    /**
+     * 商品列表
+     */
+    function initTable() {
+        var options = {
+            url: prefix + "/browse",
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            onEditableSave: onEditableSave,
+            queryParams: queryParams,
+            modalName: "秒杀活动产品",
+            columns: [
+                // {
+                //     checkbox: true
+                // },
+                {
+                    field : 'id',
+                    title : '主键',
+                    visible: false
+                },
+                {
+                    field : 'flashPromotionId',
+                    title : '活动ID',
+                    visible: false
+                },
+                {
+                    field : 'flashPromotionSessionId',
+                    title : '时间段ID',
+                    visible: false
+                },
+                {
+                    field : 'productId',
+                    title : '商品ID',
+                    visible: false
+                },
+                {
+                    field: "productSn",
+                    title: "商品货号"
+                },
+                {
+                    field: "productName",
+                    title: "商品名称",
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value, 20, "open");
+                    }
+                },
+                {
+                    field : 'publishStatus',
+                    title : '上架状态',
+                    formatter: function(value, row, index) {
+                        if (publishStatus[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", publishStatus[value].style, publishStatus[value].desc);
+                        }
+                    }
+                },
+                {
+                    field : 'status',
+                    title : '参与状态',
+                    formatter: function(value, row, index) {
+                        if ($.common.isEmpty(blockFlag)) {
+                            return statusTools(row);
+                        } else {
+                            if (commonUseStatus[value]) {
+                                return $.common.sprintf("<span class='badge badge-%s'>%s</span>", commonUseStatus[value].style, commonUseStatus[value].desc);
+                            }
+                        }
+                    }
+                },
+                {
+                    field : 'minPrice',
+                    title : '展示价格',
+                    formatter: function (value, row, index) {
+                        return $.common.sprintf("<i class=\"fa fa-jpy\"> %s</i>", value);
+                    }
+                },
+                {
+                    field : 'sales',
+                    title : '销量',
+                    sortable: true,
+                },
+                {
+                    field : 'sort',
+                    title : '排序',
+                    sortable: true,
+                    editable: {
+                        type: 'text',
+                        title: '排序(数字越小越靠前)',
+                        emptytext: "0",
+                        validate: function (value) {
+                            if (!(sortRexExp.test(value))) {
+                                return '请输入5位以内正整数';
+                            }
+                        }
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-primary btn-xs ' + detailFlag + '" href="javascript:void(0)" onclick="productDetail(\'' + row.id + '\', \'' + row.productSn + '\', \'' + row.productName + '\')"><i class="fa fa-edit"></i>详情</a>  ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    }
+
+    function queryParams(params) {
+        var search = $.table.queryParams(params);
+        search.shopId = shopId;
+        search.flashPromotionId = flashPromotionId;
+        return search;
+    }
+
+    /**
+     * 查询
+     */
+    function promotionProductSelect() {
+        $.table.search();
+    }
+
+    /**
+     * 查看活动商品（库存）
+     */
+    function productDetail(id, sn, name) {
+        if (flashPromotionId && id) {
+            var options = {
+                url: $.common.sprintf(prefix + "/browse/detail/%s/%s", flashPromotionId, id),
+                title: $.common.sprintf("查看时段 <b>[%s]</b> 活动商品 <b>[%s](%s)</b> ", $(".time-btn.btn-success").text(), name, sn),
+                btn: false,
+            }
+            $.modal.openOptions(options);
+        }
+    }
+
+    /**
+     * 状态显示
+     * @param row
+     * @returns {string}
+     */
+    function statusTools(row) {
+        if (row.status == enable) {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="productOff(\'' + row.id + '\',\'' + row.productSn + '\')"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="productOn(\'' + row.id + '\',\'' + row.productSn + '\')"></i> ';
+        }
+    }
+
+    /**
+     * 停用活动商品
+     */
+    function productOff(id, sn) {
+        $.modal.confirm($.common.sprintf("确认停用商品 [%s]", sn), function() {
+            $.operate.post(prefix + "/browse/productOff", {"id": id});
+        });
+    }
+
+    /**
+     * 启用活动商品
+     */
+    function productOn(id, sn) {
+        $.modal.confirm($.common.sprintf("确认启用商品 [%s]", sn), function() {
+            $.operate.post(prefix + "/browse/productOn", {"id": id});
+        });
+    }
+
+    /**
+     * 更改商品排序
+     */
+    function onEditableSave(field, row, oldValue, $el) {
+        $.operate.post(prefix + "/changeProductSort", {"id": row.id, "sort": row[field]}, function (result) {
+            if (result.code === web_status.SUCCESS) {
+                $.modal.msgSuccess(result.msg);
+            } else {
+                $el.html(oldValue);
+                $.modal.msgWarning(result.msg);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

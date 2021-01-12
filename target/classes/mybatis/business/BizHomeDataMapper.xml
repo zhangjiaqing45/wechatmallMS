@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.homeStatistics.mapper.BizHomeDataMapper">
+    <!--查询主页显示的数据-->
+    <select id="getHomeData" resultType="com.fante.project.business.homeStatistics.domain.HomeData">
+        <if test="shopId!=null">
+            <!--店铺查询主页显示的数据-->
+            {call getHomeDataOfShop(#{shopId})}
+        </if>
+        <if test="shopId == null">
+            <!--平台查询所有店铺主页显示的数据-->
+            {call getHomeData()}
+        </if>
+    </select>
+    <!--查询每日时间优惠券使用数量-->
+    <select id="getEveryDayCouponCount" resultType="com.fante.project.business.homeStatistics.domain.ChartOfOrderDto">
+        SELECT
+            date_format(use_time,'%Y-%m-%d') as date,
+            count(*) as num
+        FROM
+            sms_coupon_history sch
+            left join sms_coupon sc on sc.id = sch.coupon_id
+        WHERE 1=1
+        <if test="shopId != null">AND sc.shop_id = #{shopId}</if>
+        <!--使用时间-->
+        AND sch.use_time BETWEEN #{startTime} AND #{endTime}
+        <!--已经使用的-->
+        AND sch.use_status = '1'
+        GROUP BY date
+    </select>
+   <!--获取某月每天日期，成交总额，总数量-->
+    <select id="getEveryDayOrderCountOfMonth" resultType="com.fante.project.business.homeStatistics.domain.ChartOfOrderDto">
+        SELECT
+            date_format(create_time,'%Y-%m-%d') as date,
+            round(ifnull(SUM(pay_amount),0),2) as total,
+            count(*) as num
+        FROM
+            oms_order
+        WHERE 1=1
+            <if test="shopId != null">AND shop_id = #{shopId}</if>
+            AND create_time BETWEEN #{startTime}
+                            AND #{endTime}
+            <!-- 除了无效订单和待组团订单 都 计算在内-->
+            AND `status` &lt;= '5'
+         GROUP BY date
+    </select>
+    <!--获取一段时间内订单数量-->
+    <select id="getSomeDayOrderCount" parameterType="com.fante.project.business.homeStatistics.domain.SomeDaysOrderInfo" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            oms_order
+        WHERE 1=1
+            <if test="shopId!=null">
+            AND shop_id = #{shopId}
+            </if>
+            AND create_time BETWEEN #{startTime} AND  #{endTime}
+            -- 除了无效订单和待组团订单 都 计算在内
+            AND `status` &lt;= '5'
+    </select>
+    <!--获取一段时间内订单交易额-->
+    <select id="getSomeDayOrderMoney" parameterType="com.fante.project.business.homeStatistics.domain.SomeDaysOrderInfo" resultType="java.math.BigDecimal">
+        SELECT
+            round(IFNULL(sum(pay_amount),0),2)
+        FROM
+            oms_order
+        WHERE 1=1
+            <if test="shopId!=null">
+                AND shop_id = #{shopId}
+            </if>
+            AND payment_time BETWEEN #{startTime} AND  #{endTime}
+    </select>
+    <!--获取一段时间内用户佣金发放总额-->
+    <select id="getSomeDayMemberCash" parameterType="com.fante.project.business.homeStatistics.domain.SomeDaysOrderInfo" resultType="java.math.BigDecimal">
+        SELECT
+            round(IFNULL( SUM( money ), 0 ),2)
+        FROM
+            acc_account_record
+        WHERE 1=1
+            <if test="shopId!=null">
+             AND shop_id = #{shopId}
+            </if>
+            AND create_time BETWEEN #{startTime} AND  #{endTime}
+            AND `operation` = '5'
+    </select>
+    <!--获取一段时间内优惠券使用量-->
+    <select id="getSomeDayCouponCount" resultType="java.lang.Integer">
+        SELECT
+        count(*) as num
+        FROM
+        sms_coupon_history sch
+        left join sms_coupon sc on sc.id = sch.coupon_id
+        WHERE 1=1
+        <if test="shopId != null">AND sc.shop_id = #{shopId}</if>
+        <!--使用时间-->
+        AND sch.use_time BETWEEN #{startTime} AND #{endTime}
+        <!--已经使用的-->
+        AND sch.use_status = '1'
+    </select>
+
+</mapper>

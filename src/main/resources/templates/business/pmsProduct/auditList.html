@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('商品信息列表')" />
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <input type="hidden" name="orderByColumn" value="create_time" >
+                <input type="hidden" name="isAsc" value="desc" >
+                <input type="hidden" name="verifyStatus" value="01"/>
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p >店铺查询：</p>
+                            <input type="hidden" name="shopId"/>
+                            <input type="text" name="shop" readonly placeholder="请选择店铺" onclick="selectShop();" />
+                        </li>
+                        <li>
+                            <p >商品查询：</p>
+                            <input type="text" name="name"/>
+                        </li>
+                        <li>
+                            <p >货号查询：</p>
+                            <input type="text" name="productSn"/>
+                        </li>
+                        <li >
+                            <p >品牌查询：</p>
+                            <select class="form-control " name="brandId"
+                                    th:with="type=${@custom.getPmsBrand()}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}"
+                                        th:text="${dict.name}"
+                                        th:value="${dict.id}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p >商品分类：</p>
+                            <select  class="form-control " name="productCategoryId" th:with="type=${@custom.getAllPmsCategory()}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.name}" th:value="${dict.id}"></option>
+                            </select>
+                        </li>
+                        <li class="select-time">
+                            <p >创建时间：</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCreateTime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCreateTime]"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm m50" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+
+          <!--  <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:pmsProduct:export">
+                <i class="fa fa-download"></i> 导出
+            </a>-->
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs auditTabs">
+                </ul>
+            </div>
+            <table id="bootstrap-table"></table>
+        </div>
+
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:pmsProduct:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:pmsProduct:remove')}]];
+    //审核状态
+    var verifyStatusDatas = [[${@custom.auditTypes()}]];
+
+    var prefix = ctx + "business/pmsProduct";
+    var prefixShop = ctx + "business/bizShopInfo";
+    //initTable
+    $(function() {
+        bulidTabs();
+        initTable();
+    });
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='shopId']").val(shop.id);
+            $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+    /**
+     * 初始化表格信息
+     */
+    function initTable(){
+        var options = {
+            url: prefix + "/showList",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "商品信息",
+            showSearch: false,
+            showPageGo: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            columns: [
+                {
+                    title: '序号',
+                    field: '',
+                    align: 'center',
+                    width:100,
+                    formatter: function (value, row, index) {
+                        var pageSize = $('#bootstrap-table').bootstrapTable('getOptions').pageSize;     //通过table的#id 得到每页多少条
+                        var pageNumber = $('#bootstrap-table').bootstrapTable('getOptions').pageNumber; //通过table的#id 得到当前第几页
+                        return pageSize * (pageNumber - 1) + index + 1;    // 返回每条的序号： 每页条数 *（当前页 - 1 ）+ 序号
+                    }
+                },
+                {
+                    field : 'shopName',
+                    title : '店铺名称',
+                    align: 'center',
+                },
+                {
+                    field : 'productSn',
+                    title : '商品货号',
+                    align: 'center',
+                },
+                {
+                    field : 'name',
+                    title : '商品名称',
+                    align: 'center',
+                }/*,
+                {
+                    field : 'subTitle',
+                    title : '副标题',
+                    align: 'center',
+                }*/,
+                {
+                    field : 'pic',
+                    title : '图片',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        return $.table.imageView(respath+value);
+                    }
+                },
+                {
+                    field : 'productCategoryName',
+                    title : '分类名称',
+                    align: 'center',
+                },
+                {
+                    field : 'brandName',
+                    title : '品牌名称',
+                    align: 'center',
+                }/*,
+                {
+                    field : 'publishStatus',
+                    title : '上架状态：0->下架；1->上架',
+                    align: 'center',
+                },
+                {
+                    field : 'verifyStatus',
+                    title : '审核状态：0->未审核；1->审核通过',
+                    align: 'center',
+                }*/,
+                {
+                    field : 'price',
+                    title : '价格',
+                    align: 'center',
+                },
+                {
+                    field : 'originalPrice',
+                    title : '市场价',
+                    align: 'center',
+                }/*,
+                {
+                    field : 'sale',
+                    title : '销量',
+                    align: 'center',
+                },
+                {
+                    field : 'stock',
+                    title : '库存',
+                    align: 'center',
+                },
+                {
+                    field : 'albumPics',
+                    title : '画册图片',
+                    align: 'center',
+                },
+                {
+                    field : 'keywords',
+                    title : '关键字',
+                    align: 'center',
+                }*/,
+                {
+                    field : 'createTime',
+                    title : '创建时间',
+                    visible: true,
+                    align: 'center',
+                    width:150,
+                },
+                {
+                    field : 'auditMsg',
+                    title : '审核信息',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        return  $.table.tooltip(value,15,'open')
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    width:80,
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="audit(\'' + row.id + '\')"><i class="fa fa-edit"></i>详情</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    }
+    /**
+     * 手动触发查询
+     */
+    function auditSearch() {
+        $.table.search();
+    }
+    /**
+     * 审核页面
+     */
+    function audit(productId) {
+        var url = prefix + "/audit/" + productId;
+        var options = {
+            title: '店铺审核',
+            url: url,
+            width: $(window).width(),
+            height: $(window).height(),
+            btn: false,
+        };
+        $.modal.openOptions(options);
+    }
+
+    /**
+     * 构造审核状态Tabs并绑定点击事件
+     */
+    function bulidTabs() {
+        var h = "";
+        for (var key in verifyStatusDatas) {
+            h += "<li data-key=\"" + key + "\"><a data-toggle=\"tab\" href=\"#\" aria-expanded=\"false\" >" + verifyStatusDatas[key] + "</a></li>";
+        }
+        $(".auditTabs").html(h);
+        $(".auditTabs li:eq(0)").addClass("active");
+        $("input[name='verifyStatus']").val($(".auditTabs li:eq(0)").attr("data-key"));
+
+        $(".auditTabs li").on("click", function() {
+
+            $("input[name='verifyStatus']").val($(this).attr("data-key"));
+            auditSearch();
+
+        });
+    }
+</script>
+</body>
+</html>

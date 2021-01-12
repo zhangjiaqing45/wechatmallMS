@@ -1,0 +1,80 @@
+//package com.fante.framework.rabbitmq.enums;
+//
+///**
+// * @program: Fante
+// * @Date:
+// * @Author: Mr.Z
+// * @Description: 消息队列枚举配置
+// */
+//public enum QueueEnum {
+//
+//    /**
+//     * 测试队列A，绑定测试直连交换机
+//     */
+//    Q_TEST_DIRECT_A(ExchangeEnum.EX_DIRECT_TEST.getName(), "q.test.direct.a", "q.test.direct.a.key"),
+//
+//    /**
+//     * 测试队列B，绑定测试直连交换机
+//     */
+//    Q_TEST_DIRECT_B(ExchangeEnum.EX_DIRECT_TEST.getName(), "q.test.direct.b", "q.test.direct.b.key"),
+//
+//    /**
+//     * 测试队列C，绑定测试直连交换机
+//     */
+//    Q_TEST_DIRECT_C(ExchangeEnum.EX_DIRECT_TEST.getName(), "q.test.direct.c", "q.test.direct.c.key"),
+//
+//    /**
+//     * 测试队列D，绑定测试主题交换机
+//     */
+//    Q_TEST_TOPIC_D(ExchangeEnum.EX_TOPIC_TEST.getName(), "q.test.topic.d", ""),
+//
+//    /**
+//     * 测试队列E，绑定测试主题交换机
+//     */
+//    Q_TEST_TOPIC_E(ExchangeEnum.EX_TOPIC_TEST.getName(), "q.test.topic.e", ""),
+//
+//    /**
+//     * 测试队列F，绑定测试扇形交换机
+//     */
+//    Q_TEST_FANOUT_F(ExchangeEnum.EX_FANOUT_TEST.getName(), "q.test.fanout.f", ""),
+//
+//    /**
+//     * 测试队列G，绑定测试扇形交换机
+//     */
+//    Q_TEST_FANOUT_G(ExchangeEnum.EX_FANOUT_TEST.getName(), "q.test.fanout.g", ""),
+//
+//    ;
+//
+//
+//    /**
+//     * 交换名称
+//     */
+//    private String exChange;
+//    /**
+//     * 队列名称
+//     */
+//    private String name;
+//    /**
+//     * 路由键
+//     */
+//    private String routeKey;
+//
+//
+//    QueueEnum(String exChange, String name, String routeKey) {
+//        this.exChange = exChange;
+//        this.name = name;
+//        this.routeKey = routeKey;
+//    }
+//
+//    public String getExChange() {
+//        return exChange;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public String getRouteKey() {
+//        return routeKey;
+//    }
+//}

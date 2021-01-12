@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsOrderReturnApply.mapper.OmsOrderReturnApplyMapper">
+    
+    <resultMap type="OmsOrderReturnApply" id="OmsOrderReturnApplyResult">
+        <result property="id"    column="id"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="returnApplySn"    column="return_apply_sn"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="skuId"    column="sku_id"    />
+        <result property="orderItemId"    column="order_item_id"    />
+        <result property="memberId"    column="member_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productPic"    column="product_pic"    />
+        <result property="productSn"    column="product_sn"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productBrand"    column="product_brand"    />
+        <result property="spData"    column="sp_data"    />
+        <result property="productCount"    column="product_count"    />
+        <result property="productPrice"    column="product_price"    />
+        <result property="productRealPrice"    column="product_real_price"    />
+        <result property="status"    column="status"    />
+        <result property="orderSn"    column="order_sn"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="memberNickName"    column="member_nick_name"    />
+        <result property="returnName"    column="return_name"    />
+        <result property="returnPhone"    column="return_phone"    />
+        <result property="reason"    column="reason"    />
+        <result property="description"    column="description"    />
+        <result property="proofPics"    column="proof_pics"    />
+        <result property="returnAmount"    column="return_amount"    />
+        <result property="companyAddressId"    column="company_address_id"    />
+        <result property="receiveName"    column="receive_name"    />
+        <result property="receivePhone"    column="receive_phone"    />
+        <result property="receiveArea"    column="receive_area"    />
+        <result property="receiveAddr"    column="receive_addr"    />
+        <result property="handleNote"    column="handle_note"    />
+        <result property="handleTime"    column="handle_time"    />
+        <result property="handleMan"    column="handle_man"    />
+        <result property="receiveMan"    column="receive_man"    />
+        <result property="receiveTime"    column="receive_time"    />
+        <result property="receiveNote"    column="receive_note"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="deliveryCompany"    column="delivery_company"    />
+        <result property="deliverySn"    column="delivery_sn"    />
+    </resultMap>
+
+    <sql id="selectOmsOrderReturnApplyVo">
+        select id, shop_id, return_apply_sn, order_id, sku_id, order_item_id, member_id, product_id, product_pic, product_sn, product_name, product_brand, sp_data, product_count, product_price, product_real_price, status, order_sn, create_time, create_by, member_nick_name, return_name, return_phone, reason, description, proof_pics, return_amount, company_address_id, receive_name, receive_phone, receive_area, receive_addr, handle_note, handle_time, handle_man, receive_man, receive_time, receive_note, update_by, update_time, remark, del_flag, delivery_company, delivery_sn from oms_order_return_apply
+    </sql>
+
+    <select id="selectOmsOrderReturnApplyList" parameterType="OmsOrderReturnApply" resultMap="OmsOrderReturnApplyResult">
+        <include refid="selectOmsOrderReturnApplyVo"/>
+        <where>
+           del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="returnApplySn != null  and returnApplySn != ''"> and return_apply_sn = #{returnApplySn}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="skuId != null "> and sku_id = #{skuId}</if>
+            <if test="orderItemId != null "> and order_item_id = #{orderItemId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="productCount != null "> and product_count = #{productCount}</if>
+            <if test="productPrice != null "> and product_price = #{productPrice}</if>
+            <if test="productRealPrice != null "> and product_real_price = #{productRealPrice}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="memberNickName != null  and memberNickName != ''"> and member_nick_name like concat('%', #{memberNickName}, '%')</if>
+            <if test="returnName != null  and returnName != ''"> and return_name like concat('%', #{returnName}, '%')</if>
+            <if test="returnPhone != null  and returnPhone != ''"> and return_phone = #{returnPhone}</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="proofPics != null  and proofPics != ''"> and proof_pics = #{proofPics}</if>
+            <if test="returnAmount != null "> and return_amount = #{returnAmount}</if>
+            <if test="companyAddressId != null "> and company_address_id = #{companyAddressId}</if>
+            <if test="receiveName != null  and receiveName != ''"> and receive_name like concat('%', #{receiveName}, '%')</if>
+            <if test="receivePhone != null  and receivePhone != ''"> and receive_phone = #{receivePhone}</if>
+            <if test="receiveArea != null  and receiveArea != ''"> and receive_area = #{receiveArea}</if>
+            <if test="receiveAddr != null  and receiveAddr != ''"> and receive_addr = #{receiveAddr}</if>
+            <if test="handleNote != null  and handleNote != ''"> and handle_note = #{handleNote}</if>
+            <if test="handleTime != null "> and handle_time = #{handleTime}</if>
+            <if test="handleMan != null  and handleMan != ''"> and handle_man = #{handleMan}</if>
+            <if test="receiveMan != null  and receiveMan != ''"> and receive_man = #{receiveMan}</if>
+            <if test="receiveTime != null "> and receive_time = #{receiveTime}</if>
+            <if test="receiveNote != null  and receiveNote != ''"> and receive_note = #{receiveNote}</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''"> and delivery_company = #{deliveryCompany}</if>
+            <if test="deliverySn != null  and deliverySn != ''"> and delivery_sn = #{deliverySn}</if>
+        </where>
+    </select>
+
+    <select id="countOmsOrderReturnApply" parameterType="OmsOrderReturnApply" resultType="int">
+        select count(*) from oms_order_return_apply
+        <where>
+            del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="returnApplySn != null  and returnApplySn != ''"> and return_apply_sn = #{returnApplySn}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="skuId != null "> and sku_id = #{skuId}</if>
+            <if test="orderItemId != null "> and order_item_id = #{orderItemId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="productCount != null "> and product_count = #{productCount}</if>
+            <if test="productPrice != null "> and product_price = #{productPrice}</if>
+            <if test="productRealPrice != null "> and product_real_price = #{productRealPrice}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="memberNickName != null  and memberNickName != ''"> and member_nick_name like concat('%', #{memberNickName}, '%')</if>
+            <if test="returnName != null  and returnName != ''"> and return_name like concat('%', #{returnName}, '%')</if>
+            <if test="returnPhone != null  and returnPhone != ''"> and return_phone = #{returnPhone}</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="proofPics != null  and proofPics != ''"> and proof_pics = #{proofPics}</if>
+            <if test="returnAmount != null "> and return_amount = #{returnAmount}</if>
+            <if test="companyAddressId != null "> and company_address_id = #{companyAddressId}</if>
+            <if test="receiveName != null  and receiveName != ''"> and receive_name like concat('%', #{receiveName}, '%')</if>
+            <if test="receivePhone != null  and receivePhone != ''"> and receive_phone = #{receivePhone}</if>
+            <if test="receiveArea != null  and receiveArea != ''"> and receive_area = #{receiveArea}</if>
+            <if test="receiveAddr != null  and receiveAddr != ''"> and receive_addr = #{receiveAddr}</if>
+            <if test="handleNote != null  and handleNote != ''"> and handle_note = #{handleNote}</if>
+            <if test="handleTime != null "> and handle_time = #{handleTime}</if>
+            <if test="handleMan != null  and handleMan != ''"> and handle_man = #{handleMan}</if>
+            <if test="receiveMan != null  and receiveMan != ''"> and receive_man = #{receiveMan}</if>
+            <if test="receiveTime != null "> and receive_time = #{receiveTime}</if>
+            <if test="receiveNote != null  and receiveNote != ''"> and receive_note = #{receiveNote}</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''"> and delivery_company = #{deliveryCompany}</if>
+            <if test="deliverySn != null  and deliverySn != ''"> and delivery_sn = #{deliverySn}</if>
+        </where>
+    </select>
+
+    <select id="checkOmsOrderReturnApplyUnique" parameterType="OmsOrderReturnApply" resultType="int">
+        select count(*) from oms_order_return_apply
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="returnApplySn != null  and returnApplySn != ''"> and return_apply_sn = #{returnApplySn}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="skuId != null "> and sku_id = #{skuId}</if>
+            <if test="orderItemId != null "> and order_item_id = #{orderItemId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productName != null  and productName != ''"> and product_name = #{productName}</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="productCount != null "> and product_count = #{productCount}</if>
+            <if test="productPrice != null "> and product_price = #{productPrice}</if>
+            <if test="productRealPrice != null "> and product_real_price = #{productRealPrice}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="memberNickName != null  and memberNickName != ''"> and member_nick_name = #{memberNickName}</if>
+            <if test="returnName != null  and returnName != ''"> and return_name = #{returnName}</if>
+            <if test="returnPhone != null  and returnPhone != ''"> and return_phone = #{returnPhone}</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="proofPics != null  and proofPics != ''"> and proof_pics = #{proofPics}</if>
+            <if test="returnAmount != null "> and return_amount = #{returnAmount}</if>
+            <if test="companyAddressId != null "> and company_address_id = #{companyAddressId}</if>
+            <if test="receiveName != null  and receiveName != ''"> and receive_name = #{receiveName}</if>
+            <if test="receivePhone != null  and receivePhone != ''"> and receive_phone = #{receivePhone}</if>
+            <if test="receiveArea != null  and receiveArea != ''"> and receive_area = #{receiveArea}</if>
+            <if test="receiveAddr != null  and receiveAddr != ''"> and receive_addr = #{receiveAddr}</if>
+            <if test="handleNote != null  and handleNote != ''"> and handle_note = #{handleNote}</if>
+            <if test="handleTime != null "> and handle_time = #{handleTime}</if>
+            <if test="handleMan != null  and handleMan != ''"> and handle_man = #{handleMan}</if>
+            <if test="receiveMan != null  and receiveMan != ''"> and receive_man = #{receiveMan}</if>
+            <if test="receiveTime != null "> and receive_time = #{receiveTime}</if>
+            <if test="receiveNote != null  and receiveNote != ''"> and receive_note = #{receiveNote}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''"> and delivery_company = #{deliveryCompany}</if>
+            <if test="deliverySn != null  and deliverySn != ''"> and delivery_sn = #{deliverySn}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOmsOrderReturnApplyById" parameterType="Long" resultMap="OmsOrderReturnApplyResult">
+        <include refid="selectOmsOrderReturnApplyVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertOmsOrderReturnApply" parameterType="OmsOrderReturnApply" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_order_return_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">shop_id,</if>
+            <if test="returnApplySn != null  and returnApplySn != ''">return_apply_sn,</if>
+            <if test="orderId != null ">order_id,</if>
+            <if test="skuId != null ">sku_id,</if>
+            <if test="orderItemId != null ">order_item_id,</if>
+            <if test="memberId != null ">member_id,</if>
+            <if test="productId != null ">product_id,</if>
+            <if test="productPic != null  and productPic != ''">product_pic,</if>
+            <if test="productSn != null  and productSn != ''">product_sn,</if>
+            <if test="productName != null  and productName != ''">product_name,</if>
+            <if test="productBrand != null  and productBrand != ''">product_brand,</if>
+            <if test="spData != null  and spData != ''">sp_data,</if>
+            <if test="productCount != null ">product_count,</if>
+            <if test="productPrice != null ">product_price,</if>
+            <if test="productRealPrice != null ">product_real_price,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="memberNickName != null  and memberNickName != ''">member_nick_name,</if>
+            <if test="returnName != null  and returnName != ''">return_name,</if>
+            <if test="returnPhone != null  and returnPhone != ''">return_phone,</if>
+            <if test="reason != null  and reason != ''">reason,</if>
+            <if test="description != null  and description != ''">description,</if>
+            <if test="proofPics != null  and proofPics != ''">proof_pics,</if>
+            <if test="returnAmount != null ">return_amount,</if>
+            <if test="companyAddressId != null ">company_address_id,</if>
+            <if test="receiveName != null  and receiveName != ''">receive_name,</if>
+            <if test="receivePhone != null  and receivePhone != ''">receive_phone,</if>
+            <if test="receiveArea != null  and receiveArea != ''">receive_area,</if>
+            <if test="receiveAddr != null  and receiveAddr != ''">receive_addr,</if>
+            <if test="handleNote != null  and handleNote != ''">handle_note,</if>
+            <if test="handleTime != null ">handle_time,</if>
+            <if test="handleMan != null  and handleMan != ''">handle_man,</if>
+            <if test="receiveMan != null  and receiveMan != ''">receive_man,</if>
+            <if test="receiveTime != null ">receive_time,</if>
+            <if test="receiveNote != null  and receiveNote != ''">receive_note,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''">delivery_company,</if>
+            <if test="deliverySn != null  and deliverySn != ''">delivery_sn,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="returnApplySn != null  and returnApplySn != ''">#{returnApplySn},</if>
+            <if test="orderId != null ">#{orderId},</if>
+            <if test="skuId != null ">#{skuId},</if>
+            <if test="orderItemId != null ">#{orderItemId},</if>
+            <if test="memberId != null ">#{memberId},</if>
+            <if test="productId != null ">#{productId},</if>
+            <if test="productPic != null  and productPic != ''">#{productPic},</if>
+            <if test="productSn != null  and productSn != ''">#{productSn},</if>
+            <if test="productName != null  and productName != ''">#{productName},</if>
+            <if test="productBrand != null  and productBrand != ''">#{productBrand},</if>
+            <if test="spData != null  and spData != ''">#{spData},</if>
+            <if test="productCount != null ">#{productCount},</if>
+            <if test="productPrice != null ">#{productPrice},</if>
+            <if test="productRealPrice != null ">#{productRealPrice},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="orderSn != null  and orderSn != ''">#{orderSn},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="memberNickName != null  and memberNickName != ''">#{memberNickName},</if>
+            <if test="returnName != null  and returnName != ''">#{returnName},</if>
+            <if test="returnPhone != null  and returnPhone != ''">#{returnPhone},</if>
+            <if test="reason != null  and reason != ''">#{reason},</if>
+            <if test="description != null  and description != ''">#{description},</if>
+            <if test="proofPics != null  and proofPics != ''">#{proofPics},</if>
+            <if test="returnAmount != null ">#{returnAmount},</if>
+            <if test="companyAddressId != null ">#{companyAddressId},</if>
+            <if test="receiveName != null  and receiveName != ''">#{receiveName},</if>
+            <if test="receivePhone != null  and receivePhone != ''">#{receivePhone},</if>
+            <if test="receiveArea != null  and receiveArea != ''">#{receiveArea},</if>
+            <if test="receiveAddr != null  and receiveAddr != ''">#{receiveAddr},</if>
+            <if test="handleNote != null  and handleNote != ''">#{handleNote},</if>
+            <if test="handleTime != null ">#{handleTime},</if>
+            <if test="handleMan != null  and handleMan != ''">#{handleMan},</if>
+            <if test="receiveMan != null  and receiveMan != ''">#{receiveMan},</if>
+            <if test="receiveTime != null ">#{receiveTime},</if>
+            <if test="receiveNote != null  and receiveNote != ''">#{receiveNote},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''">#{deliveryCompany},</if>
+            <if test="deliverySn != null  and deliverySn != ''">#{deliverySn},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOmsOrderReturnApply" parameterType="OmsOrderReturnApply">
+        update oms_order_return_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="returnApplySn != null  and returnApplySn != ''">return_apply_sn = #{returnApplySn},</if>
+            <if test="orderId != null ">order_id = #{orderId},</if>
+            <if test="skuId != null ">sku_id = #{skuId},</if>
+            <if test="orderItemId != null ">order_item_id = #{orderItemId},</if>
+            <if test="memberId != null ">member_id = #{memberId},</if>
+            <if test="productId != null ">product_id = #{productId},</if>
+            <if test="productPic != null  and productPic != ''">product_pic = #{productPic},</if>
+            <if test="productSn != null  and productSn != ''">product_sn = #{productSn},</if>
+            <if test="productName != null  and productName != ''">product_name = #{productName},</if>
+            <if test="productBrand != null  and productBrand != ''">product_brand = #{productBrand},</if>
+            <if test="spData != null  and spData != ''">sp_data = #{spData},</if>
+            <if test="productCount != null ">product_count = #{productCount},</if>
+            <if test="productPrice != null ">product_price = #{productPrice},</if>
+            <if test="productRealPrice != null ">product_real_price = #{productRealPrice},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="orderSn != null  and orderSn != ''">order_sn = #{orderSn},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="memberNickName != null  and memberNickName != ''">member_nick_name = #{memberNickName},</if>
+            <if test="returnName != null  and returnName != ''">return_name = #{returnName},</if>
+            <if test="returnPhone != null  and returnPhone != ''">return_phone = #{returnPhone},</if>
+            <if test="reason != null  and reason != ''">reason = #{reason},</if>
+            <if test="description != null  and description != ''">description = #{description},</if>
+            <if test="proofPics != null  and proofPics != ''">proof_pics = #{proofPics},</if>
+            <if test="returnAmount != null ">return_amount = #{returnAmount},</if>
+            <if test="companyAddressId != null ">company_address_id = #{companyAddressId},</if>
+            <if test="receiveName != null  and receiveName != ''">receive_name = #{receiveName},</if>
+            <if test="receivePhone != null  and receivePhone != ''">receive_phone = #{receivePhone},</if>
+            <if test="receiveArea != null  and receiveArea != ''">receive_area = #{receiveArea},</if>
+            <if test="receiveAddr != null  and receiveAddr != ''">receive_addr = #{receiveAddr},</if>
+            <if test="handleNote != null  and handleNote != ''">handle_note = #{handleNote},</if>
+            <if test="handleTime != null ">handle_time = #{handleTime},</if>
+            <if test="handleMan != null  and handleMan != ''">handle_man = #{handleMan},</if>
+            <if test="receiveMan != null  and receiveMan != ''">receive_man = #{receiveMan},</if>
+            <if test="receiveTime != null ">receive_time = #{receiveTime},</if>
+            <if test="receiveNote != null  and receiveNote != ''">receive_note = #{receiveNote},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="deliveryCompany != null  and deliveryCompany != ''">delivery_company = #{deliveryCompany},</if>
+            <if test="deliverySn != null  and deliverySn != ''">delivery_sn = #{deliverySn},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOmsOrderReturnApplyById" parameterType="Long">
+        <!-- update oms_order_return_apply set del_flag = '1' where id = #{id} -->
+        delete from oms_order_return_apply where id = #{id}
+    </delete>
+
+    <delete id="deleteOmsOrderReturnApplyByIds" parameterType="String">
+        update oms_order_return_apply set del_flag = '1' where id in
+        <!-- delete from oms_order_return_apply where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

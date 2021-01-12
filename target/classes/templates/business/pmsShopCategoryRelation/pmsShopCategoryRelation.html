@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('店铺从平台选择的分类列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form  id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>名称：</p>
+                            <input type="text" name="name"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i> 查询</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i> 刷新</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="selectProductCategory()" shiro:hasPermission="business:pmsShopCategoryRelation:add">
+                <i class="fa fa-plus"></i> 选择添加商品分类
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:pmsShopCategoryRelation:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:pmsShopCategoryRelation:remove')}]];
+    var showStatusDatas = [[${@dict.getType('biz_status')}]];
+    var prefix = ctx + "business/pmsShopCategoryRelation";
+    //弹出选择分类弹窗
+    function selectProductCategory() {
+        $.modal.open("选择商品分类", prefix+"/selectCategory");
+    }
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "产品分类",
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            columns: [
+                {
+                    title: '序号',
+                    field: '',
+                    align: 'center',
+                    width:50,
+                    formatter: function (value, row, index) {
+                        var pageSize = $('#bootstrap-table').bootstrapTable('getOptions').pageSize;     //通过table的#id 得到每页多少条
+                        var pageNumber = $('#bootstrap-table').bootstrapTable('getOptions').pageNumber; //通过table的#id 得到当前第几页
+                        return pageSize * (pageNumber - 1) + index + 1;    // 返回每条的序号： 每页条数 *（当前页 - 1 ）+ 序号
+                    }
+                },
+                {
+                    field : 'name',
+                    title : '分类名称',
+                    align: 'center',
+                    formatter:function (value,row,index) {
+                        return row.delFlag=="1"?value+"<label class='text-warning'>(平台已删除)</label>":value;
+                    }
+                },
+                {
+                    field : 'icon',
+                    title : '图标',
+                    align: 'center',
+                    formatter : function(value, row, index) {
+                        return $.table.imageView(respath+value);
+                    }
+                },
+                {
+                    field : 'productCount',
+                    title : '商品数量',
+                    align: 'center',
+                    sortable:true,
+                },
+                {
+                    field : 'showStatus',
+                    title : '平台导航状态',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(showStatusDatas, value);
+                    }
+                },
+                {
+                    field : 'shopStatus',
+                    title : '本店导航状态',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(showStatusDatas, value);
+                    }
+                },
+                {
+                    field : 'description',
+                    title : '描述',
+                    align: 'center',
+                },
+                {
+                    field : 'remark',
+                    title : '备注',
+                    align: 'center',
+                },
+                {
+                    field : 'sort',
+                    title : '排序',
+                    align: 'center',
+                    sortable:true,
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.pscrId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.pscrId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增商品信息')"/>
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: jquery-setSetp-css"/>
+    <th:block th:include="include :: summernote-css"/>
+    <style type="text/css">
+        .ibox {
+            border-radius: unset;
+        }
+        .ibox-content {
+            border: none;
+        }
+        .del-radio-box {
+            font-size: 10px;
+        }
+        .noCheck {
+            padding-left: unset;
+        }
+        .dest-show {
+            padding: 10px 20px;
+            margin-top: 5px;
+            background-color: #f8f8f8;
+        }
+		.video{
+			max-height: 300px;
+			max-width: 300px;
+		}
+		.posImgDel{
+			width: 22px;
+			height: 22px;
+			position: absolute;
+			right: -10px;
+			top: -10px;
+			cursor: pointer;
+			border: 1px solid white;
+			background-color: white;
+			border-radius: 1000px;
+			z-index: 99;
+		}
+    </style>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal wizard-big" id="form-pmsProduct-add" th:object="${pmsProduct}">
+        <input name="id" class="form-control" type="hidden" th:field="*{id}">
+        <!-- 菜单及分页容器-->
+        <div class="stepCont ">
+            <!-- 菜单导航显示-->
+            <div class="ystep-container ystep-lg ystep-blue"></div>
+            <!--分页容器-->
+            <div class="pageCont">
+                <!--步骤1-->
+                <div id="page1" class="stepPage">
+                    <div class="row" id="step-1">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">商品分类：</label>
+                            <div class="col-sm-3">
+                                <select class="form-control " name="productCategoryId"
+                                        th:with="type=${@custom.getPmsCategory()}">
+                                    <option value="">请选择</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.name}"
+                                            th:field="*{productCategoryId}"
+                                            th:value="${dict.id}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">商品名称：</label>
+                            <div class="col-sm-6">
+                                <input name="name" class="form-control" type="text" th:field="*{name}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">副标题：</label>
+                            <div class="col-sm-6">
+                                <input name="subTitle"  th:field="*{subTitle}" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">商品品牌：</label>
+                            <div class="col-sm-3">
+                                <select name="brandId" class="form-control m-b" th:with="type=${@custom.getPmsBrand()}">
+                                    <option value="">请选择</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.name}"
+                                            th:field="*{brandId}"
+                                            th:value="${dict.id}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">推荐类型：</label>
+                            <div class="col-sm-8">
+                                <div class="radio-box" th:each="dict : ${@custom.recommendProductType()}">
+                                    <input type="checkbox" th:id="${'recommendProductType_' + dict.key}"
+                                           name="recommendProductType" th:value="${dict.key}">
+                                    <label th:for="${'recommendProductType_' + dict.key}"
+                                           th:text="${dict.value}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">支付方式：</label>
+                            <div class="col-sm-8">
+                                <input id="paymentType" name="paymentType" class="form-control" type="hidden" th:field="*{paymentType}">
+                                <div  style="width: 80%;">
+                                    <input type="radio" name="paymentType0" value="1" id="paymentType1" checked><label>线上付款</label>
+                                    <input type="radio" name="paymentType0" value="2" id="paymentType2" style="margin-left: 2%;"  ><label>货到付款</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="deposit0">
+                            <label class="col-sm-3 control-label"
+                                   data-toggle="tooltip"
+                                   data-placement="right"
+                                   title="定金在商品支付方式为货到付款时显示.">定金：</label>
+                            <div class="col-sm-6">
+                                <input name="deposit" class="form-control" type="text" th:field="*{deposit}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">商品介绍：</label>
+                            <div class="col-sm-6">
+                                <textarea name="description" th:field="*{description}" class="form-control" type="text"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label"
+                                   data-toggle="tooltip"
+                                   data-placement="right"
+                                   title="查询商品时,可通过关键字查询到该商品.">关键字：</label>
+                            <div class="col-sm-6">
+                                <input name="keywords" class="form-control" type="text" th:field="*{keywords}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label"
+                                   data-toggle="tooltip"
+                                   data-placement="right"
+                                   title="">销量：</label>
+                            <div class="col-sm-6">
+                                <input name="keywords" class="form-control" type="text" th:field="*{sale}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required"
+                                   data-toggle="tooltip"
+                                   data-placement="right"
+                                   title="此价格在商品列表中显示.实际售卖价格以商品中不同规格设置的价格为准.">商品价格：</label>
+                            <div class="col-sm-6">
+                                <input name="price" class="form-control" type="text" th:field="*{price}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required"
+                                   data-toggle="tooltip"
+                                   data-placement="right"
+                                   title="此价格只做显示,商品列表中以中划线显示.">市场价格：</label>
+                            <div class="col-sm-6">
+                                <input name="originalPrice" class="form-control" type="text" th:field="*{originalPrice}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">商品排序：</label>
+                            <div class="col-sm-6">
+                                <input name="sort" class="form-control" type="text" value="99999" th:field="*{sort}">
+                            </div>
+                        </div>
+                        <!--<div class="form-group">
+                            <label class="col-sm-3 control-label is-required">运费模板：</label>
+                            <div class="col-sm-6">
+                                <div class="input-group">
+                                    <select name="feightTemplateId" class="form-control m-b" th:with="type=${@custom.feightTemplates()}">
+                                        <option value="">请选择</option>
+                                        <option th:each="dict : ${type}" th:text="${dict.name}" th:value="${dict.id}" th:field="*{feightTemplateId}"
+                                                th:attr="data-free=${dict.freeDest},data-toll=${dict.tollDest},data-exclude=${dict.excludeDest}"></option>
+                                    </select>
+                                    <div class="dest-show hidden"></div>
+                                </div>
+                            </div>
+                        </div>-->
+                    </div>
+                </div>
+                <!--步骤2-->
+                <div id="page2" class="stepPage">
+                    <div class="row" id="step-2">
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">属性类型：</label>
+                            <div class="col-sm-3">
+                                <select name="productAttributeCategoryId" class="form-control m-b"
+                                        th:with="type=${@custom.getPmsAttrCategory()}" id="pmsAttrCategory">
+                                    <option value="">请选择</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.name}"
+                                            th:field="*{productAttributeCategoryId}"
+                                            th:value="${dict.id}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">商品规格：</label>
+                            <div class="col-sm-6 ">
+                                <div class=" " id="attrBox">
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">操作：</label>
+                            <div class="col-sm-6">
+                                <button id="update_table" class="btn btn-success" type="button">刷新规格项目表</button>
+                            </div>
+                        </div>
+
+                        <!--sku列表 style="display: none;"-->
+                        <div class="control-group form-group">
+                            <label class="col-sm-3 control-label is-required">规格项目表</label>
+                            <div class="controls col-sm-6" id="lv_table_con">
+                                <div id="lv_table">
+                                    <!--自动生成sku列表-->
+                                </div>
+                                <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> 至少添加一条sku信息.若sku图片为空则默认显示商品主图. </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">商品参数：</label>
+                            <div class="col-sm-6">
+                                <div class="ibox">
+                                    <div class="ibox-content" id="paramsBox">
+                                        <!--参数列表自动生成-->
+                                    </div>
+                                </div>
+                                <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> 若参数值为空,则该参数默认取消. </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--步骤3-->
+                <div id="page3" class="stepPage">
+                    <div class="row" id="step-3">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">商品主图：</label>
+                            <div class="col-sm-6">
+                                <input name="pic" class="form-control" type="hidden" th:field="*{pic}">
+                                <ul class="ft-uploader__files" id="picImg" style="margin-top: 10px;">
+                                    <!-- 图片展示 -->
+                                </ul>
+                                <div class="ft-uploader__input-box" id="picBox">
+                                    <button id="picBtn" type="button" class="ft-uploader__input"></button>
+                                </div>
+                                <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> 商品列表中显示 </span>
+                            </div>
+                        </div>
+						<div class="form-group">
+						    <label class="col-sm-3 control-label">商品视频：</label>
+						    <div class="col-sm-6">
+						        <input name="video" class="form-control" type="hidden" th:field="*{video}">
+						        <ul class="ft-uploader__files" id="videoShow" style="margin-top: 10px;">
+						            <!-- 图片展示 -->
+						        </ul>
+						        <div class="ft-uploader__input-box" id="videoBox">
+						            <button id="videoBtn" type="button" class="ft-uploader__input"></button>
+						        </div>
+						        <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> 商品详情中轮播图第一个视频 </span>
+						    </div>
+						</div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">商品相册：</label>
+                            <div class="col-sm-7">
+                                <input name="albumPics" class="form-control" type="hidden" th:field="*{albumPics}">
+                                <ul class="ft-uploader__files" id="albumPicsImg" style="margin-top: 10px;">
+                                    <!-- 图片展示 -->
+                                </ul>
+                                <div class="ft-uploader__input-box" id="albumPicsBox">
+                                    <button id="albumPicsBtn" type="button" class="ft-uploader__input"></button>
+                                </div>
+                                <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> 商品详情中轮播图 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label ">详情页标题：</label>
+                            <div class="col-sm-6">
+                                <input name="detailTitle" class="form-control" type="text" th:field="*{detailTitle}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label ">详情页描述：</label>
+                            <div class="col-sm-6">
+                                <input name="detailDesc" class="form-control" type="text" th:field="*{detailDesc}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">商品详情视频：</label>
+                            <div class="col-sm-6">
+                                <input name="detailVideo" class="form-control" type="hidden" th:field="*{detailVideo}">
+                                <ul class="ft-uploader__files" id="detailVideoShow" style="margin-top: 10px;">
+                                    <!-- 图片展示 -->
+                                </ul>
+                                <div class="ft-uploader__input-box" id="detailVideoBox">
+                                    <button id="detailVideoBtn" type="button" class="ft-uploader__input"></button>
+                                </div>
+                                <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> 商品详情中视频 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">详情网页内容：</label>
+                            <div class="col-sm-6">
+                                <input name="detailHtml" id="detailHtml" class="form-control" type="hidden" th:field="*{detailHtml}">
+                                <div class="summernote"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--步骤4-->
+                <div id="page4" class="stepPage">
+                    <div class="row article-title" id="step-4">
+                        <div class="ibox text-center col-sm-8 col-md-offset-2">
+                            <h1 class="ibox-title">恭喜您，商品编辑完成！</h1>
+                            <div class="ibox-content">
+                                <span style="color: #257fd8;font-size: 160px;" class="glyphicon glyphicon-ok"
+                                      aria-hidden="true"></span><br>
+                                <button type="button" class="btn-primary btn m-t-lg" id="submitAuditBtn">提交平台审核</button>
+                                <button type="button" class="btn-primary btn m-t-lg" id="returnListBtn">返回商品列表</button>
+<!--                                <button type="button" class="btn-primary btn m-t-lg" id="relodBtn">继续添加商品</button>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--上一步,下一步按钮-->
+                <div class="step-button" style="text-align: center;">
+                    <button type="button" class="btn btn-success prevBtn" id="prevBtn">上一步<span></span></button>
+                    <button type="button" class="btn btn-success nextBtn" id="nextBtn">下一步<span></span></button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<th:block th:include="include :: jquery-setSetp-js"/>
+<th:block th:include="include :: layui-all-js"/>
+<th:block th:include="include :: summernote-js"/>
+<script type="text/javascript" th:inline="javascript">
+    //获取req中传回来的商品对象
+    var productResult = [[${pmsProduct}]];
+    //ajax提交审全部同步进行
+    $.ajaxSettings.async = false;
+    //属性类型
+    var attrType = [[${@custom.getPmsAttrCategory()}]];
+    //前缀
+    var prefix = ctx + "business/pmsProduct";
+    //图片上传数量控制
+    var picLimit= 1 , albumPicsLimit = [[${@config.getKey('biz.product.album')}]];
+	var videoLimit= 1;
+    //返回结果参数初始化
+    var pmsProductParam = {};
+    //存放所有键和值的对象 key:属性标签对象  value:值的数组  length:值的数量
+    var mapList = [];
+    //正整数5以内
+    var sortRexExp = ftConsts.regExp.sort;
+    //价格
+    var priceRexExp = ftConsts.regExp.price;
+    //原有的规格属性{颜色: "红色,白色,黑色,蓝色", 内存容量: "3G,4G,6G,32G", 存储空间: "32G,64G,128G", 网络: null}
+    var inputMap={};
+    //初始化商品信息
+    function initProduct(){
+        //初始化支付方式
+        var paymentType = $("input[name='paymentType']").val();
+        console.log("paymentType="+paymentType)
+        if(paymentType=='1'){
+            //设置选中
+            $("input:radio[value='1']").attr('checked','true');
+            //隐藏定金
+            $("#deposit0").hide();
+        }else if(paymentType=='2'){
+            //设置选中
+            $("input:radio[value='2']").attr('checked','true');
+            //显示定金
+            $("#deposit0").show();
+        }
+
+
+        //判断分类/品牌是否被删除
+        var cate = $.common.isEmpty($("select[name='productCategoryId']").val());
+        var brand = $.common.isEmpty($("select[name='brandId']").val());
+        var msg="";
+        if(cate){
+            msg+="[分类]";
+            $("select[name='productCategoryId']").val([""]).trigger("change");
+        }
+        if(brand){
+            msg+="[品牌]";
+            $("select[name='brandId']").val([""]).trigger("change");
+        }
+        if(msg){
+            $.modal.alertWarning($.common.sprintf("此商品的 %s 被禁用,请重新选择！",msg))
+        }
+
+        //初始化推荐类型
+        var recommendProductTypes = "";
+        var recommends = productResult.smsHomeRecommendProductList;
+        if(recommends.length>0){
+            recommends.forEach(function (value, index, array) {
+                recommendProductTypes+=value.type;
+            })
+        }
+        $("input[name='recommendProductType']").each(function (index, value) {
+            if(recommendProductTypes.indexOf($(value).val())!=-1){
+                $(value).iCheck('check');
+            }
+        })
+        //console.log(productResult)
+        //初始化运费模板
+        /*var pmsFeightTemplate = productResult.pmsFeightTemplate;
+        if (pmsFeightTemplate) {
+            var noDest = "未选择地区",
+                freeDest = pmsFeightTemplate.freeDest || noDest,
+                tollDest = pmsFeightTemplate.tollDest || noDest,
+                excludeDest = pmsFeightTemplate.excludeDest || noDest;
+            var html = "", tpl = "<div class='row'><label class=\"col-sm-2 control-label\">%s</label><div class=\"col-sm-10\"><div class=\"form-control-static\">%s</div></div></div>";;
+            html += $.common.sprintf(tpl, "包邮配送区域：", freeDest.replace(/,/g, "、"));
+            html += $.common.sprintf(tpl, "不包邮配送区域：", tollDest.replace(/,/g, "、"));
+            html += $.common.sprintf(tpl, "不配送区域：", excludeDest.replace(/,/g, "、"));
+            $("select[name='feightTemplateId']").nextAll(".dest-show").html(html).removeClass("hidden");
+        }*/
+        // 初始化商品图片信息
+        var albumPics = $("input[name='albumPics']").val();
+        var pic = $("input[name='pic']").val();
+		var video = $("input[name='video']").val();
+        var detailVideo = $("input[name='detailVideo']").val();
+        initAlbumPics(albumPics);
+        initPic(pic);
+		initVideo(video);
+        initDetailVideo(detailVideo);
+        //富文本数据回显的方法在初始化富文本插件之前完成
+
+        //属性和参数 初始化
+        /**
+         *  1. 刷新出商品属性规格的 原始属性列表 和 参数列表
+         *  2. 更新出此商品特有的属性
+         *  3. 选中此商品的属性值
+         *  4. 初始化 skuList_table
+         *  5. 填充 skulist的值 和 参数列表中的值
+         */
+        /**1. 刷新出商品属性规格的 原始属性列表 和 参数列表*/
+        var pmsAttrCategory = $("#pmsAttrCategory").val();
+        autoProductCategory(pmsAttrCategory);
+        /**2. 更新出此商品特有的属性*/
+        //--(1) 获取原有的属性值[inputMap] 获取 此商品所有sku的属性值[skuSpDateMap]
+        //--(2) 遍历此商品属性的值 与 原有的属性的值对比:
+        //--         a.若此商品属性值,在原有属性值中存在,则状态改为选中状态
+        //--         b.若此商品属性值,在原有属性值中不存在,则添加此属性值到页面选项并改为选中状态
+        //--         c.其他原有属性值不用管(默认不选中状态)
+        //==(1)获取此商品所有sku的属性值
+        var skuList = productResult.skuList;
+        //格式:{"pmsAttr@颜色:白色,内存容量:3G[price]":2900,"pmsAttr@颜色:白色,内存容量:3G[stock]":100...}
+        var skuAttrInputValuesMap = {};
+        if(skuList.length>0){
+            //sp_Data {"颜色":"黑色","内存容量":"4G","存储空间":"64G"} 和 {"颜色":"黑色","内存容量":"6G","存储空间":"128G"}
+            //需要得到  {颜色:[黑色] 内存容量:[4G,6G] 存储空间:[64G,128G]}
+            var skuSpDateMap = {};
+            skuList.forEach(function (value, index, array) {
+                //sp_Data的JSON对象 {"颜色":"黑色","内存容量":"4G","存储空间":"64G"}
+                //把sku对应的属性放入skuSpDateMap中
+                //pmsAttr@颜色:白色,内存容量:3G[price] = 2900;
+                var nameStr = 'pmsAttr@' + value.spData.replace(/\"/g,"").replace(/{/g,"").replace(/}/g,"")+"[{col}]";
+                skuAttrInputValuesMap[nameStr.replace(/{col}/g,'id')]=value.id;
+                skuAttrInputValuesMap[nameStr.replace(/{col}/g,'price')]=value.price;
+                skuAttrInputValuesMap[nameStr.replace(/{col}/g,'stock')]=value.stock;
+                skuAttrInputValuesMap[nameStr.replace(/{col}/g,'lowStock')]=value.lowStock;
+                skuAttrInputValuesMap[nameStr.replace(/{col}/g,'pic')]=value.pic;
+
+                var spDataObj = jQuery.parseJSON(value.spData);
+                //若为空
+                if($.common.isEmptyObject(skuSpDateMap)){
+                    //[颜色,内存容量,存储空间]
+                    Object.keys(spDataObj).forEach(function (value, index, array){
+                        skuSpDateMap[value]=[spDataObj[value]];
+                    });
+                }else{
+                    //[颜色,内存容量,存储空间]
+                    Object.keys(spDataObj).forEach(function (value, index, array){
+                        //若数组中不包含则添加到值的数组中
+                        if(skuSpDateMap[value].indexOf(spDataObj[value])==-1){
+                            skuSpDateMap[value].push(spDataObj[value])
+                        }
+                    });
+                }
+            })
+
+            //==(2) 遍历此商品属性的值skuSpDateMap 与 原有的属性inputMap的值对比:
+            //skuSpDateMap : {颜色:[黑色] 内存容量:[4G,6G] 存储空间:[64G,128G]}
+            if(!$.common.isEmptyObject(skuSpDateMap)){
+                //[颜色,内存容量,存储空间]
+                Object.keys(skuSpDateMap).forEach(function (name, index, array){
+                    //console.log(name,"-",inputMap[name]);
+                    //--         a.若此商品属性值,在原有属性值中存在,则状态改为选中状态
+                    //--         b.若此商品属性值,在原有属性值中不存在,则添加此属性值到页面选项并改为选中状态
+                    //--         c.其他原有属性值不用管(默认不选中状态)
+                    //[64G,128G] 若值为空则不用循环判断
+                    skuSpDateMap[name].forEach(function(val,i,arr){
+                        //[8G,16G,32G,64G,128G].indexOf('64G')
+                        if(inputMap[name] && inputMap[name].indexOf(val)>-1){
+                            //a.若此商品属性值,在原有属性值中存在,则状态改为选中状态
+                            //获取这个值的input=checkBox
+                            //找到h4中html= 属性名称(value)的唯一父类下的input[value=(val)]可能有多个,获取第一个的父类
+                            $('div[name-value="'+name+'_'+val+'"]').addClass("checked");
+                            $('input[name-value="'+name+'_'+val+'"]').val(val);
+                        }else{
+                            //b.若此商品属性值,在原有属性值中不存在,则添加此属性值到页面选项并改为选中状态
+                            addParam($('butten[data-title="'+name+'"]')[0],val);
+                            $('div[name-value="'+name+'_'+val+'"]').addClass("checked");
+                            $('input[name-value="'+name+'_'+val+'"]').val(val);
+                        }
+                    })
+                });
+            }
+            updateTable();
+            //4. 初始化 skuList_table
+            //name = pmsAttr@颜色:白色,内存容量:3G[price]
+            //从skuList中获取sp_data拼成 👆 格式 然后,找到input 初始化value值
+            if(!$.common.isEmptyObject(skuAttrInputValuesMap)){
+                Object.keys(skuAttrInputValuesMap).forEach(function(name,index,arr){
+                    $('input[name="'+name+'"]').val(skuAttrInputValuesMap[name]);
+                    if(name.indexOf("[pic]")>-1){
+                        //初始化sku图片
+                        var tpl = "<li class=\"ft-uploader__file_sm\" style=\"background-image:url(" + respath + skuAttrInputValuesMap[name] + ")\" data-src=\"" + skuAttrInputValuesMap[name] + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+                        $('input[name="'+name+'"]').next(".ft-uploader__files").append(tpl);
+                        $('input[name="'+name+'"]').nextAll(".ft-uploader__input-box_sm").hide();
+                    }
+                });
+            }
+            //删除无用的sku行
+            $("input[name$='[price]']").each(function (index,value) {
+                if(!$(value).val()){
+                    $(value).parent().parent("tr").remove();
+                }
+            })
+        }
+        //初始化参数列表
+        var pmsParamInputValuesMap = {};
+        var paramDataObj = jQuery.parseJSON(productResult.paramData);
+        Object.keys(paramDataObj).forEach(function(name,index,arr) {
+            //pmsParam@接口类型
+            $('input[name="pmsParam@'+name+'"]').val(paramDataObj[name]);
+        })
+        //初始化select2插件
+        $("select[id^='paramSelect_']").each(function (index,value) {
+            var paramName = $(value).attr("name").replace(/pmsParam@/g,"");
+            var paramValue = paramDataObj[paramName];
+            if(paramValue){
+                var paramValueArr = paramValue.split(",");
+                $(value).val(paramValueArr).trigger('change');
+            }
+        })
+    }
+
+    /**
+     * 参数值的选择
+     * {paramName} :参数名称
+     */
+    var paramInputHtml = '<div class="form-group">\n' +
+        '                    <label class="col-sm-3 control-label ">{paramName}：</label>\n' +
+        '                    <div class="col-sm-6">\n' +
+        '                    <input  name="pmsParam@{paramName}" class="paramValue form-control" type="text">\n' +
+        '                    </div>\n' +
+        '               </div>';
+    /**
+     * 参数值的选择
+     * {option}:选项
+     * {paramName} :参数名称
+     * {id} :select 标签的id
+     */
+    var paramSelectHtml = ' <div class="form-group">\n' +
+        '                                    <label class="col-sm-3 control-label ">{paramName}：</label>\n' +
+        '                                    <div class="col-sm-6">\n' +
+        '                                        <select class="paramValue form-control m-b select2-multiple" id="paramSelect_{id}" name="pmsParam@{paramName}">\n' +
+        '                                           {option}' +
+        '                                        </select>\n' +
+        '                                    </div>\n' +
+        '                                </div>';
+
+    /**
+     * 属性列表内容
+     * {cls} :checkMore / checkOne 单选 /多选
+     * {title} : 此属性的名称
+     * {val} : 属性的值
+     * {checkHidden} : 隐藏 checkBox
+     * {delHidden} : 隐藏 删除按钮
+     * param_{id} : name属性
+     */
+    var attrHtmlContext = '<div class="radio-box  {cls}">\n' +
+        '                <div  name-value="{title}_{val}" class="icheckbox-blue">' +
+        '<input name-value="{title}_{val}" type="hidden" name="lv2" value=""/>' +
+        '<input type="checkbox" name="attrValue" value="{val}" style="position: absolute; opacity: 0;">' +
+        '<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>' +
+        '</div>\n' +
+        '   <label >{val}</label>\n' +
+        '                <a class="del-radio-box {delHidden}">删除</a>' +
+        '          </div>';
+
+    /**
+     * 属性列表头部内容
+     * {title} : 商品规格名称
+     * attr_{id} : 这个 ibox 的唯一标识
+     */
+    var attrHtmlStart = ' <div class="ibox lv1">\n' +
+        '<div class="ibox-content attr_{id}">' +
+        '<h4 class="lv1">{title}</h4>\n';
+
+    /**
+     * 属性列表的结尾内容 0->支持；1->不支持
+     * {cls} : 新增属性值的按钮的属性
+     * {title} : 按钮所在的属性模块的名称
+     */
+    var attrHtmlEnd = '<div class="addParamInput">\n' +
+        '            <input type="text" class="col-sm-3 form-control file-box m-t-xs"  name="addInput"/>\n' +
+        '             <butten data-title="{title}" class="m-l-xs m-t-xxs btn btn-primary m-t-xs btn-sm {cls}">添加</butten>\n' +
+        '              </div>\n' +
+        '              </div>\n' +
+        '            </div>';
+    /**
+     * sku主图上传拼装用的html
+     */
+    var skuPicUploadHtml ='<ul class="ft-uploader__files skuFiles"  style="margin-top: 10px;" >\n' +
+        '                                    <!-- 图片展示 -->\n' +
+        '                                </ul>\n' +
+        '                                <div class="ft-uploader__input-box_sm">\n' +
+        '                                    <button data-cls="upload_{ID}" type="button" class="ft-uploader__input skuUpload upload_{ID}" ></button>\n' +
+        '                                </div>';
+
+    /**************根据属性类型生成规格选择列表   开始**********************************/
+
+    function autoProductCategory(pmsAttrCategory) {
+        //先清空
+        $("#attrBox").empty();
+        $("#paramsBox").empty();
+        //验证参数
+        if (!pmsAttrCategory) {
+            $.modal.msg("请先选择规格类型！")
+            return false;
+        }
+        //查询到属性类型
+        var at = attrType.find(function (item) {
+            return item.id == pmsAttrCategory;
+        })
+
+        //根据属性类型获取属性列表和参数列表 -->属性的类型；0->属性；1->参数
+        $.operate.get("/business/pmsProductAttribute/listByAttrCateId?attrCateId=" + at.id, function (res) {
+            var list = res.rows;
+            //初始化商品规格值对象
+            inputMap={}
+            list.forEach(function (item, index, arr) {
+                //0->属性
+                if (item.type == 0) {
+                    //设置规格属性
+                    inputMap[item.name]=item.inputList;
+                    //属性列表的自动生成
+                    $("#attrBox").append(autoAttrListHtml(item));
+                }
+                //1->参数
+                if (item.type == 1) {
+                    autoParamListHtml(item);
+                }
+            });
+
+        })
+    }
+ /**************根据属性类型生成规格选择列表   结束**********************************/
+/*******************************根据条件生成属性和参数列表  开始*****************************************************/
+    //参数列表自动生成
+    function autoParamListHtml(item) {
+        // console.log(item)
+        //input输入框
+        var paramInputHtmlCon = paramInputHtml;
+        var paramSelectHtmlCon = paramSelectHtml;
+        //手动录入
+        if (item.inputType == 0) {
+            $("#paramsBox").append(paramInputHtmlCon.replace(/{paramName}/g, item.name))
+            return;
+        }
+        //从列表中选择
+        if (item.inputType == 1) {
+            var data=[];
+            var paramArr = item.inputList.split(',');
+            for (var i = 0; i < paramArr.length; i++) {
+                data.push({id:paramArr[i],text:paramArr[i]})
+            }
+
+            var html = paramSelectHtmlCon.replace(/{option}/g,'')
+                .replace(/{paramName}/g, item.name)
+                .replace(/{id}/g,item.id);
+
+            $("#paramsBox").append(html)
+            if(item.selectType==1){
+                $("#paramSelect_"+item.id).select2({
+                    placeholder: "",
+                    data: data
+                });
+            }else if(item.selectType==2){
+                $("#paramSelect_"+item.id).select2({
+                    createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} },
+                    multiple: true,
+                    data: data
+                });
+            }
+        }
+    }
+
+    //属性列表的自动生成
+    function autoAttrListHtml(item) {
+        //拼接name = attr_id
+        var attrHtmlCon = attrHtmlContext.replace(/{delHidden}/g, "delnohidden")
+            .replace(/{id}/g, item.id)
+            .replace(/{title}/g, item.name);
+        var autoHtml = attrHtmlStart.replace(/{title}/g, item.name)
+            .replace(/{id}/g, item.id);
+        //判断属性录入方式：0->手工录入 并且 不支持手动新增；
+        if (item.inputType == 0 && item.handAddStatus != 0) {
+            autoHtml += attrHtmlEnd.replace(/{cls}/g, "hidden")
+                .replace(/{title}/g, item.name)
+                .replace(/col-sm-3"/g, 'col-sm-8 lv2" maxLength="15"');
+            return autoHtml;
+        }
+        //判断属性录入方式：0->手工录入 并且 支持手动新增；
+        if (item.inputType == 0 && item.handAddStatus == 0) {
+            autoHtml += attrHtmlEnd.replace(/{cls}/g, " addParamBtn handAdd")
+                .replace(/{title}/g, item.name)
+                .replace(/addInput/g, "lv2");
+            return autoHtml;
+        }
+        //1->从列表中选取
+        //0->唯一；1->单选；2->多选
+        var st = item.selectType;
+        if (item.inputType == 1) {
+            if (st == 0) {
+                //唯一
+                autoHtml += attrHtmlCon.replace(/{val}/g, item.inputList.split(',')[0])
+                    .replace(/delnohidden/g, "hidden")
+                    .replace(/icheckbox-blue/g, '')
+                    .replace(/lv2/g, '')
+                    .replace(/attrValue/g, "lv2");
+                return autoHtml + '</div></div>';
+            }
+            if (st == 1) {
+                //单选 不可删除
+                item.inputList.split(',').forEach(function (value) {
+                    autoHtml += attrHtmlCon.replace(/{val}/g, value)
+                        .replace(/{cls}/g, 'checkOne');
+                    // .replace(/delnohidden/g, "hidden");
+                });
+            }
+            if (st == 2) {
+                //多选
+                item.inputList.split(',').forEach(function (value) {
+                    autoHtml += (attrHtmlCon.replace(/{val}/g, value))
+                        .replace(/{cls}/, 'checkMore');
+
+                });
+            }
+        }
+        //是否支持手动新增；0->支持；1->不支持
+        if (item.handAddStatus == 0) {
+            autoHtml += attrHtmlEnd.replace(/{cls}/g, "addParamBtn st_" + st).replace(/{title}/g, item.name);
+        } else {
+            autoHtml = autoHtml.replace(/delnohidden/g, "hidden")
+            autoHtml += '</div></div>';
+        }
+        return autoHtml;
+    }
+    /**
+     * 添加属性规格的值
+     * that : 添加按钮
+     * val : 添加 的值 若为空 则从that前的input获取
+     */
+    function addParam(that,val) {
+        //console.log($(that))
+        var attrHtmlx = attrHtmlContext;
+        //不能为空
+        if(!val){
+            val = $(that).prev().val();
+        }
+        if (!val || val == '') {
+            $.modal.msg("不能添加空属性值！")
+            return false;
+        }
+        if (val.length > 15) {
+            $.modal.msg("属性值最多15个字符！")
+            return false;
+        }
+        //验证重复
+        var flag = false;
+        var $iboxContent = $(that).parent(".addParamInput").parent(".ibox-content");
+        $iboxContent.find("label").each(function (index, item) {
+            if ($(item).html() == val) {
+                $.modal.msg("不能添加重复属性值！")
+                flag = true;
+            }
+        })
+        //获取此属性的名称
+        var name = $iboxContent.find("h4").html();
+        //console.log("获取此属性的名称",name)
+        if (flag) {
+            return false;
+        }
+        //st_1单选  st_2多选
+        var cls = "noCheck";
+        if ($(that).hasClass("st_1")) {
+            cls = "checkOne";
+        }
+        if ($(that).hasClass("st_2")) {
+            cls = "checkMore";
+        }
+        //获取它上面的输入框的删除span是否hidden如果有则也hidden 否则 delnohidden
+        var delFlag = 'delnohidden';
+        if ($(that).parent(".addParamInput").prev().find(".del-radio-box").hasClass("hidden")) {
+            delFlag = "hidden";
+        }
+        //手动录入
+        if ($(that).hasClass("handAdd")) {
+            //不显示选择框 把值付给lv2
+            attrHtmlx = attrHtmlx.replace(/icheckbox-blue/g, 'icheckbox-blue hidden')
+                .replace(/lv2/g, "")
+                .replace(/attrValue/g, "lv2");
+        }
+        $(that).parent(".addParamInput").before(attrHtmlx.replace(/{val}/g, val)
+            .replace(/{title}/g, name)
+            .replace(/{cls}/g, cls)
+            .replace(/{delHidden}/g, delFlag));
+        $(that).prev().val("")
+    }
+ /*******************************根据条件生成属性和参数列表  结束*****************************************************/
+
+    /**
+     * init
+     */
+    $(function () {
+        //初始化参数
+        initProduct();
+
+
+        //监听属性类型的改变
+        $("#pmsAttrCategory").on("change", function () {
+            autoProductCategory($(this).val());
+        });
+
+        //点击添加某个规格的值
+        $(document).on('click', '.addParamBtn', function(){
+            addParam(this)
+        });
+
+        //点击删除选项
+        $(document).on('click', '.del-radio-box', function () {
+            $(this).parent('.radio-box').remove()
+        });
+        //点击选中规格的值(多选)
+        $(document).on('click', '.checkMore', function () {
+            //如果选择中则取消 反而反之 同时给lv2赋值或清除
+            var $check = $(this).children('.icheckbox-blue');
+            if ($check.hasClass("checked")) {
+                $check.removeClass("checked");
+                $check.children('input[name="lv2"]').val('')
+            } else {
+                $check.addClass("checked");
+                $check.children('input[name="lv2"]').val($check.children('input[name="attrValue"]').val())
+            }
+        });
+        //监听点击时间刷新表格
+        $(document).on('click', '#update_table', function (){
+            $.modal.confirm("刷新列表将导致sku信息重新生成，是否要刷新？", function () {
+                updateTable();
+            })
+        });
+        //点击选中规格的值（单选）
+        $(document).on('click', '.checkOne', function () {
+            //获取兄弟元素取消选中
+            $(this).siblings(".radio-box").each(function (i, item) {
+                $(item).children('.icheckbox-blue').removeClass("checked");
+                $(item).children('.icheckbox-blue').children('input[name="lv2"]').val('')
+            })
+            //选中自己
+            var $check = $(this).children('.icheckbox-blue');
+            $check.addClass("checked");
+            $check.children('input[name="lv2"]').val($check.children('input[name="attrValue"]').val())
+        });
+
+
+        /**最后一页 三个按钮 选项*/
+        //返回商品列表页面
+        $(document).on('click', '#returnListBtn', function () {
+            var topWindow = $(window.parent.document);
+            var currentId = $('.page-tabs-content', topWindow).find('.active').attr('data-panel');
+            var tp = $('.RuoYi_iframe[data-id="' + currentId + '"]', topWindow)[0];
+            if (tp) {
+                var $contentWindow = tp.contentWindow;
+                $.modal.close();
+                $contentWindow.$(".layui-layer-padding").removeAttr("style");
+                if ($contentWindow.table.options.type == table_type.bootstrapTable) {
+                    $contentWindow.$.table.refresh();
+                } else if ($contentWindow.table.options.type == table_type.bootstrapTreeTable) {
+                    $contentWindow.$.treeTable.refresh();
+                }
+                $.modal.closeTab();
+            } else {
+                $.modal.parentTab('商品信息', prefix + "/");
+            }
+        })
+        //提交审核后返回商品列表页
+        $(document).on('click', '#submitAuditBtn', function () {
+            //console.log(pmsProductParam)
+            $.modal.parentTab('商品信息', prefix + "/verify/" + pmsProductParam.id);
+        })
+        //提交审核后返回商品列表页
+        $(document).on('click', '#relodBtn', function () {
+            window.location.reload();
+        })
+
+        //弹出提示
+        $("[data-toggle='tooltip']").tooltip();
+    })
+
+
+    /**刷新表格*/
+    function updateTable() {
+        mapList = [];
+        //获取所有的属性名称标签
+        var $lv1Arr = $('h4.lv1');
+        if (!$lv1Arr || $lv1Arr.length == 0) {
+            $.modal.msg("请选择完善的属性类型.")
+            $('#lv_table_con').hide();
+            $('#lv_table').html('');
+            return;
+        }
+
+        for (var i = 0; i < $lv1Arr.length; i++) {
+            var lv2Arr = [];
+            var lent = 0;
+            //获取该lv1Arr下的所有存放值的input
+            var $lv2Arr = $($lv1Arr[i]).parents('.lv1').find('input[name="lv2"]');
+            $lv2Arr.each(function (index, item) {
+                //如果这个值不为空则填充
+                if ($(item).val()) {
+                    lent += 1;
+                    lv2Arr.push($(item));
+                }
+            })
+            if (lent != 0) {
+                mapList.push({
+                    key: $lv1Arr[i],
+                    value: lv2Arr,
+                    length: lent
+                })
+            }
+        }
+        if (!mapList || mapList.length == 0) {
+            $.modal.msg("您还未选择任何属性值.")
+            $('#lv_table_con').hide();
+            $('#lv_table').html('');
+            return;
+        }
+        var tableHTML = '';
+        tableHTML += '<table class="table table-bordered table-condensed table-hover">';
+        tableHTML += '    <thead>';
+        tableHTML += '        <tr>';
+        for (var i = 0; i < mapList.length; i++) {
+            tableHTML += '<th>' + $(mapList[i].key).html() + '</th>';
+        }
+        tableHTML += '            <th >价格</th>';
+        tableHTML += '            <th >库存</th>';
+        tableHTML += '            <th >库存预警</th>';
+        tableHTML += '            <th >图片</th>';
+        tableHTML += '            <th >操作</th>';
+        tableHTML += '        </tr>';
+        tableHTML += '    </thead>';
+
+        tableHTML += '    <tbody>';
+
+        var numsArr = new Array();
+        var idxArr = new Array();
+
+        for (var i = 0; i < mapList.length; i++) {
+            //属性的值的数量
+            numsArr.push(mapList[i].length);
+            idxArr[i] = 0;
+        }
+
+        var len = 1;
+        var rowsArr = new Array();
+        //遍历所有 属性 的 值 的 数量(数量不为0) (1,2)
+        for (var i = 0; i < numsArr.length; i++) {
+            len = len * numsArr[i];
+
+            var tmpnum = 1;
+            for (var j = numsArr.length - 1; j > i; j--) {
+                tmpnum = tmpnum * numsArr[j];
+            }
+            rowsArr.push(tmpnum);
+        }
+
+        for (var i = 0; i < len; i++) {
+            tableHTML += '        <tr data-row="' + (i + 1) + '">';
+
+            var name = '';
+            for (var j = 0; j < mapList.length; j++) {
+                var n = parseInt(i / rowsArr[j]);
+                if (j == 0) {
+                } else if (j == mapList.length - 1) {
+                    n = idxArr[j];
+                    if (idxArr[j] + 1 >= numsArr[j]) {
+                        idxArr[j] = 0;
+                    } else {
+                        idxArr[j]++;
+                    }
+                } else {
+                    var m = parseInt(i / rowsArr[j]);
+                    n = m % numsArr[j];
+                }
+
+                var textName = $(mapList[j].key).html();
+                var text = $((mapList[j].value)[n]).val();
+                if (j != mapList.length - 1) {
+                    name += textName + ':' + text + ',';
+                } else {
+                    name += textName + ':' + text;
+                }
+                //合并单元格
+                //if (i % rowsArr[j] == 0) {
+                    //tableHTML += '<td  rowspan="' + rowsArr[j] + '" data-rc="' + (i + 1) + '_' + (j + 1) + '">' + text + '</td>';
+                    tableHTML += '<td   data-rc="' + (i + 1) + '_' + (j + 1) + '">' + text + '</td>';
+                //}
+            }
+            tableHTML += '<td ><input maxlength="12"  type="hidden" name="pmsAttr@' + name + '[id]" /><input maxlength="12" style="width: 80px" type="text" name="pmsAttr@' + name + '[price]" /></td>';
+            tableHTML += '<td ><input maxlength="5" style="width: 80px" type="text" name="pmsAttr@' + name + '[stock]" /></td>';
+            tableHTML += '<td ><input maxlength="5" style="width: 80px" type="text" name="pmsAttr@' + name + '[lowStock]" /></td>';
+            tableHTML += '<td ><input style="width: 80px" type="hidden" name="pmsAttr@' + name + '[pic]" />'+skuPicUploadHtml.replace(/{ID}/g, i)+'</td>';
+            tableHTML += '<td ><a onclick="delSku(this)">删除</a></td>';
+            tableHTML += '</tr>';
+        }
+        tableHTML += '</tbody>';
+        tableHTML += '</table>';
+
+        $('#lv_table_con').show();
+        $('#lv_table').html(tableHTML);
+
+        $(".skuUpload").each(function(index, elem) {
+            var cls = $(elem).attr("data-cls");
+            $.operate.layuiUpload("." + cls, ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function(r) {
+                var tpl = "<li class=\"ft-uploader__file_sm\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+                $(elem).parent(".ft-uploader__input-box_sm").prev(".ft-uploader__files").append(tpl);
+                $(elem).parent(".ft-uploader__input-box_sm").prevAll("input").val(r.fileName);
+                $(elem).parent(".ft-uploader__input-box_sm").hide();
+            });
+        });
+    }
+
+    /**
+     *  删除sku
+     */
+    function delSku(that){
+        $(that).parent().parent("tr").remove();
+    }
+    /**
+     * 分步提交
+     */
+    var step = new SetStep({
+        content: '.stepCont',
+        fontWidth: 120,
+        clickAble: false,
+        steps: ['基本信息', '属性信息', '页面显示', '添加完成'],
+        stepCounts: 4,
+        curStep: 1,
+        nextBtn: '#nextBtn',
+        prevBtn: '#prevBtn',
+        btnText: [' , 填写基本信息', ' , 填写属性信息', ' , 填写页面显示', ' , 提交商品信息'],
+        onChangeBefore: function (index, btuFlag) {
+            //返回上一页不需要验证btuFlag：-1 上一步 1下一步
+            if (btuFlag === -1) {
+                return true;
+            }
+            if ($.validate.form()) {
+                if (index == 3) {
+                    //提交前验证
+                    if (!$("input[name='pic']").val()) {
+                        $.modal.msgWarning("请上传商品主图");
+                        return false;
+                    }
+                    if (!$("input[name='albumPics']").val()) {
+                        $.modal.msgWarning("请上传至少1张商品相册图片");
+                        return false;
+                    }
+                    //保存富文本到隐藏域;
+                    var summernote = $('.summernote').summernote('code');
+                    if (summernote=='<p><br></p>') {
+                        $.modal.msgWarning("详情网页内容不能为空！");
+                        return false;
+                    }
+                    $("#detailHtml").val(summernote);
+
+                    var bol = false;
+                    $.modal.loading("正在处理中，请稍后...");
+                    layer.open({
+                        content: "确认要提交商品信息？"
+                        ,btn: ['确定', '取消']
+                        ,yes: function(index,layero){
+                            bol= true;
+                            layer.close(index)
+                        },
+                        end:function(){
+                            if(bol){
+                                if (submitHandler()) {
+                                    $(".step-button").addClass("hidden");
+                                    step.goToNext(step);
+                                }
+                            }
+                            $.modal.closeLoading();
+                        }
+                    });
+                    return false;
+                }else if(index == 2){
+                    if(mapList.length == 0){
+                        $.modal.msg("请添加至少1条商品sku信息.")
+                        return false;
+                    }
+                    var errFlag=false;
+                    //验证价格格式
+                    $("input[name$='[price]']").each(function (index, value) {
+                        //name = pmsAttr@颜色:金灰色,容量:300L[stock]
+                        if (!(priceRexExp.test($(value).val()))) {
+                            $(value).addClass("error")
+                            errFlag = true;
+                            return true;
+                        }
+                    })
+                    //验证库存
+                    $("input[name$='tock]']").each(function (index, value) {
+                        //name = pmsAttr@颜色:金灰色,容量:300L[stock]
+                        if (!(sortRexExp.test($(value).val()))) {
+                            $(value).addClass("error")
+                            errFlag = true;
+                            return true;
+                        }
+                    })
+                    if(errFlag){
+                        $.modal.msg("sku列表数据格式错误！");
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+        },
+        onChangeAfter: function (index) {
+            //最后一页显示完成按钮
+        }
+    })
+
+    /**提交表单*/
+    function submitHandler() {
+
+        if ($.validate.form()) {
+            //返回的参数数据包装
+            packageParam();
+            console.log(pmsProductParam)
+            /* pmsProductParam = {
+                 productCategoryId: 9,
+                 productAttributeCategoryId: 6,
+                 name: "商品名称22223",
+                 subTitle: "副标题",
+                 brandId: 3,
+                 recommendProductType: "01,02,03",
+                 description: "商品介绍商品介绍商品介绍商品介绍",
+                 keywords: "键字",
+                 price: 100,
+                 originalPrice: 120,
+                 stock: 999,
+                 feightTemplateId: 2,
+                 sort: 0,
+                 pic: "",
+                 albumPics: "画册图片,画册图片,画册图片",
+                 detailTitle: "详情页标题",
+                 detailDesc: "详情页描述详情页描述详情页描述",
+                 detailHtml: "<html>adf</html>",
+                 paramData: '{"商品货号":"13123","参数2":"param2"}',
+                 skuList: [
+                     {
+                         spData: '{"列表单选z":"红色","列表复选b":"aa","列表唯一b":"唯一选择不支持手动新"}',
+                         price: "1111",
+                         stock: "111",
+                         lowStock: "11",
+                         pic: "1",
+                     }
+                 ]
+             };*/
+            var flag = true;
+            var config = {
+                url: prefix + "/edit",
+                type: "post",
+                async: false,
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(pmsProductParam),
+                beforeSend: function () {
+
+                },
+                success: function (result) {
+                    if (result.code == web_status.SUCCESS) {
+                        pmsProductParam.id = result.data;
+                        $.modal.msgSuccess(result.msg);
+                    }else{
+                        $.modal.msgError(result.msg);
+                        flag = false;
+                    }
+                    $.modal.closeLoading();
+                }
+            };
+            $.ajax(config);
+            return flag;
+        }
+    }
+    /**
+     * 组装数据
+     */
+    function packageParam() {
+        //最后一页显示填写的商品表单信息
+        var dataArr = $('#form-pmsProduct-add').serializeArray();
+        //组装返回结果
+        var skuList = new Array();
+        var recommendProductType = "";
+        var paramData = {};
+        dataArr.forEach(function (item, index) {
+            //1. name = lv2 或者 addInput 忽略
+            //2. name 是以pmsAttr@开头的是商品属性列表 存入sp_data(商品销售属性，json格式) 以json字符串格式
+            //例如:[{"key": "颜色", "value": "黑色" },{"key": "容量","value": "32G"}
+            //3. name 是以pmsParam@开头的是商品参数列表 存入 paramData中 以json字符串格式
+            //4. 剩余的存入商品表相应的字段即可(商品推荐类型逗号拼接)
+            var name = item.name;
+            var value = item.value;
+            //无效值处理
+            if (name == 'lv2' || name == 'addInput') {
+                return true
+            }
+            //sku处理
+            if (name.indexOf("pmsAttr@") == 0) {
+                //console.log(name,"---",value)
+                //pmsAttr@列表单选z:红色,列表复选b:aa,列表唯一b:唯一选择不支持手动新增[price]", value: "1111"
+                var i = name.indexOf("[");
+                var j = name.indexOf("@");
+                // price
+                var attrName = name.substring(i + 1, name.length-1);
+                //列表单选z:红色,列表复选b:aa,列表唯一b:唯一选择不支持手动新增
+                var pdatas = name.substring(j + 1, i);
+                //{"列表单选z":"红色","列表复选b":"aa","列表唯一b":"唯一选择不支持手动新增"}
+                pdatas = '{"' + pdatas.replace(/:/g, '":"').replace(/,/g, '","') + '"}';
+                if (skuList.length > 0) {
+                    for (var k = 0; k < skuList.length ; k++) {
+                        var skuItem = skuList[k];
+                        if (skuItem.spData == pdatas) {
+                            skuItem[attrName] = value;
+                            return true
+                        }
+                    }
+                    var sku = {}
+                    sku.spData = pdatas;
+                    sku[attrName] = value;
+                    skuList.push(sku);
+                } else {
+                    var sku = {}
+                    sku.spData = pdatas;
+                    sku[attrName] = value;
+                    skuList.push(sku);
+                }
+                return true;
+            }
+
+            //商品参数值处理
+            if (name.indexOf("pmsParam@") == 0) {
+                //如果参数值为空则直接忽略该参数.
+                if(!value){
+                    return true;
+                }
+                //name:"pmsParam@商品货号", value: "阿萨德"
+                var i = name.indexOf("@");
+                //商品货号
+                var paramName = name.substring(i + 1);
+                if ($.common.isEmptyObject(paramData)) {
+                    //若为空
+                    paramData[paramName]=value;
+
+                } else {
+                    //若不为空
+                    var keyArr = Object.keys(paramData);
+                    for (var j = 0; j < keyArr.length; j++) {
+                        if(keyArr[j] == paramName){
+                            paramData[paramName] += ","+value;
+                            return true
+                        }
+                    }
+                    paramData[paramName]=value;
+                }
+                return true
+            }
+            //商品推荐类型处理
+            if (name == "recommendProductType") {
+                recommendProductType += "," + value;
+            }
+            //其他参数放入商品对象中
+            pmsProductParam[name] = value;
+        })
+
+        //需要把商品参数中value添加上{}和去掉头部的,
+        pmsProductParam.paramData =  JSON.stringify(paramData);
+        //去掉推荐类型的第一个逗号
+        if (recommendProductType) {
+            pmsProductParam.recommendProductType = recommendProductType.substring(1);
+        }
+        //设置sku
+        skuList.forEach(function (value, index, array) {
+            array[index].pic = array[index].pic==''?pmsProductParam.pic:array[index].pic;
+        })
+        pmsProductParam.skuList = skuList;
+
+    }
+    /******************验证 开始************************/
+    $("#form-pmsProduct-add").validate({
+        rules: {
+            name: {
+                required: true,
+                maxlength: 50,
+                remote: {
+                    url: prefix + "/checkUnique",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "name": function () {
+                            return $.common.trim($("input[name='name']").val());
+                        },
+                        "id": function () {
+                            return $.common.trim($("input[name='id']").val());
+                        }
+                    },
+                    dataFilter: function (data, type) {
+                        return $.validate.unique(data);
+                    }
+                }
+            },
+            productCategoryId:{
+                required: true,
+            },
+            albumPics:{
+                required: true,
+            },
+            pic:{
+                required: true,
+            },
+            subTitle:{
+                required: true,
+                maxlength: 100,
+            },
+            brandId:{
+                required: true,
+            },
+            price: {
+                required: true,
+                isPrice: true,
+            },
+           /* feightTemplateId:{
+                required: true,
+            },*/
+            productAttributeCategoryId: {
+                required: true,
+            },
+            originalPrice: {
+                required: true,
+                isPrice: true,
+            },
+            stock: {
+                required: true,
+                positiveIntegerZero: true,
+                maxlength: 5,
+            },
+            keywords: {
+                maxlength: 20,
+            },
+            sort: {
+                required: true,
+                positiveIntegerZero: true,
+                maxlength: 5,
+            },
+            description: {
+                maxlength: 500,
+            },
+            skuPic: {
+                required: true,
+            },
+            detailTitle: {
+                maxlength: 20,
+            },
+            detailDesc: {
+                maxlength: 20,
+            },
+            detailHtml: {
+                required: true,
+            },
+            remark: {
+                maxlength: 20
+            },
+        },
+        messages: {
+            name: {
+                required: "名称不能为空 ",
+                maxlength: "最多输入50个字. ",
+                remote: "商品名称已存在！ "
+            },
+            subTitle:{
+                required: "副标题不能为空",
+                maxlength: "最多输入100个字. ",
+            },
+            productCategoryId:{
+                required: "商品分类不能为空",
+            },
+            brandId:{
+                required: "商品品牌不能为空",
+            },
+            stock: {
+                positiveIntegerZero: "库存只能输入正整数. ",
+                maxlength: "最大库存 99999 ",
+            },
+            /*feightTemplateId:{
+                required: "运费模板不能为空.",
+            },*/
+            productAttributeCategoryId: {
+                required: "属性类型不能为空.",
+            },
+            keywords: {
+                maxlength: "最多输入20个字. ",
+            },
+            pic: {
+                required: "商品主图不能为空 ",
+            },
+            albumPics:{
+                required: "至少上传一张商品相册",
+            },
+            sort: {
+                required: "序号不能为空 ",
+                positiveIntegerZero: "序号只能是正整数",
+                maxlength: "最多输入5位数字",
+            },
+            description: {
+                maxlength: "最多输入500个字符.",
+            },
+            remark: {
+                maxlength: "最多输入20个字符.",
+            },
+        },
+        focusCleanup: true
+    })
+    /******************验证 结束************************/
+
+    $('input:radio[name="paymentType0"]').change(function () {
+        if ($("#paymentType1").is(":checked")) {
+            $("#deposit0").hide();
+        }
+        if ($("#paymentType2").is(":checked")) {
+            $("#deposit0").show();
+        }
+        $('#paymentType').val($("input[name='paymentType0']:checked").val());
+    })
+
+
+    /******************图片通用 开始************************/
+    /**图片预览--通用 */
+    $("body").on("click", ".ft-uploader__file", function (e) {
+        if ($(this).attr("data-src")) {
+            $.modal.preview(respath + $(this).attr("data-src"));
+        }
+    });
+
+    $("body").on("click", ".ft-uploader__file_sm", function (e) {
+        if ($(this).attr("data-src")) {
+            $.modal.preview(respath + $(this).attr("data-src"));
+        }
+    });
+
+    /**
+     * 收集图片--通用
+     * @param ulSelector 显示图片的ul
+     * @param inputSelector input隐藏域
+     */
+    function collectPic(ulSelector) {
+        var arr = [];
+        $(ulSelector + " li").each(function (index, elem) {
+            arr.push($(elem).attr("data-src"));
+        });
+        return arr.join();
+    }
+    /******************图片通用 结束************************/
+    /******************图片初始化 开始************************/
+    /**
+     * 初始化商品主图
+     */
+    function initPic(pic) {
+        if (pic) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + pic + ")\" data-src=\"" + pic + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+            $("#picImg").append(tpl);
+            picCtrl();
+        }
+    }
+	/**
+	 * 初始化商品视频
+	 */
+	function initVideo(video) {
+	    if (video) {
+	        var tpl = "<li style=\"max-width:300px;position: relative;\" data-src=\"" + video + "\" ><video class=\"video\" src=\""+ respath + video +"\" controls=\"controls\" autoplay=\"autoplay\">您的浏览器不支持 video 标签。</video><img class=\"posImgDel del-img\" src=\"../../../img/close.png\" /></li>";
+			$("#videoShow").append(tpl);
+			videoCtrl();
+	    }
+	}
+    function initDetailVideo(video) {
+	    console.log("video="+video)
+        if (video) {
+            var tpl = "<li style=\"max-width:300px;position: relative;\" data-src=\"" + video + "\" ><video class=\"detailVideo\" src=\""+ respath + video +"\" controls=\"controls\" autoplay=\"autoplay\">您的浏览器不支持 video 标签。</video><img class=\"posImgDel del-img\" src=\"../../../img/close.png\" /></li>";
+            $("#detailVideoShow").append(tpl);
+            detailVideoCtrl();
+        }
+    }
+    /**
+     * 初始化商品画册
+     */
+    function initAlbumPics(albumPics) {
+        if (albumPics && albumPics.split(",").length > 0) {
+            var pics = albumPics.split(","), tpl = "";
+            for (var i in pics) {
+                tpl += "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + pics[i] + ")\" data-src=\"" + pics[i] + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+            }
+            $("#albumPicsImg").html(tpl);
+            albumPicsCtrl();
+        }
+    }
+    /******************图片初始化 结束************************/
+    /******************上传主图 开始************************/
+    /**
+     * 上传主图
+     */
+    $.operate.layuiUpload("#picBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function(r) {
+        var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+        $("#picImg").append(tpl);
+        $("input[name='pic']").val(collectPic("#picImg"));
+        picCtrl();
+    });
+
+    // 商品主图上传控制
+    function picCtrl() {
+        $("#picImg li").length >= picLimit ? $("#picBox").hide() : $("#picBox").show();
+    }
+
+    // 商品主图上传图片删除
+    $("#picImg").on("click", ".del-img", function(e) {
+        var self = this;
+        $.modal.confirm("确认删除商品主图图片？", function() {
+            $(self).parent().remove();
+            $("input[name='pic']").val(collectPic("#picImg"));
+            picCtrl();
+        });
+        stopPropagation(e);
+    });
+    /******************上传主图 结束************************/
+	/******************上传视频****************************/
+	/**
+	 * 上传视频
+	 */
+	$.operate.layuiUpload("#videoBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.video, function(r) {
+	    // var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+	    var tpl = "<li style=\"max-width:300px;position: relative;\" data-src=\"" + r.fileName + "\" ><video class=\"video\" src=\""+ respath + r.fileName +"\" controls=\"controls\" autoplay=\"autoplay\">您的浏览器不支持 video 标签。</video><img class=\"posImgDel del-img\" src=\"../../../img/close.png\" /></li>";
+	    $("#videoShow").append(tpl);
+	    $("input[name='video']").val(collectPic("#videoShow"));
+	    videoCtrl();
+	});
+
+    $.operate.layuiUpload("#detailVideoBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.video, function(r) {
+        // var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+        var tpl = "<li style=\"max-width:300px;position: relative;\" data-src=\"" + r.fileName + "\" ><video class=\"detailVideo\" src=\""+ respath + r.fileName +"\" controls=\"controls\" autoplay=\"autoplay\">您的浏览器不支持 video 标签。</video><img class=\"posImgDel del-img\" src=\"../../../img/close.png\" /></li>";
+        $("#detailVideoShow").append(tpl);
+        $("input[name='detailVideo']").val(collectPic("#detailVideoShow"));
+        detailVideoCtrl();
+    });
+	
+	// 商品主图上传控制
+	function videoCtrl() {
+	    $("#videoShow li").length >= videoLimit ? $("#videoBox").hide() : $("#videoBox").show();
+	}
+
+    function detailVideoCtrl() {
+        $("#detailVideoShow li").length >= videoLimit ? $("#detailVideoBox").hide() : $("#detailVideoBox").show();
+    }
+	
+	// 商品主图上传图片删除
+	$("#videoShow").on("click", ".del-img", function(e) {
+	    var self = this;
+	    $.modal.confirm("确认删除商品展示视频？", function() {
+	        $(self).parent().remove();
+	        $("input[name='video']").val(collectPic("#videoShow"));
+	        videoCtrl();
+	    });
+	    stopPropagation(e);
+	});
+    $("#detailVideoShow").on("click", ".del-img", function(e) {
+        var self = this;
+        $.modal.confirm("确认删除商品详情展示视频？", function() {
+            $(self).parent().remove();
+            $("input[name='detailVideo']").val(collectPic("#detailVideoShow"));
+            detailVideoCtrl();
+        });
+        stopPropagation(e);
+    });
+	/*********************视频 结束********************************/
+    /******************sku主图 开始************************/
+    //sku主图上传图片删除
+    $("body").on("click", ".skuFiles .del-img", function(e) {
+        var self = this;
+        $.modal.confirm("确认删除SKU图片？", function() {
+            $li = $(self).parent()
+            $ul = $li.parent();
+            $ul.prevAll("input").val("");
+            $ul.nextAll(".ft-uploader__input-box_sm").show();
+            $li.remove();
+        });
+        stopPropagation(e);
+    });
+    /******************上传主图 结束************************/
+    /******************上传图册 开始************************/
+    // 上传商品相册
+    $.operate.layuiUpload("#albumPicsBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function (r) {
+        var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+        $("#albumPicsImg").append(tpl);
+        $("input[name='albumPics']").val(collectPic("#albumPicsImg"));
+        albumPicsCtrl();
+    });
+
+
+    // 图册上传控制
+    function albumPicsCtrl() {
+        $("#albumPicsImg li").length >= albumPicsLimit ? $("#albumPicsBox").hide() : $("#albumPicsBox").show();
+    }
+
+    // 图册上传图片删除
+    $("#albumPicsImg").on("click", ".del-img", function (e) {
+        var self = this;
+        $.modal.confirm("确认删除该资料图片？", function () {
+            $(self).parent().remove();
+            $("input[name='albumPics']").val(collectPic("#albumPicsImg"));
+            albumPicsCtrl();
+        });
+        stopPropagation(e);
+    });
+    /******************上传图册 结束************************/
+    /******************富文本编辑 开始************************/
+    //初始化富文本
+    $('.summernote').append( $("input[name='detailHtml']").val());
+    $(".summernote").summernote({
+        placeholder: '请填写图文内容',
+        height: 256,
+        lang: 'zh-CN',
+        followingToolbar: false,
+        dialogsInBody: true,
+        callbacks: {
+            onImageUpload: function (files) {
+                var len = files.length;
+                for (var i = 0; i < len; i++) {
+                    $.operate.summernoteImageUpload(files[i], this);
+                }
+            }
+        }
+    });
+    /******************富文本编辑 结束************************/
+
+    /*$("select[name='feightTemplateId']").on('select2:select', function (e) {
+        var val = $(this).val();
+        var $destDivs = $(this).nextAll(".dest-show");
+        $destDivs.addClass("hidden").html("");
+        if (val) {
+            var tpl = "<div class='row'><label class=\"col-sm-2 control-label\">%s</label><div class=\"col-sm-10\"><div class=\"form-control-static\">%s</div></div></div>";
+            var noDest = "未选择地区";
+            $selected = $(this).find("option:selected"),
+                freeDest = $selected.attr("data-free") || noDest,
+                tollDest = $selected.attr("data-toll") || noDest,
+                excludeDest = $selected.attr("data-exclude") || noDest;
+            var html = "";
+            html += $.common.sprintf(tpl, "包邮配送区域：", freeDest.replace(/,/g, "、"));
+            html += $.common.sprintf(tpl, "不包邮配送区域：", tollDest.replace(/,/g, "、"));
+            html += $.common.sprintf(tpl, "不配送区域：", excludeDest.replace(/,/g, "、"));
+            $destDivs.html(html).removeClass("hidden");
+        }
+    });*/
+
+</script>
+
+</body>
+</html>

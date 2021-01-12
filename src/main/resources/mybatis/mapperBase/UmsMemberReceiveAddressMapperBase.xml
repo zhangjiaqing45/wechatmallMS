@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.umsMemberReceiveAddress.mapper.UmsMemberReceiveAddressMapper">
+    
+    <resultMap type="UmsMemberReceiveAddress" id="UmsMemberReceiveAddressResult">
+        <result property="id"    column="id"    />
+        <result property="memberId"    column="member_id"    />
+        <result property="name"    column="name"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="status"    column="status"    />
+        <result property="postCode"    column="post_code"    />
+        <result property="province"    column="province"    />
+        <result property="city"    column="city"    />
+        <result property="region"    column="region"    />
+        <result property="detailAddress"    column="detail_address"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectUmsMemberReceiveAddressVo">
+        select id, member_id, name, phone_number, status, post_code, province, city, region, detail_address, create_by, create_time, update_by, update_time, remark, del_flag from ums_member_receive_address
+    </sql>
+
+    <select id="selectUmsMemberReceiveAddressList" parameterType="UmsMemberReceiveAddress" resultMap="UmsMemberReceiveAddressResult">
+        <include refid="selectUmsMemberReceiveAddressVo"/>
+        <where>
+           del_flag = '0'
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="phoneNumber != null  and phoneNumber != ''"> and phone_number = #{phoneNumber}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="postCode != null  and postCode != ''"> and post_code = #{postCode}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
+            <if test="detailAddress != null  and detailAddress != ''"> and detail_address = #{detailAddress}</if>
+        </where>
+    </select>
+
+    <select id="countUmsMemberReceiveAddress" parameterType="UmsMemberReceiveAddress" resultType="int">
+        select count(*) from ums_member_receive_address
+        <where>
+            del_flag = '0'
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="phoneNumber != null  and phoneNumber != ''"> and phone_number = #{phoneNumber}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="postCode != null  and postCode != ''"> and post_code = #{postCode}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
+            <if test="detailAddress != null  and detailAddress != ''"> and detail_address = #{detailAddress}</if>
+        </where>
+    </select>
+
+    <select id="checkUmsMemberReceiveAddressUnique" parameterType="UmsMemberReceiveAddress" resultType="int">
+        select count(*) from ums_member_receive_address
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="name != null  and name != ''"> and name = #{name}</if>
+            <if test="phoneNumber != null  and phoneNumber != ''"> and phone_number = #{phoneNumber}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="postCode != null  and postCode != ''"> and post_code = #{postCode}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
+            <if test="detailAddress != null  and detailAddress != ''"> and detail_address = #{detailAddress}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectUmsMemberReceiveAddressById" parameterType="Long" resultMap="UmsMemberReceiveAddressResult">
+        <include refid="selectUmsMemberReceiveAddressVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertUmsMemberReceiveAddress" parameterType="UmsMemberReceiveAddress" useGeneratedKeys="true" keyProperty="id">
+        insert into ums_member_receive_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="memberId != null ">member_id,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="phoneNumber != null  and phoneNumber != ''">phone_number,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="postCode != null  and postCode != ''">post_code,</if>
+            <if test="province != null  and province != ''">province,</if>
+            <if test="city != null  and city != ''">city,</if>
+            <if test="region != null  and region != ''">region,</if>
+            <if test="detailAddress != null  and detailAddress != ''">detail_address,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="memberId != null ">#{memberId},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="phoneNumber != null  and phoneNumber != ''">#{phoneNumber},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="postCode != null  and postCode != ''">#{postCode},</if>
+            <if test="province != null  and province != ''">#{province},</if>
+            <if test="city != null  and city != ''">#{city},</if>
+            <if test="region != null  and region != ''">#{region},</if>
+            <if test="detailAddress != null  and detailAddress != ''">#{detailAddress},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUmsMemberReceiveAddress" parameterType="UmsMemberReceiveAddress">
+        update ums_member_receive_address
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="phoneNumber != null  and phoneNumber != ''">phone_number = #{phoneNumber},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="postCode != null  and postCode != ''">post_code = #{postCode},</if>
+            <if test="province != null  and province != ''">province = #{province},</if>
+            <if test="city != null  and city != ''">city = #{city},</if>
+            <if test="region != null  and region != ''">region = #{region},</if>
+            <if test="detailAddress != null  and detailAddress != ''">detail_address = #{detailAddress},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+        and member_id = #{memberId}
+    </update>
+
+    <delete id="deleteUmsMemberReceiveAddressById" parameterType="Long">
+        <!-- update ums_member_receive_address set del_flag = '1' where id = #{id} -->
+        delete from ums_member_receive_address where id = #{id}
+    </delete>
+
+    <delete id="deleteUmsMemberReceiveAddressByIds" parameterType="String">
+        update ums_member_receive_address set del_flag = '1' where id in
+        <!-- delete from ums_member_receive_address where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

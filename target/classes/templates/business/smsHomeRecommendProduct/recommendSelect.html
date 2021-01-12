@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('选择推荐商品')"/>
+    <th:block th:include="include :: bootstrap-editable-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <input type="hidden" name="recommendType" th:value="${recommendType}" />
+                <div class="select-list">
+                    <ul>
+                        <li th:if="${isAdmin}">
+                            <p>店铺：</p>
+                            <input type="hidden" name="shopId"/>
+                            <input type="text" name="shop" readonly placeholder="请选择店铺" onclick="selectShop();" />
+                        </li>
+                        <li>
+                            <p>商品货号：</p>
+                            <input type="text" name="productSn"/>
+                        </li>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="name"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="resetSel()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: bootstrap-table-editable-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "business/smsHomeRecommendCommon";
+    var prefixShop = ctx + "business/bizShopInfo";
+    var publishStatus = [[${@custom.allPublicStatusPlus()}]];
+
+    $(function () {
+        var options = {
+            url: prefix + "/select",
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            clickToSelect: true,
+            rememberSelected: true,
+            modalName: "选择商品",
+            sortName: "createTime",
+            sortOrder: "desc",
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: true
+                },
+                {
+                    field: 'id',
+                    title: '商品ID',
+                    visible: false
+                },
+                {
+                    field: 'productSn',
+                    title: '商品货号'
+                },
+                {
+                    field: 'name',
+                    title: '商品名称'
+                },
+                // {
+                //     field: 'brandName',
+                //     title: '品牌'
+                // },
+                // {
+                //     field: 'productCategoryName',
+                //     title: '分类'
+                // },
+                {
+                    field: 'publishStatus',
+                    title: '上架状态',
+                    formatter: function(value, row, index) {
+                        if (publishStatus[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", publishStatus[value].style, publishStatus[value].desc);
+                        }
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function resetSel() {
+        $("input[name='shopId']").val("");
+        $.form.reset();
+    }
+
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='shopId']").val(shop.id);
+            $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+
+    /**
+     * 选择提交
+     * @param index
+     * @param layero
+     */
+    function submitHandler(index, layero) {
+        var rows = $.table.selectFirstColumns();
+        if (rows.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        $.modal.close();
+        var productIds = $.table.selectFirstColumns("id").join();
+        (parent.recommendSelectCallback && typeof (parent.recommendSelectCallback) === "function") && parent.recommendSelectCallback(productIds);
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('商品信息列表')" />
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: bootstrap-editable-css"/>
+    <style type="text/css">
+        .dropup .caret {
+            border-top: 4px dashed;
+            border-bottom: 0;
+        }
+        .fixed-table-body{
+            overflow: visible;
+        }
+        del {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p >商品名称：</p>
+                            <input type="text" name="name"/>
+                        </li>
+                        <li>
+                            <p >货号查询：</p>
+                            <input type="text" name="productSn"/>
+                        </li>
+                        <li >
+                            <p >品牌查询：</p>
+                            <select class="form-control " name="brandId"
+                                    th:with="type=${@custom.getPmsBrand()}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}"
+                                        th:text="${dict.name}"
+                                        th:value="${dict.id}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p >商品分类：</p>
+                            <select  class="form-control " name="productCategoryId" th:with="type=${@custom.getPmsCategory()}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.name}" th:value="${dict.id}"></option>
+                            </select>
+                        </li>
+                        <li class="select-time">
+                            <p >创建时间：</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCreateTime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCreateTime]"/>
+                        </li>
+                        <li>
+                            <p >上架状态：</p>
+                            <select class="form-control " name="publishStatus" th:with="type=${@custom.allPublicStatus()}">
+                                <option value="" >所有</option>
+                                <option  th:each="dict : ${type}" th:text="${dict.value}" th:value="${dict.key}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p >审核状态：</p>
+                            <select class="form-control " name="verifyStatus"  th:with="type=${@custom.allAuditTypes()}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.value}" th:value="${dict.key}"></option>
+                            </select>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm m50" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.addTab()" shiro:hasPermission="business:pmsProduct:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:pmsProduct:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+    <div>
+        <!--验证信息-->
+        <input type="hidden" th:value="${verifyMsg}" id="verifyMsg"/>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: select2-js"/>
+<th:block th:include="include :: bootstrap-table-editable-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:pmsProduct:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:pmsProduct:remove')}]];
+    //上架状态
+    var publishStatusDatas = [[${@custom.allPublicStatusPlus()}]];
+    //审核状态
+    var verifyStatusDatas = [[${@custom.allAuditTypesPlus()}]];
+    //商品前缀
+    var prefix = ctx + "business/pmsProduct";
+    //佣金编辑页前缀
+    var distribution_prefix = ctx + "business/umsDistribution";
+    var sortRexExp = ftConsts.regExp.sort;
+    var priceRexExp = ftConsts.regExp.price;
+    /**
+     * 操作按钮
+     * {id}: row.id
+     * {audit}:审核状态
+     */
+    var activityBtnMap = {
+        "commission":'<li><a class"font-bold ' + editFlag + '" href="javascript:void(0)" onclick="editCommission(\'{id}\')"><i class="fa fa-edit"></i>佣金</a></li> ',
+        "del":'<li><a class"font-bold ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'{id}\')"><i class="fa fa-remove"></i>删除</a></li> ',
+        "audit":'<li><a class"font-bold ' + editFlag + '" href="javascript:void(0)" onclick="auditPruduct(\'{id}\')"><i class="fa fa-edit"></i>审核</a></li> ',
+        "putAway":'<li><a class"font-bold ' + editFlag + '" href="javascript:void(0)" onclick="putAway(\'{id}\')"><i class="fa fa-edit"></i>上架</a></li> ',
+        "soldOut":'<li><a class"font-bold ' + editFlag + '" href="javascript:void(0)" onclick="soldOut(\'{id}\')"><i class="fa fa-edit"></i>下架</a></li> ',
+        "edit":'<li><a class"font-bold ' + editFlag + '" href="javascript:void(0)" onclick="editPms(\'{id}\',\'{audit}\')"><i class="fa fa-edit"></i>编辑</a></li> ',
+        "detail":'<li><a class"btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="toToDetailPage(\'{id}\')"><i class="fa fa-edit"></i>详情</a></li> '
+    }
+
+    /**
+     * 操作按钮
+     * {li} : 按钮组
+     */
+    var btnHtml = '<div class="btn-group {direct}">\n' +
+        '                            <button data-toggle="dropdown" class="btn btn-primary btn-xs dropdown-toggle">操作 <span\n' +
+        '                                    class="caret"></span>\n' +
+        '                            </button>\n' +
+        '                            <ul class="dropdown-menu">{li}' +
+        '                            </ul>\n' +
+        '                        </div>';
+
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "商品信息",
+            sortName: "createTime",
+            sortOrder: "desc",
+            onEditableSave:onEditableSave,
+            columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'name',
+                    title : '名称',
+                    align: 'center',
+                    width:150,
+                },
+                {
+                    field : 'productSn',
+                    title : '货号',
+                    visible: false,
+                    align: 'center',
+                    width:150,
+                },
+                {
+                    field : 'pic',
+                    title : '图片',
+                    align: 'center',
+                    width:100,
+                    formatter: function(value, row, index){
+                        return $.table.imageView(respath+value);
+                    }
+                },
+                {
+                    field : 'productCategoryName',
+                    title : '产品分类名称',
+                    visible: true,
+                    align: 'center',
+                    width:150,
+                },
+                {
+                    field : 'brandName',
+                    title : '品牌名称',
+                    visible: true,
+                    sortable:true,
+                    align: 'center',
+                    width:150,
+                },
+                {
+                    field : 'price',
+                    title : '价格(元)',
+                    align: 'center',
+                    sortable:true,
+                    width:180,
+                    editable: {
+                        type: 'text',
+                        title: '主页显示价格',
+                        emptytext: "0",
+                        validate: function (value) {
+                            if (!(priceRexExp.test(value))) {
+                                return '请填写正确的价格';
+                            }
+                        }
+                    }
+                },
+                {
+                    field : 'originalPrice',
+                    title : '原价(元)',
+                    align: 'center',
+                    sortable:true,
+                    width:180,
+                    editable: {
+                        type: 'text',
+                        title: '主页显示原价',
+                        emptytext: "0",
+                        validate: function (value) {
+                            if (!(priceRexExp.test(value))) {
+                                return '请填写正确的价格';
+                            }
+                        }
+                    }
+                },
+                {
+                    field : 'sale',
+                    title : '销量',
+                    align: 'center',
+                    width:100,
+                    editable: {
+                        type: 'text',
+                        title: '主页显示原价',
+                        emptytext: "0",
+                        validate: function (value) {
+                            if (!(sortRexExp.test(value))) {
+                                return '请输入5位以内正整数';
+                            }
+                        }
+                    }
+                 //   sortable:true,
+                },
+                {
+                    field : 'stock',
+                    title : '库存',
+                    visible: false,
+                    align: 'center',
+                    width:100,
+                },
+                {
+                    field : 'publishStatus',
+                    align: 'center',
+                    title : '上架',
+                    width:50,
+                    formatter: function(value, row, index) {
+                        if (publishStatusDatas[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", publishStatusDatas[value].style, publishStatusDatas[value].desc);
+                        }
+                    }
+                },
+                {
+                    field : 'verifyStatus',
+                    title : '审核状态',
+                    align: 'center',
+                    sortable:true,
+                    width:80,
+                    formatter: function(value, row, index) {
+                        if (verifyStatusDatas[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", verifyStatusDatas[value].style, verifyStatusDatas[value].desc);
+                        }
+                    }
+                },
+                {
+                    field : 'sort',
+                    title : '排序',
+                    align: 'center',
+                    sortable:true,
+                    width: 80,
+                    editable: {
+                        type: 'text',
+                        title: '排序(数字越小越靠前)',
+                        emptytext: "0",
+                        validate: function (value) {
+                            if (!(sortRexExp.test(value))) {
+                                return '请输入5位以内正整数';
+                            }
+                        }
+                    }
+                },
+                {
+                    field : 'createTime',
+                    title : '创建时间',
+                    visible: false,
+                    align: 'center',
+                    sortable:true,
+                    width:150,
+                },
+                {
+                    field : 'remark',
+                    title : '备注',
+                    align: 'center',
+                    visible: false,
+                    width: 150,
+                },
+                {
+                    field : 'auditMsg',
+                    title : '审核信息',
+                    align: 'center',
+                    visible: false,
+                    width: 150,
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    width:100,
+                    formatter: function(value, row, index) {
+                        var pageSize = $("#bootstrap-table").bootstrapTable("getOptions").pageSize;
+                        var direct = index >= pageSize - 5 ? "dropup" : "";
+                        var btnCont = btnHtml.replace(/{direct}/g, direct);
+                        var actions = [];
+                        $.each(row.btnList,function(index,val) {
+                            var btnHtml = activityBtnMap[val];
+                            if(btnHtml){
+                                actions.push(btnHtml.replace(/{id}/g,row.id).replace(/{audit}/g,row.verifyStatus));
+                            }
+                        })
+                        return btnCont.replace(/{li}/g,actions.join(''));
+                    }
+                }]
+        };
+        $.table.init(options);
+        //点击提交审核的反馈
+        var msg = $("#verifyMsg").val();
+        if(msg){
+            $.modal.msg(msg);
+        }
+    });
+    /**
+     * 行内修改
+     */
+    function onEditableSave(field, row, oldValue, $el) {
+        if(row.verifyStatus=="01"){
+            setTimeout(function(){
+                $el.html(oldValue);
+            },0);
+            $.modal.msgWarning("审核结束后才可执行此操作")
+            return
+        }
+        var data = {};
+        data.id=row.id;
+        data[field]=row[field];
+        $.operate.post(prefix + "/editable", data);
+    }
+    /**
+     * 跳转到详情页面
+     * @param rowId
+     * @param verifyStatus
+     */
+    function toToDetailPage(id){
+        var url = prefix + "/detail/"+id;
+        var options = {
+            title: '商品详情',
+            url: url,
+            width: $(window).width(),
+            height: $(window).height(),
+            btn: false,
+        };
+        $.modal.openOptions(options);
+    }
+    /**
+     * 编辑佣金
+     */
+    function editCommission(id){
+        var url = distribution_prefix + "/distribution/"+id;
+        var options = {
+            title: '佣金设置',
+            url: url,
+            width: $(window).width(),
+            height: $(window).height(),
+            btn: false,
+        };
+        $.modal.openOptions(options);
+    }
+
+    /**
+     * 编辑商品信息
+     * @param rowId
+     * @param verifyStatus
+     */
+    function editPms(rowId,verifyStatus){
+        //如果审核状态已经通过则提示
+        if(verifyStatus=='02'){
+            $.modal.confirm("编辑商品信息需要重新审核,是否继续？", function () {
+                $.operate.editTab(rowId);
+            })
+        }else{
+            $.operate.editTab(rowId);
+        }
+    }
+    /**
+     * 提交审核商品
+     * @param rowId
+     * @param verifyStatus
+     */
+    function auditPruduct(rowId){
+        $.operate.post(prefix + "/pmsAudit",{id:rowId});
+    }
+    /**
+     * 上架商品
+     * @param rowId
+     */
+    function putAway(rowId){
+        $.operate.post(prefix + "/putAway",{id:rowId});
+
+    }
+    /**
+     * 下架商品
+     * @param rowId
+     */
+    function soldOut(rowId){
+        $.operate.post(prefix + "/soldOut",{id:rowId});
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+
+B
+java:S1068*"'Remove this unused "log" private field.(§èˆâùÿÿÿÿ
+H
+java:S1874%"3Remove this use of "description"; it is deprecated.(İÜ1
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ù®¡¶
+D
+java:S1128".Remove this unused import 'java.util.Objects'.(¼¸õ›
+l
+java:S1128"QRemove this unused import 'org.springframework.web.bind.annotation.PathVariable'.(¹ûñÅşÿÿÿÿ
+J
+java:S3740]"/Provide the parametrized type for this generic.(×ºùÿÿÿÿ
+X
+java:S3416*"=Update this logger to use "OmsIntegralOrderController.class".(§èˆâùÿÿÿÿ

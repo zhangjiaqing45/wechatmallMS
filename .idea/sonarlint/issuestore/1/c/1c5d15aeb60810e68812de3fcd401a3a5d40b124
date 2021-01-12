@@ -1,0 +1,8 @@
+
+ƒ
+java:S1128	"hRemove this unused import 'com.fante.project.business.smsGroupMemberRecord.domain.SmsGroupMemberRecord'.(–§†ˆûÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(âŞâù
+`
+java:S3252f"JUse static access with "org.apache.commons.lang3.StringUtils" for "EMPTY".(Ş…Ù
+G
+java:S1602y",Remove useless curly braces around statement(¿ì Áşÿÿÿÿ

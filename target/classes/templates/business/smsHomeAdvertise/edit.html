@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改广告管理')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-smsHomeAdvertise-edit" th:object="${smsHomeAdvertise}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">广告标题：</label>
+                <div class="col-sm-8">
+                    <input name="title" th:field="*{title}" class="form-control" type="text" autocomplete="off" >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">广告位置：</label>
+                <div class="col-sm-8">
+                    <select name="position" th:field="*{position}" class="form-control" th:with="pos=${@custom.advertisePosition()}">
+                        <option value="">请选择</option>
+                        <option th:each="p: ${pos}" th:text="${p.value}" th:value="${p.key}"></option>
+                    </select>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 用户看到广告的位置</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">广告状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('biz_status')}">
+                        <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:field="*{status}">
+                        <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">广告图片：</label>
+                <div class="col-sm-8">
+                    <input id="pic" name="pic" th:field="*{pic}" class="form-control" type="hidden" required>
+                    <div id="picShow" class="fileinput">
+                        <div class="thumbnail" style="width: 100px; height: 75px; margin-bottom: 10px;">
+                            <img style="max-height: 100%;" th:src="${@config.resPath()} + @{${smsHomeAdvertise?.pic}}" onclick="$.modal.preview($(this).prop('src'));" />
+                        </div>
+                    </div>
+                    <button id="picBtn" class="btn btn-success" type="button">
+                        <i class="fa fa-upload"></i>&nbsp;&nbsp; <span class="bold">上传图片</span>
+                    </button>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 广告展示的图片 </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">链接类型：</label>
+                <div class="col-sm-8">
+                    <input type="hidden" name="urlType" th:field="*{urlType}">
+                    <input type="hidden" name="urlTarget" th:field="*{urlTarget}">
+                    <input type="hidden" name="urlDesp" th:field="*{urlDesp}">
+                    <div class="btn-group m-b urlTypeBtnArea">
+
+                    </div>
+                    <div class="input-group selArea shop hidden">
+                        <input name="target" class="form-control" type="hidden">
+                        <input name="desp" class="form-control" type="text" readonly>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-success" onclick="shopSel()" > <i class="fa fa-search"></i> 选择店铺 </button>
+                        </span>
+                    </div>
+                    <div class="input-group selArea promotion hidden">
+                        <input name="target" class="form-control" type="hidden">
+                        <input name="desp" class="form-control" type="text" readonly>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-success" onclick="promotionSel()" > <i class="fa fa-search"></i> 选择活动 </button>
+                        </span>
+                    </div>
+                    <div class="input-group selArea product hidden">
+                        <input name="target" class="form-control" type="hidden">
+                        <input name="desp" class="form-control" type="text" readonly>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-success" onclick="productSel()" > <i class="fa fa-search"></i> 选择商品 </button>
+                        </span>
+                    </div>
+
+                    <div class="input-group selArea other hidden" style="width: 100%">
+                        <input name="url" th:field="*{url}" class="form-control" type="text" autocomplete="off" >
+                    </div>
+
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 设置广告的跳转链接 </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">排序：</label>
+                <div class="col-sm-8">
+                    <input name="sort" th:field="*{sort}" class="form-control" type="text" value="99999" autocomplete="off" >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">广告备注：</label>
+                <div class="col-sm-8">
+                    <textarea name="note" class="form-control" rows="2" style="resize: none;" >[[*{note}]]</textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--选择跳转活动-->
+    <div id="promotionDiv" class="wrapper wrapper-content ibox-content" style="display: none;" >
+        <form class="form-horizontal m" id="form-promotion-sel">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">目标活动：</label>
+                <div class="col-sm-8">
+                    <select id="promotionSelect" name="promotionSelect" class="form-control">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: layui-all-js"/>
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/smsHomeAdvertise";
+        var prefixShop = ctx + "business/bizShopInfo";
+
+        var smsHomeAdvertiseForm = "form-smsHomeAdvertise-edit";
+        var promotionSelForm = "form-promotion-sel";
+
+        var urlTypes = [[${@custom.advertiseUrlType()}]];
+        var promotionLinks = [[${@dict.getType('biz_promotion_link')}]];
+
+        $(function () {
+            bulidPromotionSel();
+            buildUrlTypeBtn();
+        });
+
+
+        /**
+         * 提交数据
+         */
+        function submitHandler() {
+            if ($.validate.form(smsHomeAdvertiseForm)) {
+                var typeVal = $("input[name='urlType']").val(),
+                    chooseType = urlTypes[typeVal],
+                    tip = $.common.sprintf("确认提交？(链接类型：<b> %s </b>).", chooseType),
+                    target = "",
+                    desp = "";
+
+                $.modal.confirm(tip, function() {
+                    if ($(".selArea." + typeVal).length > 0) {
+                        if(typeVal!='other') {
+                            target = $(".selArea." + typeVal + " input[name='target']").val();
+                            desp = $(".selArea." + typeVal + " input[name='desp']").val();
+
+                            if (!(target && desp)) {
+                                $.modal.msgWarning($.common.sprintf("请选择: %s", chooseType));
+                                return false;
+                            }
+                        }
+                    }
+
+                    $("input[name='urlTarget']").val(target);
+                    $("input[name='urlDesp']").val(desp);
+
+                    $.operate.save(prefix + "/edit", $('#' + smsHomeAdvertiseForm).serialize());
+                });
+            }
+        }
+
+
+        /**
+         * 构建活动选项
+         */
+        function bulidPromotionSel() {
+            if (!$.common.isEmptyObject(promotionLinks)) {
+                var tpl = "<option value=\"%s\" data-label=\"%s\" >%s</option>";
+                for (var i in promotionLinks) {
+                    $("#" + promotionSelForm + " #promotionSelect").append($.common.sprintf(tpl, promotionLinks[i].dictValue, promotionLinks[i].dictLabel, promotionLinks[i].dictLabel));
+                }
+            }
+        }
+
+        /**
+         * 构建链接类型按钮
+         */
+        function buildUrlTypeBtn() {
+            if (!$.common.isEmptyObject(urlTypes)) {
+                var tpl = "<button class=\"btn btn-white urlTypeBtn\" type=\"button\" data-type=\"%s\">%s</button>";
+                for (var key in urlTypes) {
+                    $(".urlTypeBtnArea").append($.common.sprintf(tpl, key, urlTypes[key]));
+                }
+                initUrlTypeBtn();
+            }
+        }
+
+        /**
+         * 初始化链接类型按钮及设置监听
+         */
+        function initUrlTypeBtn() {
+            var $urlType = $("input[name='urlType']"),
+                typeVal = $urlType.val(),
+                $urlTypeBtn = $(".urlTypeBtn"),
+                $urlTypeBtn1st = $(".urlTypeBtn:eq(0)");
+
+            if ($(".selArea." + typeVal).length > 0) {
+                $urlTypeBtn.each(function(index, elem) {
+                    if (typeVal == $(elem).attr("data-type")) {
+                        $(elem).removeClass("btn-white").addClass("btn-success");
+                        return false;
+                    }
+                });
+
+                $(".selArea." + typeVal + " input[name='target']").val($("input[name='urlTarget']").val());
+                $(".selArea." + typeVal + " input[name='desp']").val($("input[name='urlDesp']").val());
+                $(".selArea." + typeVal).removeClass("hidden");
+            } else {
+                $urlType.val($urlTypeBtn1st.attr("data-type"));
+                $urlTypeBtn1st.removeClass("btn-white").addClass("btn-success");
+            }
+
+            // 按钮监听
+            $urlTypeBtn.on("click", function() {
+                var type = $(this).attr("data-type");
+                $urlType.val(type);
+                $(this).removeClass("btn-white").addClass("btn-success").siblings().removeClass("btn-success").addClass("btn-white");
+                $(".selArea").addClass("hidden");
+                $(".selArea." + type).removeClass("hidden");
+            });
+        }
+
+        /**
+         * 选择跳转店铺
+         */
+        function shopSel(){
+            $.modal.open("选择跳转店铺", prefixShop + "/select");
+        }
+
+        /**
+         * 选择跳转店铺回调
+         */
+        function shopSelectCallback(shop) {
+            if (shop && shop.id) {
+                $(".selArea.shop input[name='target']").val(shop.id);
+                $(".selArea.shop input[name='desp']").val(shop.companyName + "(" + shop.city + ")");
+            } else {
+                $.modal.msgWarning("未选择店铺");
+            }
+        }
+
+        /**
+         * 选择跳转营销活动
+         */
+        function promotionSel(){
+            var width = $(window).width() > 800 ? 800 : ($(window).width() - 80),
+                height = $(window).height() > 300 ? 300 : ($(window).height() - 50);
+            layer.open({
+                type: 1,
+                area: [width + 'px', height + 'px'],
+                title: "选择跳转活动",
+                content: $("#promotionDiv"),
+                btn: ['确定', '关闭'],
+                success: function() {
+                    $("#" + promotionSelForm)[0].reset();
+                },
+                yes: function(index, layero) {
+                    promotionSelCallback(index);
+                },
+                cancel: function(){
+
+                }
+            });
+        }
+
+        /**
+         * 选择跳转活动表单校验
+         */
+        $("#" + promotionSelForm).validate({
+            focusCleanup: true,
+            rules: {
+                promotionSelect: {
+                    required: true,
+                }
+            },
+            messages: {
+                promotionSelect: {
+                    required: "请选择目标活动",
+                }
+            }
+        });
+
+        /**
+         * 选择跳转营销活动回调
+         */
+        function promotionSelCallback(layerIndex) {
+            if ($.validate.form(promotionSelForm)) {
+                var val = $("#" + promotionSelForm + " #promotionSelect").val(),
+                    label =  $("#" + promotionSelForm + " #promotionSelect option:selected").attr("data-label");
+
+                $(".selArea.promotion input[name='target']").val(val);
+                $(".selArea.promotion input[name='desp']").val(label);
+                layer.close(layerIndex);
+            }
+        }
+
+        /**
+         * 选择跳转商品
+         */
+        function productSel(){
+            $.modal.open("选择跳转商品", prefix + "/select/product");
+        }
+
+        /**
+         * 选择跳转商品回调
+         */
+        function advertiseProductSelectCallback(product) {
+            if (product && product.id) {
+                $(".selArea.product input[name='target']").val(product.id);
+                $(".selArea.product input[name='desp']").val(product.name);
+            }else {
+                $.modal.msgWarning("未选择商品");
+            }
+        }
+
+        /**
+         * 表单验证
+         */
+        $("#" + smsHomeAdvertiseForm).validate({
+            focusCleanup: true,
+            ignore: [],
+            rules: {
+                title: {
+                    required: true,
+                    rangelength: [2,50],
+                },
+                position: {
+                    required: true,
+                },
+                status: {
+                    required: true,
+                },
+                pic: {
+                    required: true,
+                },
+                urlType: {
+                    required: true,
+                },
+                sort: {
+                    required: true,
+                    positiveIntegerZero:true,
+                    maxlength: 5,
+                }
+            },
+            messages: {
+                title: {
+                    required: "请填写广告标题",
+                    rangelength: $.validator.format("广告标题字数在 {0} 到 {1} 字之间"),
+                },
+                position: {
+                    required: "请选择广告位置",
+                },
+                status: {
+                    required: "请选择广告状态",
+                },
+                pic: {
+                    required: "请上传广告图片",
+                },
+                urlType: {
+                    required: "请选择链接类型",
+                },
+                sort: {
+                    required: "序号不能为空",
+                    positiveIntegerZero:"序号只能是正整数",
+                    maxlength: $.validator.format("最多输入{0}位数字"),
+                },
+            }
+        });
+
+        $.operate.layuiUpload("#picBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function(r) {
+            if ($("#picShow").hasClass("hidden")) {
+                $("#picShow").removeClass("hidden");
+            }
+            $("#picShow .thumbnail img").prop("src", ctx + r.fileName);
+            $("input[name='pic']").val(r.fileName);
+        });
+    </script>
+</body>
+</html>

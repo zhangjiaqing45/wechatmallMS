@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsCartItem.mapper.OmsCartItemMapper">
+    
+    <resultMap type="OmsCartItem" id="OmsCartItemResult">
+        <result property="id"    column="id"    />
+        <result property="cartType"    column="cart_type"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productSkuId"    column="product_sku_id"    />
+        <result property="memberId"    column="member_id"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="price"    column="price"    />
+        <result property="productPic"    column="product_pic"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productBrand"    column="product_brand"    />
+        <result property="productSn"    column="product_sn"    />
+        <result property="productSubTitle"    column="product_sub_title"    />
+        <result property="productSkuCode"    column="product_sku_code"    />
+        <result property="memberNickname"    column="member_nickname"    />
+        <result property="productCategoryId"    column="product_category_id"    />
+        <result property="spData"    column="sp_data"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectOmsCartItemVo">
+        select id, cart_type, shop_name, shop_id, product_id, product_sku_id, member_id, quantity, price, product_pic, product_name, product_brand, product_sn, product_sub_title, product_sku_code, member_nickname, product_category_id, sp_data, status, create_by, create_time, update_by, update_time, remark, del_flag from oms_cart_item
+    </sql>
+
+    <select id="selectOmsCartItemList" parameterType="OmsCartItem" resultMap="OmsCartItemResult">
+        <include refid="selectOmsCartItemVo"/>
+        <where>
+           del_flag = '0'
+            <if test="cartType != null  and cartType != ''"> and cart_type = #{cartType}</if>
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productSkuId != null "> and product_sku_id = #{productSkuId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productSubTitle != null  and productSubTitle != ''"> and product_sub_title = #{productSubTitle}</if>
+            <if test="productSkuCode != null  and productSkuCode != ''"> and product_sku_code = #{productSkuCode}</if>
+            <if test="memberNickname != null  and memberNickname != ''"> and member_nickname like concat('%', #{memberNickname}, '%')</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="countOmsCartItem" parameterType="OmsCartItem" resultType="int">
+        select count(*) from oms_cart_item
+        <where>
+            del_flag = '0'
+            <if test="cartType != null  and cartType != ''"> and cart_type = #{cartType}</if>
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productSkuId != null "> and product_sku_id = #{productSkuId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productSubTitle != null  and productSubTitle != ''"> and product_sub_title = #{productSubTitle}</if>
+            <if test="productSkuCode != null  and productSkuCode != ''"> and product_sku_code = #{productSkuCode}</if>
+            <if test="memberNickname != null  and memberNickname != ''"> and member_nickname like concat('%', #{memberNickname}, '%')</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="checkOmsCartItemUnique" parameterType="OmsCartItem" resultType="int">
+        select count(*) from oms_cart_item
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="cartType != null  and cartType != ''"> and cart_type = #{cartType}</if>
+            <if test="shopName != null  and shopName != ''"> and shop_name = #{shopName}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productSkuId != null "> and product_sku_id = #{productSkuId}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="productName != null  and productName != ''"> and product_name = #{productName}</if>
+            <if test="productBrand != null  and productBrand != ''"> and product_brand = #{productBrand}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productSubTitle != null  and productSubTitle != ''"> and product_sub_title = #{productSubTitle}</if>
+            <if test="productSkuCode != null  and productSkuCode != ''"> and product_sku_code = #{productSkuCode}</if>
+            <if test="memberNickname != null  and memberNickname != ''"> and member_nickname = #{memberNickname}</if>
+            <if test="productCategoryId != null "> and product_category_id = #{productCategoryId}</if>
+            <if test="spData != null  and spData != ''"> and sp_data = #{spData}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOmsCartItemById" parameterType="Long" resultMap="OmsCartItemResult">
+        <include refid="selectOmsCartItemVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+        
+    <insert id="insertOmsCartItem" parameterType="OmsCartItem" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_cart_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cartType != null  and cartType != ''">cart_type,</if>
+            <if test="shopName != null  and shopName != ''">shop_name,</if>
+            <if test="shopId != null ">shop_id,</if>
+            <if test="productId != null ">product_id,</if>
+            <if test="productSkuId != null ">product_sku_id,</if>
+            <if test="memberId != null ">member_id,</if>
+            <if test="quantity != null ">quantity,</if>
+            <if test="price != null ">price,</if>
+            <if test="productPic != null  and productPic != ''">product_pic,</if>
+            <if test="productName != null  and productName != ''">product_name,</if>
+            <if test="productBrand != null  and productBrand != ''">product_brand,</if>
+            <if test="productSn != null  and productSn != ''">product_sn,</if>
+            <if test="productSubTitle != null  and productSubTitle != ''">product_sub_title,</if>
+            <if test="productSkuCode != null  and productSkuCode != ''">product_sku_code,</if>
+            <if test="memberNickname != null  and memberNickname != ''">member_nickname,</if>
+            <if test="productCategoryId != null ">product_category_id,</if>
+            <if test="spData != null  and spData != ''">sp_data,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cartType != null  and cartType != ''">#{cartType},</if>
+            <if test="shopName != null  and shopName != ''">#{shopName},</if>
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="productId != null ">#{productId},</if>
+            <if test="productSkuId != null ">#{productSkuId},</if>
+            <if test="memberId != null ">#{memberId},</if>
+            <if test="quantity != null ">#{quantity},</if>
+            <if test="price != null ">#{price},</if>
+            <if test="productPic != null  and productPic != ''">#{productPic},</if>
+            <if test="productName != null  and productName != ''">#{productName},</if>
+            <if test="productBrand != null  and productBrand != ''">#{productBrand},</if>
+            <if test="productSn != null  and productSn != ''">#{productSn},</if>
+            <if test="productSubTitle != null  and productSubTitle != ''">#{productSubTitle},</if>
+            <if test="productSkuCode != null  and productSkuCode != ''">#{productSkuCode},</if>
+            <if test="memberNickname != null  and memberNickname != ''">#{memberNickname},</if>
+            <if test="productCategoryId != null ">#{productCategoryId},</if>
+            <if test="spData != null  and spData != ''">#{spData},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOmsCartItem" parameterType="OmsCartItem">
+        update oms_cart_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cartType != null  and cartType != ''">cart_type = #{cartType},</if>
+            <if test="shopName != null  and shopName != ''">shop_name = #{shopName},</if>
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="productId != null ">product_id = #{productId},</if>
+            <if test="productSkuId != null ">product_sku_id = #{productSkuId},</if>
+            <if test="memberId != null ">member_id = #{memberId},</if>
+            <if test="quantity != null ">quantity = #{quantity},</if>
+            <if test="price != null ">price = #{price},</if>
+            <if test="productPic != null  and productPic != ''">product_pic = #{productPic},</if>
+            <if test="productName != null  and productName != ''">product_name = #{productName},</if>
+            <if test="productBrand != null  and productBrand != ''">product_brand = #{productBrand},</if>
+            <if test="productSn != null  and productSn != ''">product_sn = #{productSn},</if>
+            <if test="productSubTitle != null  and productSubTitle != ''">product_sub_title = #{productSubTitle},</if>
+            <if test="productSkuCode != null  and productSkuCode != ''">product_sku_code = #{productSkuCode},</if>
+            <if test="memberNickname != null  and memberNickname != ''">member_nickname = #{memberNickname},</if>
+            <if test="productCategoryId != null ">product_category_id = #{productCategoryId},</if>
+            <if test="spData != null  and spData != ''">sp_data = #{spData},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOmsCartItemById" parameterType="Long">
+        <!-- update oms_cart_item set del_flag = '1' where id = #{id} -->
+        delete from oms_cart_item where id = #{id}
+    </delete>
+
+    <delete id="deleteOmsCartItemByIds" parameterType="String">
+        update oms_cart_item set del_flag = '1' where id in
+        <!-- delete from oms_cart_item where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

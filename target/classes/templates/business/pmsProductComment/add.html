@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增商品评价')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-pmsProductComment-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">商品id：</label>
+                <div class="col-sm-8">
+                    <input name="productId" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">用户id：</label>
+                <div class="col-sm-8">
+                    <input name="memberId" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">商品名称：</label>
+                <div class="col-sm-8">
+                    <input name="productName" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">用户昵称：</label>
+                <div class="col-sm-8">
+                    <input name="memberNickName" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">评论用户头像：</label>
+                <div class="col-sm-8">
+                    <input name="memberIcon" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">购买时的商品属性：</label>
+                <div class="col-sm-8">
+                    <input name="productAttribute" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">评价内容：</label>
+                <div class="col-sm-8">
+                    <input name="content" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label  ">上传图片地址，以逗号隔开：</label>
+                <div class="col-sm-8">
+                    <textarea name="pics" class="form-control"  ></textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">5：</label>
+                <div class="col-sm-8">
+                    <select name="star" class="form-control m-b" th:with="type=${@dict.getType('pms_common_star')}"  >
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label   ">是否展示：</label>
+                <div class="col-sm-8">
+                    <select name="showStatus" class="form-control m-b" th:with="type=${@dict.getType('biz_status')}"  >
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "business/pmsProductComment";
+        $("#form-pmsProductComment-add").validate({
+            ignore:[],
+            rules: {
+                productId:{
+                    maxlength: 20,
+                },
+                memberId:{
+                    maxlength: 64,
+                },
+                productName:{
+                    maxlength: 255,
+                },
+                memberNickName:{
+                    maxlength: 255,
+                },
+                memberIcon:{
+                    maxlength: 255,
+                },
+                productAttribute:{
+                    maxlength: 255,
+                },
+                content:{
+                },
+                pics:{
+                    maxlength: 1000,
+                },
+                star:{
+                    maxlength: 3,
+                },
+                showStatus:{
+                    maxlength: 1,
+                },
+                createBy:{
+                    maxlength: 50,
+                },
+                createTime:{
+                },
+            },
+            messages: {
+                productId:{
+                    maxlength: "最多输入20 个字符.",
+
+                },
+
+                memberId:{
+                    maxlength: "最多输入64 个字符.",
+
+                },
+
+                productName:{
+                    maxlength: "最多输入255 个字符.",
+
+                },
+
+                memberNickName:{
+                    maxlength: "最多输入255 个字符.",
+
+                },
+
+                memberIcon:{
+                    maxlength: "最多输入255 个字符.",
+
+                },
+
+                productAttribute:{
+                    maxlength: "最多输入255 个字符.",
+
+                },
+
+                content:{
+
+                },
+
+                pics:{
+                    maxlength: "最多输入1000 个字符.",
+
+                },
+
+                star:{
+                    maxlength: "最多输入3 个字符.",
+
+                },
+
+                showStatus:{
+                    maxlength: "最多输入1 个字符.",
+
+                },
+
+                createBy:{
+                    maxlength: "最多输入50 个字符.",
+
+                },
+
+                createTime:{
+
+                },
+
+            },
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-pmsProductComment-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+
+N	java:S106n"9Replace this use of System.out or System.err by a logger.(äàì­
+[	java:S106°"9Replace this use of System.out or System.err by a logger.(İè¬øÿÿÿÿ8æ­´×ã.
+p
+java:S2293À"YReplace the type specification in this constructor call with the diamond operator ("<>").(ÛœÂ
+S	java:S106y"9Replace this use of System.out or System.err by a logger.(İè¬øÿÿÿÿ
+B
+java:S1068."'Remove this unused "log" private field.(†ÿŒˆıÿÿÿÿ
+a
+java:S1155·">Use isEmpty() to check whether the collection is empty or not.(É€°Îøÿÿÿÿ8æ­´×ã.
+N	java:S106r"9Replace this use of System.out or System.err by a logger.(ïÔ¤ 
+[	java:S106¦"9Replace this use of System.out or System.err by a logger.(·Ş¦Ñøÿÿÿÿ8æ­´×ã.
+V	java:S106¥"9Replace this use of System.out or System.err by a logger.(äàì­8æ­´×ã.
+U	java:S106¬"9Replace this use of System.out or System.err by a logger.(¸ØïU8æ­´×ã.
+V	java:S106©"9Replace this use of System.out or System.err by a logger.(ïÔ¤ 8æ­´×ã.
+Z
+java:S1155‚">Use isEmpty() to check whether the collection is empty or not.(É€°Îøÿÿÿÿ
+M	java:S106u"9Replace this use of System.out or System.err by a logger.(¸ØïU
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ÀÍÖîıÿÿÿÿ
+I
+java:S1874)"3Remove this use of "description"; it is deprecated.(‚–õ
+F
+java:S3740"/Provide the parametrized type for this generic.(¦óì“
+S	java:S106o"9Replace this use of System.out or System.err by a logger.(·Ş¦Ñøÿÿÿÿ

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <th:block th:include="include :: header('集成WebSocket')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content fadeInRight">
+    <div class="row">
+        <div class="col-sm-10">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>服务端通过定时任务广播（10秒更新，需要开启controller中的定时任务）</h5>
+                </div>
+                <div class="ibox-content">
+                    <p id="topic1"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>服务端接收客户端发来的消息并广播</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">姓名：</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="fullname" placeholder="请输入姓名" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button type="button" class="btn btn-primary" onclick="sendGreetings()">发送广播</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>向指定用户发送消息</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">部门：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="dept">
+                                    <option value="">请选择部门</option>
+                                    <option value="103">研发部门</option>
+                                    <option value="104">市场部门</option>
+                                    <option value="105">测试部门</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">接收消息：</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="receive" placeholder="将展示接收到的消息" readonly class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button type="button" class="btn btn-primary" onclick="sendToDept()">发送给对应部门人员</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: sockjs-client-js"/>
+<script th:inline="javascript"> var user = [[${user}]] ; </script>
+<script type="text/javascript">
+    var colors = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple'], colorLen = colors.length, index = 0;
+    var prefix = ctx + "demo/integrate/websocket";
+    var stomp = null;
+
+    $(function () {
+        console.log("ctx:" + ctx);
+        console.log("登录用户信息: ----begin-----");
+        console.log(user);
+        console.log("登录用户信息: ----end-----");
+        connect();
+    });
+
+    window.onunload = function() {
+        disconnect()
+    };
+
+    function connect() {
+        var sock = new SockJS("/endPoint");
+        stomp = Stomp.over(sock);
+        stomp.connect({}, function(frame) {
+            console.log('Connected ... ');
+
+            // 定时器方式展示
+            // 订阅/topic/getResponse 目标(destination)发送的消息
+            stomp.subscribe("/topic/getResponse", function(message) {
+                // console.log(message);
+                if (message && message.body) {
+                    var info = $.parseJSON(message.body);
+                    $("#topic1").css({color: colors[index]});
+                    $("#topic1").html(info.msg + info.time);
+                    index ++;
+                    if (index >= colorLen) {
+                        index = 0;
+                    }
+                }
+            });
+
+            // 通过主题/app/endPoint发送过来的消息
+            // 客户端订阅/topic/greetings 监听并接收服务端发回的消息
+            stomp.subscribe("/topic/greetings", function(message) {
+                // console.log(message);
+                if (message && message.body) {
+                    var info = $.parseJSON(message.body);
+                    $.modal.msgSuccess("[" + info.msg + "]向你问好！<br/>" + info.time);
+                }
+            });
+
+            // 接收指定部门的消息
+            stomp.subscribe("/user/" + user.dept.deptId + "/queue/getResponse", function (message) {
+                // console.log(message);
+                $("#receive").val("");
+                if (message && message.body) {
+                    var info = $.parseJSON(message.body);
+                    $("#receive").val(info.time + ": " + info.msg);
+                }
+            })
+
+        });
+    }
+
+
+    function sendGreetings() {
+        var name = $("#fullname").val();
+        if (name) {
+            stomp.send("/app/endPoint", {topic:"greetings"}, JSON.stringify({ 'name': name }));
+        } else {
+            $.modal.msgWarning("请填写姓名");
+        }
+    }
+
+    function sendToDept() {
+        var deptId = $("#dept").val();
+        if (deptId) {
+            // console.log(prefix + "/sendToDept");
+            $.operate.post(prefix + "/sendToDept", {deptId: deptId});
+        } else {
+            $.modal.msgWarning("请选择部门");
+        }
+    }
+
+    function disconnect() {
+        if (stomp != null) {
+            stomp.disconnect();
+        }
+        console.log("Disconnected");
+    }
+
+</script>
+</body>
+</html>

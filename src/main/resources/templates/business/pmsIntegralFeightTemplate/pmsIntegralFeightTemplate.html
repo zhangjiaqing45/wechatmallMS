@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('积分商品运费设置')" />
+    <style type="text/css">
+        .dest-label {
+            width: 150px;
+        }
+        .dest-label-static {
+            width: 150px;
+            padding-left: 0px;
+        }
+        .free-total {
+            color: #26a;
+            font-weight: 700;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+        .label-del {
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <span class="label label-primary pull-right">设置</span>
+                    <h5>积分商品运费</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m" id="form-pmsIntegralFeightTemplate-set">
+                        <input name="id" id="id" type="hidden">
+<!--                        <input name="name" id="name" type="hidden">-->
+                        <input name="freeDest" id="freeDest" type="hidden">
+                        <input name="tollDest" id="tollDest" type="hidden">
+                        <input name="excludeDest" id="excludeDest" type="hidden">
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-sm-2 control-label is-required">付费区域运费：</label>-->
+                            <!--<div class="col-sm-8">-->
+                                <!--<div class="input-group" >-->
+                                    <!--<input name="feightFee" id="feightFee" class="form-control edit-input" type="text" readonly required>-->
+                                    <!--<span class="input-group-addon">元</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">包邮配送区域：</label>
+                            <div class="col-sm-8">
+                                <div class="input-group m-b">
+                                    <div type="text" class="form-control-static">已选择<span class="free-total">0</span>个区域</div>
+                                    <span class="input-group-btn">
+                                        <button type="button" id="selAllBtn" class="btn btn-success hidden" disabled style="border-radius: 0px;padding: 3px 12px;" onclick="selectAll();" >全选 </button>
+                                    </span>
+                                </div>
+                                <div class="input-group m-b all-dest">
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-sm-2 control-label is-required">买家付运费区域：</label>-->
+                            <!--<div class="col-sm-8 toll-dest">-->
+
+                            <!--</div>-->
+                        <!--</div>-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">不配送区域：</label>
+                            <div class="col-sm-8 exclude-dest">
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6 col-sm-offset-2">
+                                <button type="button" id="editBtn" class="btn btn-success" onclick="edit();"><i class="fa fa-paste"></i> 编辑</button>
+                                <button type="button" id="cancelBtn" class="btn btn-warning hidden" disabled onclick="cancel();"><i class="fa fa-backward"></i> 取消</button>
+                                <button type="button" id="saveBtn" data-loading-text="Loading..." disabled class="btn btn-primary hidden" onclick="saveSetting();"><i class="fa fa-check"></i> 保存</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript" type="text/javascript">
+    var prefix = ctx + "business/pmsIntegralFeightTemplate";
+    var formId = "form-pmsIntegralFeightTemplate-set";
+    var template = [[${template}]];
+
+    $(function () {
+        formInit();
+
+        buildDest($("#freeDest").val());
+        // buildTollDest($("#tollDest").val());
+        buildExcludeDest($("#excludeDest").val());
+
+        eventInit();
+        eventChecked();
+        eventUncheck();
+
+        // eventTollDel();
+        eventExcludeDel();
+    });
+
+    /**
+     * 初始化表单数据
+     */
+    function formInit() {
+        if (template) {
+            for (var key in template) {
+                $("#" + key).val(template[key]);
+            }
+        }
+    }
+
+
+    /**
+     * 设置iCheck
+     */
+    function eventInit() {
+        $(".check-box:not(.noicheck),.radio-box:not(.noicheck)").each(function () {
+            $(this).iCheck({
+                checkboxClass: 'icheckbox-blue',
+                radioClass: 'iradio-blue',
+            })
+        });
+    }
+
+    /**
+     * checkbox选中事件
+     */
+    function eventChecked() {
+        $(".free-input").on("ifChecked", function(event){
+            selectCount();
+            var checkedVal = $(this).val();
+            $(".toll-dest .dest-label-static").each(function(index, elem) {
+                if (checkedVal == $(elem).attr("data-val")) {
+                    $(elem).remove();
+                    return false;
+                }
+            });
+            $(".exclude-dest .dest-label-static").each(function(index, elem) {
+                if (checkedVal == $(elem).attr("data-val")) {
+                    $(elem).remove();
+                    return false;
+                }
+            });
+        });
+    }
+
+    /**
+     * checkbox取消选中事件
+     */
+    function eventUncheck() {
+        $(".free-input").on("ifUnchecked", function(event){
+            selectCount();
+            var tpl = "<label class=\"check-box dest-label-static\" data-val=\"" + $(this).val() + "\" >" + $(this).val() + " <a href=\"javascript:;\" class=\"label-del\">删除</a></label></label>\n";
+            // $(".toll-dest").append(tpl);
+            $(".exclude-dest").append(tpl);
+        });
+    }
+
+    /**
+     * 付费区域删除，进入不配送区域
+     */
+    // function eventTollDel() {
+    //     $("body").on("click", ".toll-dest .label-del", function() {
+    //         var self = this;
+    //         var tollVal = $(self).parent(".dest-label-static").attr("data-val");
+    //         $.modal.confirm("删除后，" + tollVal + "将不支持配送", function () {
+    //             $(self).parent(".dest-label-static").remove();
+    //             var tpl = "<label class=\"check-box dest-label-static\" data-val=\"" + tollVal + "\" >" + tollVal + " <a href=\"javascript:;\" class=\"label-del\">删除</a></label></label>\n";
+    //             $(".exclude-dest").append(tpl);
+    //         });
+    //     });
+    // }
+
+    /**
+     * 不配送区域删除，该区域重新支持包邮配送
+     */
+    function eventExcludeDel() {
+        $("body").on("click", ".exclude-dest .label-del", function() {
+            var self = this;
+            var excludeVal = $(self).parent(".dest-label-static").attr("data-val");
+            $.modal.confirm("删除后，" + excludeVal + "将重新支持配送", function () {
+                $(self).parent(".dest-label-static").remove();
+                $(".free-input[value='"+excludeVal+"']").iCheck('check');
+            });
+        });
+    }
+
+    /**
+     * 初始化区域
+     */
+    function buildDest(freeDest) {
+        var tpl = "";
+        for (var i in DESTINATION.ALL) {
+            var checkSign = "checked";
+            if (template) {
+                checkSign = (freeDest && freeDest.indexOf(DESTINATION.ALL[i]) > -1) ? "checked" : "";
+            }
+            tpl += "<label class=\"check-box dest-label\">\n" +
+                "      <input class=\"free-input check-input\" type=\"checkbox\" " + checkSign + " value=\"" + DESTINATION.ALL[i] + "\" disabled>" + DESTINATION.ALL[i] + "\n" +
+                "   </label>\n";
+        }
+        $(".all-dest").html(tpl);
+        selectCount();
+    }
+
+    /**
+     * 构建收费区域
+     */
+    // function buildTollDest(tollDest) {
+    //     var tpl = "", tollArr = [];
+    //     if (tollDest && tollDest.split(",").length > 0) {
+    //         tollArr = tollDest.split(",");
+    //         for (var i in tollArr) {
+    //             tpl += "<label class=\"check-box dest-label-static\" data-val=\"" + tollArr[i] + "\" >" + tollArr[i] + " <a href=\"javascript:;\" class=\"label-del hidden\">删除</a></label></label>\n";
+    //         }
+    //     }
+    //     $(".toll-dest").html(tpl);
+    // }
+
+    /**
+     * 构建不配送区域
+     */
+    function buildExcludeDest(excludeDest) {
+        var tpl = "", excludeArr = [];
+        if (excludeDest && excludeDest.split(",").length > 0) {
+            excludeArr = excludeDest.split(",");
+            for (var i in excludeArr) {
+                tpl += "<label class=\"check-box dest-label-static\" data-val=\"" + excludeArr[i] + "\" >" + excludeArr[i] + " <a href=\"javascript:;\" class=\"label-del hidden\">删除</a></label></label>\n";
+            }
+        }
+        $(".exclude-dest").html(tpl);
+    }
+
+
+    function selectCount() {
+        $(".free-total").text($(".free-input:checked").length);
+    }
+
+    /**
+     * 全选
+     */
+    function selectAll(){
+        $(".free-input").iCheck('check');
+        $(".toll-dest").html("");
+        $(".exclude-dest").html("");
+    }
+
+    $("#" + formId).validate({
+        focusCleanup: true,
+        rules: {
+            feightFee: {
+                isPrice: true,
+            },
+            name: {
+                rangelength: [2, 50],
+            }
+        },
+        messages: {
+            name: {
+                rangelength: $.validator.format("模板名称在 {0} 到 {1} 之间"),
+            }
+        }
+    });
+
+    /**
+     * 开启编辑
+     */
+    function edit() {
+        $(".edit-input").removeAttr("readonly");
+        $(".label-del").removeClass("hidden");
+        $(".check-input").iCheck("enable");
+        $("#editBtn").addClass("hidden").attr("disabled", "disabled");
+        $("#selAllBtn").removeClass("hidden").removeAttr("disabled");
+        $("#saveBtn").removeClass("hidden").removeAttr("disabled");
+        $("#cancelBtn").removeClass("hidden").removeAttr("disabled");
+    }
+
+    /**
+     * 取消编辑
+     */
+    function cancel() {
+        $(".edit-input").attr("readonly", "readonly");
+        $(".label-del").addClass("hidden");
+        $(".check-input").iCheck("disable");
+        $("#editBtn").removeClass("hidden").removeAttr("disabled");
+        $("#selAllBtn").addClass("hidden").attr("disabled", "disabled");
+        $("#saveBtn").addClass("hidden").attr("disabled", "disabled");
+        $("#cancelBtn").addClass("hidden").attr("disabled", "disabled");
+        window.location.reload();
+    }
+
+    /**
+     * 保存设置
+     */
+    function saveSetting() {
+        if ($.validate.form()) {
+            var freeArr = [], tollArr = [], excludeArr = [];
+            $(".free-input:checked").each(function(index, elem) {
+                freeArr.push($(this).val());
+            });
+            $(".toll-dest .dest-label-static").each(function(index, elem) {
+                tollArr.push($(this).attr("data-val"));
+            });
+            $(".exclude-dest .dest-label-static").each(function(index, elem) {
+                excludeArr.push($(this).attr("data-val"));
+            });
+
+            $("#freeDest").val(freeArr.join());
+            $("#tollDest").val(tollArr.join());
+            $("#excludeDest").val(excludeArr.join());
+
+            $.modal.confirm("确认保存设置", function() {
+                $("#cancelBtn").addClass("hidden").attr("disabled", "disabled");
+                $("#saveBtn").button('loading');
+                $.operate.post(prefix + "/add", $('#' + formId).serialize(), function(result){
+                    if (result.code === web_status.SUCCESS) {
+                        $.modal.alert("设置保存成功", modal_status.SUCCESS, function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        $.modal.alertWarning(result.msg);
+                        $("#cancelBtn").removeClass("hidden").removeAttr("disabled");
+                        $("#saveBtn").button('reset');
+                    }
+                });
+            });
+        }
+    }
+
+</script>
+</body>
+</html>

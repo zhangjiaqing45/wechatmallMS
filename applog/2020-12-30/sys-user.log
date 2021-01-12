@@ -1,0 +1,7 @@
+10:01:24.504 [schedule-pool-2] INFO  sys-user - [run,99] - [127.0.0.1][pingtai][Success][登录成功]
+11:33:20.503 [schedule-pool-1] INFO  sys-user - [run,99] - [127.0.0.1][pingtai][Success][登录成功]
+11:42:46.166 [Thread-34] INFO  sys-user - [shutdownSpringSessionValidationScheduler,41] - ====关闭会话验证任务====
+11:42:46.167 [Thread-34] INFO  sys-user - [shutdownAsyncManager,54] - ====关闭后台任务任务线程池====
+11:42:46.167 [Thread-34] INFO  sys-user - [shutdownEhCacheManager,63] - ====关闭缓存====
+14:31:50.909 [schedule-pool-10] INFO  sys-user - [run,99] - [127.0.0.1][pingtai][Success][登录成功]
+17:48:10.767 [schedule-pool-6] INFO  sys-user - [run,99] - [127.0.0.1][pingtai][Success][登录成功]

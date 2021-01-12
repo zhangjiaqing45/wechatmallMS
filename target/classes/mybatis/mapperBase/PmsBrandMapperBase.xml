@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsBrand.mapper.PmsBrandMapper">
+
+    <resultMap type="PmsBrand" id="PmsBrandResult">
+        <result property="id"    column="id"    />
+        <result property="shopId"    column="shop_id"    />
+        <result property="name"    column="name"    />
+        <result property="firstLetter"    column="first_letter"    />
+        <result property="factoryStatus"    column="factory_status"    />
+        <result property="showStatus"    column="show_status"    />
+        <result property="productCount"    column="product_count"    />
+        <result property="logo"    column="logo"    />
+        <result property="bigPic"    column="big_pic"    />
+        <result property="brandStory"    column="brand_story"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="sort"    column="sort"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectPmsBrandVo">
+        select id, shop_id, name, first_letter, factory_status, show_status, product_count, logo, big_pic, brand_story, del_flag, sort, create_by, create_time, update_by, update_time, remark from pms_brand
+    </sql>
+
+    <select id="selectPmsBrandList" parameterType="PmsBrand" resultMap="PmsBrandResult">
+        <include refid="selectPmsBrandVo"/>
+        <where>
+            del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="firstLetter != null  and firstLetter != ''"> and first_letter = #{firstLetter}</if>
+            <if test="factoryStatus != null "> and factory_status = #{factoryStatus}</if>
+            <if test="showStatus != null "> and show_status = #{showStatus}</if>
+            <if test="productCount != null "> and product_count = #{productCount}</if>
+            <if test="logo != null  and logo != ''"> and logo = #{logo}</if>
+            <if test="bigPic != null  and bigPic != ''"> and big_pic = #{bigPic}</if>
+            <if test="brandStory != null  and brandStory != ''"> and brand_story = #{brandStory}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+        </where>
+    </select>
+
+    <select id="countPmsBrand" parameterType="PmsBrand" resultType="int">
+        select count(*) from pms_brand
+        <where>
+            del_flag = '0'
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="firstLetter != null  and firstLetter != ''"> and first_letter = #{firstLetter}</if>
+            <if test="factoryStatus != null "> and factory_status = #{factoryStatus}</if>
+            <if test="showStatus != null "> and show_status = #{showStatus}</if>
+            <if test="productCount != null "> and product_count = #{productCount}</if>
+            <if test="logo != null  and logo != ''"> and logo = #{logo}</if>
+            <if test="bigPic != null  and bigPic != ''"> and big_pic = #{bigPic}</if>
+            <if test="brandStory != null  and brandStory != ''"> and brand_story = #{brandStory}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+        </where>
+    </select>
+
+    <select id="checkPmsBrandUnique" parameterType="PmsBrand" resultType="int">
+        select count(*) from pms_brand
+        <where>
+            del_flag = '0'
+            <if test="id != null"> and id != #{id}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="name != null  and name != ''"> and name = #{name}</if>
+            <if test="firstLetter != null  and firstLetter != ''"> and first_letter = #{firstLetter}</if>
+            <if test="factoryStatus != null "> and factory_status = #{factoryStatus}</if>
+            <if test="showStatus != null "> and show_status = #{showStatus}</if>
+            <if test="productCount != null "> and product_count = #{productCount}</if>
+            <if test="logo != null  and logo != ''"> and logo = #{logo}</if>
+            <if test="bigPic != null  and bigPic != ''"> and big_pic = #{bigPic}</if>
+            <if test="brandStory != null  and brandStory != ''"> and brand_story = #{brandStory}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+        </where>
+    </select>
+
+
+    <select id="selectPmsBrandById" parameterType="Long" resultMap="PmsBrandResult">
+        <include refid="selectPmsBrandVo"/>
+        where id = #{id}
+        and del_flag = '0'
+    </select>
+
+    <insert id="insertPmsBrand" parameterType="PmsBrand" useGeneratedKeys="true" keyProperty="id">
+        insert into pms_brand
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">shop_id,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="firstLetter != null  and firstLetter != ''">first_letter,</if>
+            <if test="factoryStatus != null ">factory_status,</if>
+            <if test="showStatus != null ">show_status,</if>
+            <if test="productCount != null ">product_count,</if>
+            <if test="logo != null  and logo != ''">logo,</if>
+            <if test="bigPic != null  and bigPic != ''">big_pic,</if>
+            <if test="brandStory != null  and brandStory != ''">brand_story,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="sort != null ">sort,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="firstLetter != null  and firstLetter != ''">#{firstLetter},</if>
+            <if test="factoryStatus != null ">#{factoryStatus},</if>
+            <if test="showStatus != null ">#{showStatus},</if>
+            <if test="productCount != null ">#{productCount},</if>
+            <if test="logo != null  and logo != ''">#{logo},</if>
+            <if test="bigPic != null  and bigPic != ''">#{bigPic},</if>
+            <if test="brandStory != null  and brandStory != ''">#{brandStory},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="sort != null ">#{sort},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePmsBrand" parameterType="PmsBrand">
+        update pms_brand
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="firstLetter != null  and firstLetter != ''">first_letter = #{firstLetter},</if>
+            <if test="factoryStatus != null ">factory_status = #{factoryStatus},</if>
+            <if test="showStatus != null ">show_status = #{showStatus},</if>
+            <if test="productCount != null ">product_count = #{productCount},</if>
+            <if test="logo != null  and logo != ''">logo = #{logo},</if>
+            <if test="bigPic != null  and bigPic != ''">big_pic = #{bigPic},</if>
+            <if test="brandStory != null  and brandStory != ''">brand_story = #{brandStory},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="sort != null ">sort = #{sort},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePmsBrandById" parameterType="Long">
+        <!-- update pms_brand set del_flag = '1' where id = #{id} -->
+        delete from pms_brand where id = #{id}
+    </delete>
+
+    <delete id="deletePmsBrandByIds" parameterType="String">
+        update pms_brand set del_flag = '1' where id in
+        <!-- delete from pms_brand where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

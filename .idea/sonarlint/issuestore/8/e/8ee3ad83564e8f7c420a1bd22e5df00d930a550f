@@ -1,0 +1,13 @@
+
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(®†Ÿþ
+g
+java:S3252n"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(´Þ¹¼üÿÿÿÿ
+f
+java:S3252o"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(Ø®ùÀûÿÿÿÿ
+a
+java:S3252r"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(÷º¯ë
+P	java:S125y"<This block of commented-out lines of code should be removed.(ð¨¢c
+g
+java:S3252z"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(ý÷ðõýÿÿÿÿ
+b
+java:S3252€"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(¶Û•.

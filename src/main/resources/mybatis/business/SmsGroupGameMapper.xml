@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsGroupGame.mapper.SmsGroupGameMapper">
+    <resultMap id="smsGroupGameDetailMap" type="com.fante.project.business.smsGroupGame.domain.SmsGroupGameParam" extends="SmsGroupGameResult">
+        <collection property="skus" resultMap="com.fante.project.business.smsGroupGameSku.mapper.SmsGroupGameSkuMapper.SmsGroupGameSkuResult" columnPrefix="item_"/>
+    </resultMap>
+
+    <select id="getSmsGroupGameList" parameterType="SmsGroupGame" resultType="com.fante.project.business.smsGroupGame.domain.SmsGroupGameBtnsResult">
+        select
+            gg.id,
+            gg.shop_id,
+            gg.shop_name,
+            gg.product_id,
+            gg.product_sn,
+            gg.product_name,
+            gg.product_pic,
+            gg.target_member_count,
+            gg.end_time,
+            gg.aging,
+            gg.virtual_count,
+            gg.success_count,
+            gg.min_price,
+            gg.status,
+            gg.create_by,
+            gg.create_time,
+            gg.update_by,
+            gg.update_time,
+            gg.remark,
+            gg.del_flag,
+            gg.sort,
+
+            p.publish_status as product_publish_status,
+            p.del_flag as product_del_flag
+        from sms_group_game gg
+        left join pms_product p
+        on p.id = gg.product_id
+        <where>
+            gg.del_flag = '0'
+            <if test="shopId != null "> and gg.shop_id = #{shopId}</if>
+            <if test="shopName != null  and shopName != ''"> and gg.shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="productId != null "> and gg.product_id = #{productId}</if>
+            <if test="productName != null  and productName != ''"> and gg.product_name like concat('%', #{productName}, '%')</if>
+            <if test="productPic != null  and productPic != ''"> and gg.product_pic = #{productPic}</if>
+            <if test="targetMemberCount != null "> and gg.target_member_count = #{targetMemberCount}</if>
+            <if test="endTime != null "> and gg.end_time = #{endTime}</if>
+            <if test="aging != null "> and gg.aging = #{aging}</if>
+            <if test="virtualCount != null "> and gg.virtual_count = #{virtualCount}</if>
+            <if test="successCount != null "> and gg.success_count = #{successCount}</if>
+            <if test="minPrice != null "> and gg.min_price = #{minPrice}</if>
+            <if test="status != null  and status != ''"> and gg.status = #{status}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(gg.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(gg.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    <delete id="realDelSmsGroupGameByIds" parameterType="String">
+        <!--  update sms_group_game set del_flag = '1' where id in -->
+        delete from sms_group_game where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and status != "1"
+    </delete>
+    <select id="selectDistinctProductListForGroupGame" resultType="com.fante.project.business.pmsProduct.domain.PmsProduct">
+        SELECT
+            *
+        FROM
+            pms_product p
+        WHERE
+            p.shop_id = #{shopId}
+            AND p.del_flag = '0'
+            AND p.id NOT IN (
+                SELECT
+                    g.product_id
+                FROM
+                    sms_group_game g
+                WHERE
+                    g.shop_id = #{shopId}
+                    AND g.del_flag = '0'
+                    AND g.status != '2'
+            )
+    </select>
+    <select id="getSmsGroupGameDetailbyId" resultMap="smsGroupGameDetailMap">
+        SELECT
+            gg.id,
+            gg.shop_id,
+            gg.shop_name,
+            gg.product_id,
+            gg.product_name,
+            gg.product_pic,
+            gg.target_member_count,
+            gg.end_time,
+            gg.aging,
+            gg.product_sn,
+            gg.virtual_count,
+            gg.success_count,
+            gg.min_price,
+            gg.STATUS,
+            gg.create_by,
+            gg.create_time,
+            gg.update_by,
+            gg.update_time,
+            gg.remark,
+            gg.del_flag,
+            gg.sort,
+            ggsku.id AS item_id,
+            ggsku.group_game_id AS item_group_game_id,
+            ggsku.product_id AS item_product_id,
+            ggsku.sku_price AS item_sku_price,
+            ggsku.sku_id AS item_sku_id,
+            ggsku.sku_sp_data AS item_sku_sp_data,
+            ggsku.sku_pic AS item_sku_pic,
+            ggsku.sku_code AS item_sku_code,
+            ggsku.group_price AS item_group_price,
+            ggsku.group_stock AS item_group_stock,
+            ggsku.sales AS item_sales,
+            ggsku.STATUS AS item_status,
+            ggsku.create_by AS item_create_by,
+            ggsku.create_time AS item_create_time,
+            ggsku.update_by AS item_update_by,
+            ggsku.update_time AS item_update_time,
+            ggsku.remark AS item_remark,
+            ggsku.del_flag AS item_del_flag
+        FROM
+            sms_group_game gg
+            LEFT JOIN sms_group_game_sku ggsku ON gg.id = ggsku.group_game_id and gg.del_flag = '0'
+        WHERE
+            gg.id = #{id}
+    </select>
+    <select id="getSmsGroupGameDetailofEdit" resultMap="smsGroupGameDetailMap">
+      	SELECT
+            gg.id,
+            gg.shop_id,
+            gg.shop_name,
+            gg.product_id,
+            gg.product_name,
+            gg.product_sn,
+            gg.product_pic,
+            gg.target_member_count,
+            gg.end_time,
+            gg.aging,
+            gg.virtual_count,
+            gg.success_count,
+            gg.min_price,
+            gg.STATUS,
+            gg.create_by,
+            gg.create_time,
+            gg.update_by,
+            gg.update_time,
+            gg.remark,
+            gg.del_flag,
+            gg.sort,
+
+            sku.id AS item_sku_id,
+            sku.sp_data AS item_sku_sp_data,
+            sku.pic AS item_sku_pic,
+            sku.price AS item_sku_price,
+            sku.sku_code AS item_sku_code,
+            ifnull( ggsku.id, null ) AS item_id,
+            ifnull( ggsku.group_price, 0 ) AS item_group_price,
+            ifnull( ggsku.group_stock, 0 ) AS item_group_stock,
+            ifnull( ggsku.sales, 0 ) AS item_sales
+        FROM
+            sms_group_game gg
+            INNER JOIN pms_sku_stock sku ON sku.product_id = gg.product_id and gg.del_flag = '0'
+            LEFT JOIN sms_group_game_sku ggsku ON ggsku.group_game_id = gg.id and ggsku.del_flag='0'
+            AND sku.id = ggsku.sku_id
+        WHERE
+            sku.del_flag = '0'
+            AND gg.id = #{id}
+    </select>
+    <update id="startGroupGames">
+        update sms_group_game set `status` = 1
+        where id in
+        (
+            select * from (
+                select gg.id from sms_group_game gg left join pms_product p
+                on p.id = gg.product_id
+                where gg.id in
+                <foreach item="id" collection="ids" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+                and p.publish_status = '1'
+                and p.del_flag = '0'
+                and gg.status = '0'
+                and gg.del_flag = '0'
+            ) a
+        )
+    </update>
+    <select id="selectSmsGroupGameByIds"  resultMap="SmsGroupGameResult">
+        <include refid="selectSmsGroupGameVo"/>
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and status != '1'
+        and del_flag = '0'
+    </select>
+    <select id="countSmsGroupGameByIdsOfwaitStart" resultType="int">
+        select count(*) from sms_group_game gg left join pms_product p
+        on p.id = gg.product_id
+        where gg.id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and p.publish_status = '1'
+        and p.del_flag = '0'
+        and gg.status = '0'
+        and gg.del_flag = '0'
+    </select>
+    <select id="validateGame" resultType="int">
+        select case when count(sgg.aging)=0 then -1 else sgg.aging end as aging
+        from
+            sms_group_game_sku sggs
+            left join  sms_group_game sgg
+            on sgg.id = sggs.group_game_id
+        where
+            sgg.id = #{groupGameId}
+            and
+            sggs.id = #{groupGameSkuId}
+            and
+            sggs.group_stock &gt;= #{quantity}
+    </select>
+    <!--增加成团数量-->
+    <update id="groupSuccess">
+        update sms_group_game set success_count = success_count+1
+        where
+            id = (
+                select group_game_id from sms_group_game_record where id = #{recordId}
+            )
+    </update>
+    <!--(app)获取可用团购商品-->
+    <select id="getEnableGroupProduct" parameterType="SmsGroupGame" resultMap="SmsGroupGameResult">
+        <include refid="selectSmsGroupGameVo"/>
+        <where>
+            del_flag = '0'
+            <!--团购活动状态:进行中 -->
+            and status = #{status}
+            <!--结束时间 大于 等于 现在 -->
+            and date_format(end_time,'%y%m%d') &gt;= date_format(now(),'%y%m%d')
+            <!--店铺id / 商品名称 -->
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+        </where>
+    </select>
+
+    <!--秒杀商品详情页面数据封装-->
+    <resultMap id="groupDetailPageInfoMap"
+               type="com.fante.project.api.appView.domain.PmsGroupProductDetailPageInfo"
+               extends="SmsGroupGameResult">
+        <!--副标题-->
+        <result column="sub_title"  property="subTitle"/>
+        <!--商品图册-->
+        <result column="album_pics"  property="albumPics"/>
+        <!--商品参数-->
+        <result column="param_data"  property="paramData"/>
+        <!--商品市场价-->
+        <result column="original_price"  property="originalPrice"/>
+        <!--商品描述-->
+        <result column="description"  property="description"/>
+        <!--商品详情标题-->
+        <result column="detail_title"  property="detailTitle"/>
+        <!--商品详情描述-->
+        <result column="detail_desc"  property="detailDesc"/>
+        <!--商品详情html-->
+        <result column="detail_html"  property="detailHtml"/>
+        <!--经度-->
+        <result column="longitude"  property="longitude"/>
+        <!--纬度-->
+        <result column="latitude"  property="latitude"/>
+        <!--sku秒杀信息集合-->
+        <collection property="skuList"
+                    resultMap="com.fante.project.business.smsGroupGameSku.mapper.SmsGroupGameSkuMapper.SmsGroupGameSkuResult"
+                    columnPrefix="item_"/>
+    </resultMap>
+    <!--(app)获取团购商品详情-->
+    <select id="getGroupProductDetailInfo"  resultMap="groupDetailPageInfoMap">
+        SELECT
+            <!--团购活动信息-->
+            gg.id,
+            gg.shop_id,
+            gg.product_id,
+            gg.product_name,
+            gg.product_pic,
+            gg.target_member_count,
+            gg.end_time,
+            gg.aging,
+            gg.virtual_count,
+            gg.success_count,
+            gg.min_price,
+            gg.`status`,
+            gg.create_by,
+            gg.create_time,
+            gg.update_by,
+            gg.update_time,
+            gg.remark,
+            gg.del_flag,
+            gg.sort,
+            gg.product_sn,
+            <!--商品信息-->
+            p.original_price,
+            p.sub_title,
+            p.album_pics,
+            p.param_data,
+            p.description,
+            p.detail_title,
+            p.detail_desc,
+            p.detail_html,
+            <!--店铺信息-->
+            shop.company_name AS shop_name,
+            shop.longitude AS longitude,
+            shop.latitude AS latitude,
+            <!--团购活动sku信息-->
+            sku.id AS item_id,
+            sku.group_game_id AS item_group_game_id,
+            sku.product_id AS item_product_id,
+            sku.sku_code AS item_sku_code,
+            sku.sku_id AS item_sku_id,
+            sku.sku_price AS item_sku_price,
+            sku.sku_sp_data AS item_sku_sp_data,
+            sku.sku_pic AS item_sku_pic,
+            sku.group_price AS item_group_price,
+            sku.group_stock AS item_group_stock,
+            sku.sales AS item_sales,
+            sku.`status` AS item_status,
+            sku.create_by AS item_create_by,
+            sku.create_time AS item_create_time,
+            sku.update_by AS item_update_by,
+            sku.update_time AS item_update_time,
+            sku.remark AS item_remark,
+            sku.del_flag AS item_del_flag
+        FROM
+            sms_group_game gg
+            LEFT JOIN sms_group_game_sku sku ON sku.group_game_id = gg.id
+            LEFT JOIN biz_shop_info shop ON shop.id = gg.shop_id
+            LEFT JOIN pms_product p ON p.id = gg.product_id
+        WHERE
+            gg.id = #{id}
+            <!--团购活动状态: 进行中-->
+            AND gg.`status` = #{groupGameStatus}
+            <!--商品状态: 上架-->
+            AND p.publish_status = #{publishStatus}
+    </select>
+
+    <!--通过gameskuid查询skugame-->
+    <select id="selectSmsGroupGameBySkuId" resultMap="SmsGroupGameResult">
+        SELECT
+        <!--团购活动信息-->
+        gg.id,
+        gg.shop_id,
+        gg.product_id,
+        gg.product_name,
+        gg.product_pic,
+        gg.target_member_count,
+        gg.end_time,
+        gg.aging,
+        gg.virtual_count,
+        gg.success_count,
+        gg.min_price,
+        gg.`status`,
+        gg.create_by,
+        gg.create_time,
+        gg.update_by,
+        gg.update_time,
+        gg.remark,
+        gg.del_flag,
+        gg.sort,
+        gg.product_sn
+        from sms_group_game gg
+        LEFT JOIN sms_group_game_sku sku ON sku.group_game_id = gg.id
+        where sku.id = #{gameId}
+    </select>
+
+</mapper>

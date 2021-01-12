@@ -1,0 +1,28 @@
+
+{
+java:S1128"`Remove this unused import 'com.fante.project.business.pmsProductLog.mapper.PmsProductLogMapper'.(–ãì™úÿÿÿÿ
+w
+java:S1128"bRemove this unused import 'com.fante.project.business.pmsProductComment.domain.PmsProductComment'.(Ô¡às
+y
+java:S1128"dRemove this unused import 'com.fante.project.business.pmsProductCategory.domain.PmsProductCategory'.(ü £?
+k
+java:S1128"PRemove this unused import 'com.fante.project.business.pmsBrand.domain.PmsBrand'.(ž³Øçÿÿÿÿÿ
+‘
+java:S1128"vRemove this unused import 'com.fante.project.business.pmsProductAttributeCategory.domain.PmsProductAttributeCategory'.(ø’…Ñùÿÿÿÿ
+d
+java:S1128"NRemove this unused import 'com.fante.common.business.enums.ProductActionEnum'.(–ä°ê
+b
+java:S1128"GRemove this unused import 'com.fante.common.business.enums.OrderConst'.(Â£Êðûÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ëªéº
+z
+java:S1128!"dRemove this unused import 'com.fante.project.business.umsDistribution.domain.UmsDistributionResult'.(À°¤è
+B
+java:S10686"'Remove this unused "log" private field.(éªËÝúÿÿÿÿ
+p
+java:S1128"ZRemove this unused import 'com.fante.project.business.pmsProductLog.domain.PmsProductLog'.(·å†¥
+H
+java:S1128"-Remove this unused import 'java.util.Arrays'.(î–˜Éüÿÿÿÿ
+W
+java:S1128""BRemove this unused import 'com.github.pagehelper.util.StringUtil'.(ýçþb
+x
+java:S1128"bRemove this unused import 'com.fante.project.business.pmsFeightTemplate.domain.PmsFeightTemplate'.(­ƒ‡õ

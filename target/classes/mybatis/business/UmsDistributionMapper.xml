@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.umsDistribution.mapper.UmsDistributionMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="UmsDistributionResultExt" type="扩展类全包名" extends="UmsDistributionResult">
+
+    </resultMap>
+     -->
+    <resultMap id="umsDistributionResultMap" type="com.fante.project.business.umsDistribution.domain.UmsDistributionResult" extends="UmsDistributionResult">
+        <result column="product_name" jdbcType="VARCHAR" property="productName" />
+        <collection property="skuList" resultMap="com.fante.project.business.pmsSkuStock.mapper.PmsSkuStockMapper.PmsSkuStockResult" columnPrefix="sku_"/>
+    </resultMap>
+    <!--根据商品id查询该商品sku 到各个分销金-->
+    <select id="selectUmsDistributionByProudctId" resultMap="umsDistributionResultMap">
+        SELECT
+            d.*,
+            p.name as product_name,
+            p.id as product_id,
+            sku.id as sku_id,
+            sku.sp_data as sku_sp_data,
+            sku.price as sku_price
+        FROM
+            ums_distribution d
+            LEFT JOIN pms_product p ON p.id = d.product_id
+            LEFT JOIN pms_sku_stock sku ON sku.product_id = p.id
+        WHERE
+            p.id = #{pid}
+            AND p.shop_id = #{shopId}
+    </select>
+    <!--查询分销时所需商品信息-->
+    <select id="selectSkuInfoForDistribution" resultMap="umsDistributionResultMap">
+        select
+            0 as ratio,
+            p.id as product_id,
+            p.name as product_name,
+            sku.id as sku_id,
+            sku.sp_data as sku_sp_data,
+            sku.price as sku_price
+        from  pms_product p
+        left join pms_sku_stock sku on sku.product_id = p.id
+        where p.id = #{pid}
+        and p.shop_id = #{shopId}
+    </select>
+    <!--根据订单详情ids获取分销总金额-->
+    <select id="getCommissionByOrderItemIds" resultType="com.fante.project.api.omsOrderProcess.domain.OmsOrderCommissionDTO">
+        select
+            <!--计算佣金 = 价格 × 数量 × 佣金比例 -->
+          ooi.id   as orderItemId
+          ,
+                IFNULL(
+                    ooi.product_price*IFNULL(ud.ratio,0)
+                    ,0
+                ) as money,
+        ooi.product_quantity as quantity
+        from
+            oms_order_item ooi
+            left join ums_distribution  ud on  ud.product_id = ooi.product_id
+            left join ums_member m on m.role_type = ud.role_type
+        where
+            ooi.id in
+            <foreach collection="itemIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+            and m.id = #{memberId}
+    </select>
+    <!--根据订单详情获取单个分销金额-->
+    <select id="getCommissionByOrderItem" resultType="java.math.BigDecimal">
+        select
+            <!--计算佣金 = 价格 × 佣金比例 -->
+            IFNULL(
+                SUM(IFNULL( ooi.product_price, 0 ) * IFNULL(ud.ratio,0))
+                ,0
+            )
+        from
+            oms_order_item ooi
+            left join ums_distribution  ud on  ud.product_id = ooi.product_id
+            left join ums_member m on m.role_type = ud.role_type
+        where
+            ooi.id = #{orderItemId}
+            and m.id = #{memberId}
+    </select>
+</mapper>

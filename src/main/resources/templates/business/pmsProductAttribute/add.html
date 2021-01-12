@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增商品属性＆参数')" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-pmsProductAttribute-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">名称：</label>
+            <div class="col-sm-8">
+                <input name="name" class="form-control" type="text">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">录入方式：</label>
+            <div class="col-sm-8">
+                <div id="inputTypeId" class="radio-box" th:each="dict : ${@custom.entryMethod()}">
+                    <input type="radio" th:id="${'inputType_' + dict.key}" name="inputType"
+                           th:value="${dict.key}"
+                           th:checked="${dict.key=='1'?true:false}">
+                    <label th:for="${'inputType_' + dict.key}" th:text="${dict.value}"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group select-change">
+            <label class="col-sm-3 control-label is-required">是否可选：</label>
+            <div class="col-sm-8">
+                <div class="radio-box" th:each="dict : ${@custom.checkMethod()}">
+                    <input type="radio"
+                           th:id="${'selectType_' + dict.key}"
+                           name="selectType"
+                           th:value="${dict.key}"
+                           th:checked="${dict.key=='1'?true:false}"/>
+                    <label th:for="${'selectType_' + dict.key}" th:text="${dict.value}"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group select-change">
+            <label class="col-sm-3 control-label is-required">选项列表：</label>
+            <div class="col-sm-8">
+                <textarea id="inputListId" name="inputList" class="form-control"></textarea>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>
+                    注意 : 每行是一个属性值.若选择了从列表中选取,则此处可选值列表不能为空!
+                </span>
+            </div>
+        </div>
+<!--        <div class="form-group" th:hidden="${typeId==1}">-->
+<!--            <label class="col-sm-3 control-label is-required">手动新增：</label>-->
+<!--            <div class="col-sm-8">-->
+<!--                <div class="radio-box" th:each="dict : ${@custom.supportManual()}">-->
+<!--                    <input type="radio" th:id="${'handAddStatus_' + dict.key}" name="handAddStatus" th:value="${dict.key}" th:checked="${dict.key=='0'?true:false}">-->
+<!--                    <label th:for="${'handAddStatus_' + dict.key}" th:text="${dict.value}"></label>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <div class="form-group">
+            <label class="col-sm-3 control-label">备注：</label>
+            <div class="col-sm-8">
+                <input name="remark" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">排序：</label>
+            <div class="col-sm-8">
+                <input name="sort" class="form-control" type="text">
+            </div>
+        </div>
+        <!--属性的类型；0->属性列表；1->参数列表-->
+        <input name="type" class="form-control" type="hidden" th:value="${typeId}" required>
+        <!--所属商品类型id-->
+        <input name="productAttributeCategoryId" class="form-control" type="hidden" th:value="${parentId}" required>
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<script type="text/javascript">
+    var prefix = ctx + "business/pmsProductAttribute";
+
+    //init
+    $(function () {
+        //自适应换行
+        makeExpandingArea($("#inputListId")[0]);
+
+        //参数列表直接隐藏手动新增选项
+        if($("#typeId").val()==1){
+            $("#handAddStatus").addClass("hidden");
+        }
+    })
+
+
+    //选择从下列参数列表选择:显示提示语句,添加 required 属性
+    $("#inputType_1").on("ifChecked",function(event){
+        $(".select-change").removeClass("hidden");
+    })
+
+    //选择从下列参数列表选择:隐藏提示语句,移除required 属性
+    $("#inputType_0").on("ifChecked",function(event){
+        $(".select-change").addClass("hidden");
+    })
+
+    /**
+     * 提交
+     */
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-pmsProductAttribute-add').serialize());
+        }
+    }
+    /**
+     * textarea自适应高度
+     */
+    function makeExpandingArea(el) {
+        var timer = null;
+        //由于ie8有溢出堆栈问题，故调整了这里
+        var setStyle = function(el, auto) {
+            if (auto) el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        }
+        var delayedResize = function(el) {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            timer = setTimeout(function() {
+                setStyle(el)
+            }, 200);
+        }
+        if (el.addEventListener) {
+            el.addEventListener('input', function() {
+                setStyle(el, 1);
+            }, false);
+            setStyle(el)
+        } else if (el.attachEvent) {
+            el.attachEvent('onpropertychange', function() {
+                setStyle(el)
+            })
+            setStyle(el)
+        }
+        if (window.VBArray && window.addEventListener) { //IE9
+            el.attachEvent("onkeydown", function() {
+                var key = window.event.keyCode;
+                if (key == 8 || key == 46) delayedResize(el);
+
+            });
+            el.attachEvent("oncut", function() {
+                delayedResize(el);
+            }); //处理粘贴
+        }
+    }
+    /**
+     * 验证参数
+     */
+    $("#form-pmsProductAttribute-add").validate({
+        rules: {
+            name: {
+                required: true,
+                maxlength: 20,
+                remote: {
+                    url: prefix + "/checkUnique",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "name": function () {
+                            return $.common.trim($("input[name='name']").val());
+                        },
+                        "productAttributeCategoryId":function () {
+                            return $.common.trim($("input[name='productAttributeCategoryId']").val());
+                        }
+                    },
+                    dataFilter: function (data, type) {
+                        return $.validate.unique(data);
+                    }
+                }
+
+            },
+            sort: {
+                    required: true,
+                    positiveIntegerZero:true,
+                    maxlength: 5,
+                },
+            inputList: {
+                required: true,
+                maxlength: 200
+            },
+            remark: {
+                maxlength: 20
+            },
+        },
+        messages: {
+            name: {
+                required: "名称不能为空",
+                maxlength: "最多输入20个字符.",
+                remote: "此名称已经存在！"
+            },
+            sort: {
+                required: "序号不能为空",
+                positiveIntegerZero:"序号只能是正整数",
+                maxlength: "最多10位数"
+            },
+            inputList: {
+                required: "列表选项不能为空",
+                maxlength: "最多输入200个字符.",
+            },
+            remark: {
+                maxlength: "最多输入20个字符.",
+            },
+        },
+        focusCleanup: true
+    });
+
+</script>
+</body>
+</html>

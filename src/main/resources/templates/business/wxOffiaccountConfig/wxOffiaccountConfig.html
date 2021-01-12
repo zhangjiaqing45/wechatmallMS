@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('微信公众号配置')" />
+    <style type="text/css">
+        label.error {
+            position: absolute;
+            right: 35px;
+            top: 10px;
+            color: #ef392b;
+            font-size: 12px;
+            z-index: 99;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <span class="label label-primary pull-right">设置</span>
+                    <h5>公众号配置</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m" id="form-wxOffiaccountConfig">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">开发者ID：</label>
+                            <div class="col-sm-6">
+                                <input id="appid" name="appid" class="form-control edit-input" type="text" readonly>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 公众平台（基本配置->公众号开发信息）查看 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">开发者密码：</label>
+                            <div class="col-sm-6">
+                                <input id="secret" name="secret" class="form-control edit-input" type="text" readonly>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 公众平台（基本配置->公众号开发信息）查看（首次使用需要生成） </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">公众号原始ID：</label>
+                            <div class="col-sm-6">
+                                <input id="originalid" name="originalid" class="form-control edit-input" type="text" readonly>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 公众平台（公众号设置->账号详情->注册信息）查看 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">消息加密方式：</label>
+                            <div class="col-sm-6">
+                                <select id="encodingtype" name="encodingtype" class="form-control edit-select" disabled th:with="type=${@dict.getType('biz_wx_encodingtype')}">
+                                    <option value="">请选择</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 公众平台（基本配置->服务器配置）设置（需要启用公众号服务器配置时选择） </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">消息加密密钥：</label>
+                            <div class="col-sm-6">
+                                <input id="encodingaeskey" name="encodingaeskey" class="form-control edit-input" type="text" readonly>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 公众平台（基本配置->服务器配置）设置（需要启用公众号服务器配置时填写） </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">网页安全授权URL：</label>
+                            <div class="col-sm-6">
+                                <input id="oauthUrl" name="oauthUrl" class="form-control edit-input" type="text" readonly>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 需要在公众平台（公众号设置->功能设置）进行配置 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">公众平台接口域名：</label>
+                            <div class="col-sm-6">
+                                <select id="apiDomain" name="apiDomain" class="form-control edit-select" disabled th:with="type=${@dict.getType('biz_wx_api_domain')}">
+                                    <option value="">请选择</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 调用微信公众平台接口使用 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">配置备注：</label>
+                            <div class="col-sm-6">
+                                <textarea id="remark" name="remark" class="form-control edit-input" readonly rows="3" style="resize: none;" ></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6 col-sm-offset-2">
+                                <button type="button" id="editBtn" class="btn btn-success" onclick="edit();"><i class="fa fa-paste"></i> 编辑</button>
+                                <button type="button" id="cancelBtn" class="btn btn-warning hidden" onclick="cancel();"><i class="fa fa-backward"></i> 取消</button>
+                                <button type="button" id="saveBtn" data-loading-text="Loading..." class="btn btn-primary hidden" onclick="saveSetting();"><i class="fa fa-check"></i> 保存</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:include="include :: footer" />
+<script th:inline="javascript" type="text/javascript">
+    var prefix = ctx + "business/wxOffiaccountConfig";
+    var configForm = "form-wxOffiaccountConfig";
+    var config = [[${config}]];
+
+    $(function () {
+        if (config) {
+            for (var key in config) {
+                $("#" + key).val(config[key]);
+            }
+        }
+    });
+
+    /**
+     * 保存设置
+     */
+    function saveSetting() {
+        if ($.validate.form(configForm)) {
+            $.modal.confirm("确认保存设置", function() {
+                $("#cancelBtn").addClass("hidden").attr("disabled", "disabled");
+                $("#saveBtn").button('loading');
+                $.operate.post(prefix + "/add", $('#' + configForm).serialize(), function(result){
+                    if (result.code === web_status.SUCCESS) {
+                        $.modal.alert("设置保存成功", modal_status.SUCCESS, function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        $.modal.alertWarning(result.msg);
+                        $("#cancelBtn").removeClass("hidden").removeAttr("disabled");
+                        $("#saveBtn").button('reset');
+                    }
+                });
+            });
+        }
+    }
+
+    /**
+     * 开启编辑
+     */
+    function edit() {
+        $(".edit-input").removeAttr("readonly");
+        $(".edit-select").removeAttr("disabled");
+        $("#editBtn").addClass("hidden").attr("disabled", "disabled");
+        $("#saveBtn").removeClass("hidden").removeAttr("disabled");
+        $("#cancelBtn").removeClass("hidden").removeAttr("disabled");
+    }
+
+    /**
+     * 取消编辑
+     */
+    function cancel() {
+        $(".edit-input").attr("readonly", "readonly");
+        $(".edit-select").attr("disabled", "disabled");
+        $("#editBtn").removeClass("hidden").removeAttr("disabled");
+        $("#saveBtn").addClass("hidden").attr("disabled", "disabled");
+        $("#cancelBtn").addClass("hidden").attr("disabled", "disabled");
+        window.location.reload();
+    }
+
+    /**
+     * 表单验证
+     */
+    $("#" + configForm).validate({
+        focusCleanup: true,
+        rules: {
+            appid: {
+                required: true,
+                rangelength: [2, 50],
+            },
+            secret: {
+                required: true,
+                rangelength: [2, 50],
+            },
+            originalid: {
+                required: true,
+                rangelength: [2, 50],
+            },
+            encodingaeskey: {
+                rangelength: [2, 50],
+            },
+            oauthUrl: {
+                required: true,
+                rangelength: [2, 100],
+                url:true,
+            },
+            apiDomain: {
+                required: true,
+            },
+            remark: {
+                rangelength: [2, 500],
+            }
+        },
+        messages: {
+            appid: {
+                required: "请填写开发者ID",
+                rangelength: $.validator.format("开发者ID长度在 {0} 到 {1} 字之间"),
+            },
+            secret: {
+                required: "请填写开发者密码",
+                rangelength: $.validator.format("开发者密码长度在 {0} 到 {1} 字之间"),
+            },
+            originalid: {
+                required: "请填写公众号原始ID",
+                rangelength: $.validator.format("公众号原始ID长度在 {0} 到 {1} 字之间"),
+            },
+            encodingaeskey: {
+                rangelength: $.validator.format("消息加密密钥长度在 {0} 到 {1} 字之间"),
+            },
+            oauthUrl: {
+                required: "请填写网页安全授权URL",
+                rangelength: $.validator.format("网页安全授权URL长度在 {0} 到 {1} 字之间"),
+                url: "请填写有效的网址（http(s)//: xxx.xxx.xxx）"
+            },
+            apiDomain: {
+                required: "请选择公众平台接口域名",
+            },
+            remark: {
+                rangelength: $.validator.format("配置备注长度在 {0} 到 {1} 字之间"),
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

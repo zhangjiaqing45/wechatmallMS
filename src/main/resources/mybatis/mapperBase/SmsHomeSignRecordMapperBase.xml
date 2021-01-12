@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsHomeSignRecord.mapper.SmsHomeSignRecordMapper">
+    
+    <resultMap type="SmsHomeSignRecord" id="SmsHomeSignRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="nickname"    column="nickname"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectSmsHomeSignRecordVo">
+        select id, user_id, nickname, create_time from sms_home_sign_record
+    </sql>
+
+    <select id="selectSmsHomeSignRecordList" parameterType="SmsHomeSignRecord" resultMap="SmsHomeSignRecordResult">
+        <include refid="selectSmsHomeSignRecordVo"/>
+        <where>
+            <if test="userId != null"> and user_id = #{userId}</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="countSmsHomeSignRecord" parameterType="SmsHomeSignRecord" resultType="int">
+        select count(*) from sms_home_sign_record
+        <where>
+            <if test="userId != null"> and user_id = #{userId}</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSmsHomeSignRecordById" parameterType="Long" resultMap="SmsHomeSignRecordResult">
+        <include refid="selectSmsHomeSignRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSmsHomeSignRecord" parameterType="SmsHomeSignRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_home_sign_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="nickname != null  and nickname != ''">nickname,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="nickname != null  and nickname != ''">#{nickname},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSmsHomeSignRecord" parameterType="SmsHomeSignRecord">
+        update sms_home_sign_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="nickname != null  and nickname != ''">nickname = #{nickname},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsHomeSignRecordById" parameterType="Long">
+        <!-- update sms_home_sign_record set del_flag = '1' where id = #{id} -->
+        delete from sms_home_sign_record where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsHomeSignRecordByIds" parameterType="String">
+        update sms_home_sign_record set del_flag = '1' where id in
+        <!-- delete from sms_home_sign_record where id in  -->
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

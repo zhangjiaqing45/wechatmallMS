@@ -1,0 +1,36 @@
+
+F
+java:S2629\"$Invoke method(s) only conditionally.(Ú§¾éüÿÿÿÿ8–†–‚å.
+f
+java:S1192—"HDefine a constant instead of duplicating this literal "resPath" 3 times.(î²³ª8´ã€èâ.
+O	java:S106‘"9Replace this use of System.out or System.err by a logger.(Ø‡ßú
+d
+java:S2259¿"AA "NullPointerException" could be thrown; "rsp" is nullable here.(Ú§¾éüÿÿÿÿ8´ã€èâ.
+O	java:S106™"9Replace this use of System.out or System.err by a logger.(ºŸÄ
+P
+java:S1854J":Remove this useless assignment to local variable "member".(Ò„ï
+n	java:S117½"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ªãë©8´ã€èâ.
+Y	java:S125±"<This block of commented-out lines of code should be removed.(ÿ±¨Ñ8²¿€èâ.
+^	java:S125Å"<This block of commented-out lines of code should be removed.(‹œµºüÿÿÿÿ8´ã€èâ.
+N
+java:S1874+"3Remove this use of "description"; it is deprecated.(½öüˆúÿÿÿÿ
+m	java:S117Z"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ªãë©8ÜÊÿçâ.
+t
+java:S3776F"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(ş¬×åøÿÿÿÿ8ÜÊÿçâ.
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(êØİ´
+Q
+java:S1854¦":Remove this useless assignment to local variable "member".(Ò„ï
+R	java:S125«"<This block of commented-out lines of code should be removed.(²ô‚Ó
+W	java:S125"<This block of commented-out lines of code should be removed.(ò¿É›şÿÿÿÿ
+<
+java:S11702"!Make this final field static too.(ß¦å°ÿÿÿÿÿ
+i
+java:S3252H"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(ö’ö™8–†–‚å.
+]	java:S125b"<This block of commented-out lines of code should be removed.(‹œµºüÿÿÿÿ8ÜÊÿçâ.
+c
+java:S2259\"AA "NullPointerException" could be thrown; "rsp" is nullable here.(Ú§¾éüÿÿÿÿ8ÜÊÿçâ.
+u
+java:S3776¢"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(Â§ÊŒşÿÿÿÿ8´ã€èâ.
+G
+java:S2629¿"$Invoke method(s) only conditionally.(Ú§¾éüÿÿÿÿ8–†–‚å.
+^	java:S125ê"<This block of commented-out lines of code should be removed.(ò¿É›şÿÿÿÿ8´ã€èâ.

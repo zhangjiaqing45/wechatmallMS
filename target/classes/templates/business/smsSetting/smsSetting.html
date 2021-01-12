@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('营销设置')" />
+    <style type="text/css">
+        label.error {
+            position: absolute;
+            right: 35px;
+            top: 10px;
+            color: #ef392b;
+            font-size: 12px;
+            z-index: 99;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <span class="label label-primary pull-right">设置</span>
+                    <h5>营销活动</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m" id="form-smsSetting">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">优惠券：</label>
+                            <div class="col-sm-5">
+                                <select id="couponStatus" name="couponStatus" class="form-control edit-select" disabled th:with="pos=${@custom.commonUseStatus()}">
+                                    <option value="">请选择</option>
+                                    <option th:each="p: ${pos}" th:text="${p.value}" th:value="${p.key}"></option>
+                                </select>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 优惠券启用后：店铺可以发布优惠券、用户可以查看和领取优惠券 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">团购活动：</label>
+                            <div class="col-sm-5">
+                                <select id="groupStatus" name="groupStatus" class="form-control edit-select" disabled th:with="pos=${@custom.commonUseStatus()}">
+                                    <option value="">请选择</option>
+                                    <option th:each="p: ${pos}" th:text="${p.value}" th:value="${p.key}"></option>
+                                </select>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 团购活动启用后：店铺可以发布团购商品、用户可以参与团购活动 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">签到活动：</label>
+                            <div class="col-sm-5">
+                                <select id="signStatus" name="signStatus" class="form-control edit-select" disabled th:with="pos=${@custom.commonUseStatus()}">
+                                    <option value="">请选择</option>
+                                    <option th:each="p: ${pos}" th:text="${p.value}" th:value="${p.key}"></option>
+                                </select>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 签到活动启用后：用户可以参与签到活动 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">限时秒杀：</label>
+                            <div class="col-sm-5">
+                                <select id="flashStatus" name="flashStatus" class="form-control edit-select" disabled th:with="pos=${@custom.commonUseStatus()}">
+                                    <option value="">请选择</option>
+                                    <option th:each="p: ${pos}" th:text="${p.value}" th:value="${p.key}"></option>
+                                </select>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 限时秒杀启用后：店铺可以发布秒杀活动、用户可以参与限时秒杀 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label is-required">积分商城：</label>
+                            <div class="col-sm-5">
+                                <select id="integralStatus" name="integralStatus" class="form-control edit-select" disabled th:with="pos=${@custom.commonUseStatus()}">
+                                    <option value="">请选择</option>
+                                    <option th:each="p: ${pos}" th:text="${p.value}" th:value="${p.key}"></option>
+                                </select>
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 积分商城启用后：平台可以发布积分商品、用户可以兑换积分商品 </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-5 col-sm-offset-2" >
+                                <button type="button" id="editBtn" class="btn btn-success" onclick="edit();"><i class="fa fa-paste"></i> 编辑</button>
+                                <button type="button" id="cancelBtn" class="btn btn-warning hidden" onclick="cancel();"><i class="fa fa-backward"></i> 取消</button>
+                                <button type="button" id="saveBtn" data-loading-text="Loading..." class="btn btn-primary hidden" onclick="saveSetting();"><i class="fa fa-check"></i> 保存</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: layui-all-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "business/smsSetting";
+    var setForm = "form-smsSetting";
+    var smsSetting = [[${smsSetting}]];
+
+    $(function () {
+        if (smsSetting) {
+            for (var key in smsSetting) {
+                $("#" + setForm + " #" + key).val(smsSetting[key]);
+            }
+        }
+    });
+
+    /**
+     * 保存设置
+     */
+    function saveSetting() {
+        if ($.validate.form(setForm)) {
+            $("#cancelBtn").addClass("hidden").attr("disabled", "disabled");
+            $("#saveBtn").button('loading');
+            $.operate.post(prefix + "/add", $('#' + setForm).serialize(), function(result){
+                if (result.code === web_status.SUCCESS) {
+                    $.modal.alert("设置保存成功", modal_status.SUCCESS, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    $.modal.alertWarning(result.msg);
+                    $("#cancelBtn").removeClass("hidden").removeAttr("disabled");
+                    $("#saveBtn").button('reset');
+                }
+            });
+        }
+    }
+
+    /**
+     * 开启编辑
+     */
+    function edit() {
+        $(".edit-select").removeAttr("disabled");
+        $("#editBtn").addClass("hidden").attr("disabled", "disabled");;
+        $("#saveBtn").removeClass("hidden").removeAttr("disabled");
+        $("#cancelBtn").removeClass("hidden").removeAttr("disabled");
+    }
+
+    /**
+     * 取消编辑
+     */
+    function cancel() {
+        $(".edit-select").attr("disabled", "disabled");
+        $("#editBtn").removeClass("hidden").removeAttr("disabled");
+        $("#saveBtn").addClass("hidden").attr("disabled", "disabled");
+        $("#cancelBtn").addClass("hidden").attr("disabled", "disabled");
+        window.location.reload();
+    }
+    
+    /**
+     * 表单验证
+     */
+    $("#" + setForm).validate({
+        focusCleanup: true,
+        rules: {
+            couponStatus: {
+                required: true,
+            },
+            groupStatus: {
+                required: true,
+            },
+            signStatus: {
+                required: true,
+            },
+            flashStatus: {
+                required: true,
+            },
+            integralStatus: {
+                required: true,
+            }
+        },
+        messages: {
+            couponStatus: {
+                required: "请设置优惠券",
+            },
+            groupStatus: {
+                required: "请设置团购活动",
+            },
+            signStatus: {
+                required: "请设置见到活动",
+            },
+            flashStatus: {
+                required: "请设置限时秒杀",
+            },
+            integralStatus: {
+                required: "请设置积分商城",
+            }
+        }
+    });
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.wxSettings.mapper.WxSettingsMapper">
+    
+    <resultMap type="WxSettings" id="WxSettingsResult">
+        <result property="id"    column="id"    />
+        <result property="prompt"    column="prompt"    />
+        <result property="qrcode"    column="qrcode"    />
+        <result property="serviceTel"    column="service_tel"    />
+        <result property="shareImg"    column="share_img"    />
+        <result property="shareTitle"    column="share_title"    />
+        <result property="shareDesc"    column="share_desc"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectWxSettingsVo">
+        select id, prompt, qrcode, service_tel, share_img, share_title, share_desc, create_by, create_time, update_by, update_time, remark, del_flag from wx_settings
+    </sql>
+    
+    <select id="selectWxSettingsRecent" resultMap="WxSettingsResult">
+        <include refid="selectWxSettingsVo"/>
+        order by id desc limit 1
+    </select>
+
+    <!--
+    <select id="selectWxSettingsList" parameterType="WxSettings" resultMap="WxSettingsResult">
+        <include refid="selectWxSettingsVo"/>
+        <where>
+
+        </where>
+    </select>
+   -->
+
+    <!--
+    <select id="selectWxSettingsById" parameterType="Long" resultMap="WxSettingsResult">
+        <include refid="selectWxSettingsVo"/>
+        where id = #{id}
+
+    </select>
+    -->
+
+    <insert id="insertWxSettings" parameterType="WxSettings" useGeneratedKeys="true" keyProperty="id">
+        insert into wx_settings
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="prompt != null  and prompt != ''">prompt,</if>
+            <if test="qrcode != null  and qrcode != ''">qrcode,</if>
+            <if test="serviceTel != null  and serviceTel != ''">service_tel,</if>
+            <if test="shareImg != null  and shareImg != ''">share_img,</if>
+            <if test="shareTitle != null  and shareTitle != ''">share_title,</if>
+            <if test="shareDesc != null  and shareDesc != ''">share_desc,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="prompt != null  and prompt != ''">#{prompt},</if>
+            <if test="qrcode != null  and qrcode != ''">#{qrcode},</if>
+            <if test="serviceTel != null  and serviceTel != ''">#{serviceTel},</if>
+            <if test="shareImg != null  and shareImg != ''">#{shareImg},</if>
+            <if test="shareTitle != null  and shareTitle != ''">#{shareTitle},</if>
+            <if test="shareDesc != null  and shareDesc != ''">#{shareDesc},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWxSettings" parameterType="WxSettings">
+        update wx_settings
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="prompt != null  and prompt != ''">prompt = #{prompt},</if>
+            <if test="qrcode != null  and qrcode != ''">qrcode = #{qrcode},</if>
+            <if test="serviceTel != null  and serviceTel != ''">service_tel = #{serviceTel},</if>
+            <if test="shareImg != null  and shareImg != ''">share_img = #{shareImg},</if>
+            <if test="shareTitle != null  and shareTitle != ''">share_title = #{shareTitle},</if>
+            <if test="shareDesc != null  and shareDesc != ''">share_desc = #{shareDesc},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <!--
+    <delete id="deleteWxSettingsById" parameterType="Long">
+        delete from wx_settings where id = #{id}
+    </delete>
+    -->
+    <!--
+    <delete id="deleteWxSettingsByIds" parameterType="String">
+        delete from wx_settings where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    -->
+</mapper>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('推荐商品列表')"/>
+    <th:block th:include="include :: bootstrap-editable-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li th:if="${isAdmin}">
+                            <p>店铺：</p>
+                            <input type="hidden" name="shopId"/>
+                            <input type="text" name="shop" readonly placeholder="请选择店铺" onclick="selectShop();" />
+                        </li>
+                        <li>
+                            <p>商品货号：</p>
+                            <input type="text" name="productSn"/>
+                        </li>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="productName"/>
+                        </li>
+                        <li>
+                            <p>推荐状态：</p>
+                            <select name="status" th:with="type=${@dict.getType('biz_status')}" th:placeholder="全部">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>上架状态：</p>
+                            <select name="publishStatus" th:with="type=${@custom.allPublicStatus()}">
+                                <option value="">请选择</option>
+                                <option th:each="dict : ${type}" th:text="${dict.value}" th:value="${dict.key}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="boutiqueReset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="boutiqueAdd()" shiro:hasPermission="business:smsHomeRecommendProductBoutique:add">
+                <i class="fa fa-plus"></i> 添加商品
+            </a>
+            <!--                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="business:smsHomeRecommendProductBoutique:edit">-->
+            <!--                    <i class="fa fa-edit"></i> 修改-->
+            <!--                </a>-->
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="business:smsHomeRecommendProductBoutique:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <!--                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:smsHomeRecommendProductBoutique:export">-->
+            <!--                    <i class="fa fa-download"></i> 导出-->
+            <!--                 </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: bootstrap-table-editable-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:smsHomeRecommendProductBoutique:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:smsHomeRecommendProductBoutique:remove')}]];
+    var prefix = ctx + "business/smsHomeRecommendProductBoutique";
+    var prefixComm = ctx + "business/smsHomeRecommendCommon";
+    var prefixShop = ctx + "business/bizShopInfo";
+    var sortRexExp = ftConsts.regExp.sort;
+    var recommend = [[${recommend}]];
+    var recommendType = [[${recommendType}]];
+    var publishStatus = [[${@custom.allPublicStatusPlus()}]];
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            onEditableSave: onEditableSave,
+            modalName: "精品商品",
+            sortName: "createTime",
+            sortOrder: "desc",
+            columns: [
+                {
+                    checkbox: true
+                },
+                {
+                    field: 'id',
+                    title: '主键',
+                    visible: false
+                },
+                {
+                    field: 'id',
+                    title: '热门商品',
+                    visible: false
+                },
+                {
+                    field: 'productSn',
+                    title: '商品货号'
+                },
+                {
+                    field: 'productName',
+                    title: '商品名称'
+                },
+                {
+                    field: 'brandName',
+                    title: '品牌'
+                },
+                {
+                    field: 'productCategoryName',
+                    title: '分类'
+                },
+                {
+                    field: 'publishStatus',
+                    title: '上架状态',
+                    formatter: function(value, row, index) {
+                        if (publishStatus[value]) {
+                            return $.common.sprintf("<span class='badge badge-%s'>%s</span>", publishStatus[value].style, publishStatus[value].desc);
+                        }
+                    }
+                },
+                {
+                    field: 'sort',
+                    title: '排序',
+                    sortable: true,
+                    editable: {
+                        type: 'text',
+                        title: '排序(数字越小越靠前)',
+                        emptytext: "0",
+                        validate: function (value) {
+                            if (!(sortRexExp.test(value))) {
+                                return '请输入5位以内正整数';
+                            }
+                        }
+                    }
+                },
+                {
+                    field: 'status',
+                    title: '是否推荐',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function onEditableSave(field, row, oldValue, $el) {
+        $.operate.post(prefix + "/changeSort", {"id": row.id, "sort": row[field]}, function (result) {
+            if (result.code === web_status.SUCCESS) {
+                $.modal.msgSuccess(result.msg);
+            } else {
+                $el.html(oldValue);
+                $.modal.msgWarning(result.msg);
+            }
+        });
+    }
+
+    /* 状态显示 */
+    function statusTools(row) {
+        if (row.status == recommend) {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="cancelRecommend(\'' + row.id + '\',\'' + row.productName + '\')"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="setRecommend(\'' + row.id + '\',\'' + row.productName + '\')"></i> ';
+        }
+    }
+
+    /* 停用 */
+    function cancelRecommend(id, productName) {
+        $.modal.confirm("确认更改商品【" + productName + "】的推荐状态", function () {
+            $.operate.post(prefix + "/cancelRecommend", {"id": id});
+        })
+    }
+
+    /* 启用 */
+    function setRecommend(id, productName) {
+        $.modal.confirm("确认更改商品【" + productName + "】的推荐状态", function () {
+            $.operate.post(prefix + "/setRecommend", {"id": id});
+        })
+    }
+
+    /**
+     * 选择推荐商品
+     */
+    function boutiqueAdd(){
+        $.modal.open("选择热门商品", prefixComm + "/select/" + recommendType);
+    }
+
+    /**
+     * 选择商品回调
+     * @param productIds
+     */
+    function recommendSelectCallback(productIds) {
+        $.operate.post(prefix + "/batchAdd", {ids: productIds});
+    }
+
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='shopId']").val(shop.id);
+            $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+
+    function boutiqueReset() {
+        $("input[name='shopId']").val("");
+        $.form.reset();
+    }
+</script>
+</body>
+</html>

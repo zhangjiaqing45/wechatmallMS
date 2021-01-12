@@ -1,0 +1,79 @@
+
+n	java:S117—"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ªô’Õ8¶ŞĞÅê.
+Z
+java:S1854ú"<Remove this useless assignment to local variable "allPrice".(¼æÕã8¶ŞĞÅê.
+V	java:S106Õ"9Replace this use of System.out or System.err by a logger.(ÿ¸¦à8à×Úí.
+J
+java:S1612¨",Replace this lambda with a method reference.(‚ƒî8¶ŞĞÅê.
+^	java:S125Ø"<This block of commented-out lines of code should be removed.(Äµïıÿÿÿÿ8¶ŞĞÅê.
+^	java:S125‡"<This block of commented-out lines of code should be removed.(ˆªÄûÿÿÿÿ8¶ŞĞÅê.
+T	java:S106®"9Replace this use of System.out or System.err by a logger.(¾îà’üÿÿÿÿ
+p
+java:S3776®"RRefactor this method to reduce its Cognitive Complexity from 24 to the 15 allowed.(‚’Äè8„ìßÛí.
+n	java:S117£"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Á³Çõ8¶ŞĞÅê.
+n	java:S117—"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ªô’Õ8¶ŞĞÅê.
+a
+java:S1117¢">Rename "orderRedis" which hides the field declared at line 67.(¦­ÿÿÿÿÿ8à×Úí.
+?
+java:S1116³"Remove this empty statement.(Åñ­õşÿÿÿÿ8¶ŞĞÅê.
+O
+java:S1602À",Remove useless curly braces around statement(§¢ôÙüÿÿÿÿ8¶ŞĞÅê.
+J
+java:S1612—",Replace this lambda with a method reference.(ªô’Õ8¶ŞĞÅê.
+n	java:S117¯"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Á³Çõ8¶ŞĞÅê.
+V	java:S106ä"9Replace this use of System.out or System.err by a logger.(ñğÑ8¶ŞĞÅê.
+n
+java:S3252"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(¶‚Åİşÿÿÿÿ8¶ŞĞÅê.
+[	java:S106Š"9Replace this use of System.out or System.err by a logger.(°ÌÖÆşÿÿÿÿ8¶ŞĞÅê.
+U
+java:S1854Ô"8Remove this useless assignment to local variable "anew".(¡ÕÅ 8à×Úí.
+I
+java:S1481Ş"&Remove this unused "p" local variable.(—ªÉ‰ıÿÿÿÿ8à×Úí.
+n
+java:S3252Õ"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(ÒÉš¶ıÿÿÿÿ8¶ŞĞÅê.
+s	java:S117ƒ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(íÙ©—şÿÿÿÿ8¶ŞĞÅê.
+g	java:S117µ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¶¦ 
+O
+java:S1612œ",Replace this lambda with a method reference.(¥®Œ—ûÿÿÿÿ8¶ŞĞÅê.
+^	java:S125ú"<This block of commented-out lines of code should be removed.(µôŞ÷ùÿÿÿÿ8¶ŞĞÅê.
+V	java:S106º"9Replace this use of System.out or System.err by a logger.(®Ù™³8„ìßÛí.
+F
+java:S1481Ô")Remove this unused "anew" local variable.(¡ÕÅ 8à×Úí.
+n	java:S117¯"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Á³Çõ8¶ŞĞÅê.
+^	java:S125ß"<This block of commented-out lines of code should be removed.(ñÕˆéùÿÿÿÿ8à×Úí.
+b
+java:S1854Á"?Remove this useless assignment to local variable "templateIds".(ÆÇÄ™üÿÿÿÿ8¶ŞĞÅê.
+V	java:S106ˆ"9Replace this use of System.out or System.err by a logger.(ƒóâÓ8¶ŞĞÅê.
+U
+java:S3655—"7Call "Optional#isPresent()" before accessing the value.(ªô’Õ8¶ŞĞÅê.
+h
+java:S3252à"JUse static access with "org.apache.commons.lang3.StringUtils" for "EMPTY".(©ºĞ8„ìßÛí.
+f
+java:S5361Á"HReplace this call to "replaceAll()" by a call to the "replace()" method.(Üù™‡8¶ŞĞÅê.
+`
+java:S3252º"JUse static access with "org.apache.commons.lang3.StringUtils" for "EMPTY".(¿ñÖ`
+Z
+java:S3655ƒ"7Call "Optional#isPresent()" before accessing the value.(íÙ©—şÿÿÿÿ8¶ŞĞÅê.
+S
+java:S1481Á"0Remove this unused "templateIds" local variable.(ÆÇÄ™üÿÿÿÿ8¶ŞĞÅê.
+M
+java:S1481Ö"/Remove this unused "templateId" local variable.(ë¨®Ú8¶ŞĞÅê.
+Y	java:S125Ñ"<This block of commented-out lines of code should be removed.(âÌûŸ8¶ŞĞÅê.
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Çè¿ˆ
+I
+java:S1481"&Remove this unused "p" local variable.(—ªÉ‰ıÿÿÿÿ8à×Úí.
+X
+java:S1854"5Remove this useless assignment to local variable "p".(—ªÉ‰ıÿÿÿÿ8à×Úí.
+n	java:S117£"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Á³Çõ8¶ŞĞÅê.
+Z
+java:S3655©"7Call "Optional#isPresent()" before accessing the value.(£’‚ÿÿÿÿÿ8¶ŞĞÅê.
+X
+java:S1854Ş"5Remove this useless assignment to local variable "p".(—ªÉ‰ıÿÿÿÿ8à×Úí.
+[	java:S106„"9Replace this use of System.out or System.err by a logger.(µÓ“³şÿÿÿÿ8¶ŞĞÅê.
+s	java:S117ƒ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(íÙ©—şÿÿÿÿ8¶ŞĞÅê.
+O
+java:S1612˜",Replace this lambda with a method reference.(ĞÂ¶øşÿÿÿÿ8ííÏÅê.
+i
+java:S3252“"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(Åµõ¥8¶ŞĞÅê.
+Z
+java:S3655"7Call "Optional#isPresent()" before accessing the value.(£’‚ÿÿÿÿÿ8¶ŞĞÅê.

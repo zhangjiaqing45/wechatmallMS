@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsFlashPromotionProduct.mapper.SmsFlashPromotionProductMapper">
+    
+    <resultMap type="SmsFlashPromotionProduct" id="SmsFlashPromotionProductResult">
+        <result property="id"    column="id"    />
+        <result property="flashPromotionId"    column="flash_promotion_id"    />
+        <result property="flashPromotionSessionId"    column="flash_promotion_session_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productSn"    column="product_sn"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productPic"    column="product_pic"    />
+        <result property="minPrice"    column="min_price"    />
+        <result property="sales"    column="sales"    />
+        <result property="sort"    column="sort"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectSmsFlashPromotionProductVo">
+        select id, flash_promotion_id, flash_promotion_session_id, product_id, product_sn, product_name, product_pic, min_price, sales, sort, status from sms_flash_promotion_product
+    </sql>
+
+    <select id="selectSmsFlashPromotionProductList" parameterType="SmsFlashPromotionProduct" resultMap="SmsFlashPromotionProductResult">
+        <include refid="selectSmsFlashPromotionProductVo"/>
+        <where>
+            <if test="flashPromotionId != null "> and flash_promotion_id = #{flashPromotionId}</if>
+            <if test="flashPromotionSessionId != null "> and flash_promotion_session_id = #{flashPromotionSessionId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="minPrice != null "> and min_price = #{minPrice}</if>
+            <if test="sales != null "> and sales = #{sales}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="countSmsFlashPromotionProduct" parameterType="SmsFlashPromotionProduct" resultType="int">
+        select count(*) from sms_flash_promotion_product
+        <where>
+            <if test="flashPromotionId != null "> and flash_promotion_id = #{flashPromotionId}</if>
+            <if test="flashPromotionSessionId != null "> and flash_promotion_session_id = #{flashPromotionSessionId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="minPrice != null "> and min_price = #{minPrice}</if>
+            <if test="sales != null "> and sales = #{sales}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="checkSmsFlashPromotionProductUnique" parameterType="SmsFlashPromotionProduct" resultType="int">
+        select count(*) from sms_flash_promotion_product
+        <where>
+            <if test="id != null"> and id &lt;&gt; #{id}</if>
+            <if test="flashPromotionId != null "> and flash_promotion_id = #{flashPromotionId}</if>
+            <if test="flashPromotionSessionId != null "> and flash_promotion_session_id = #{flashPromotionSessionId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productSn != null  and productSn != ''"> and product_sn = #{productSn}</if>
+            <if test="productName != null  and productName != ''"> and product_name = #{productName}</if>
+            <if test="productPic != null  and productPic != ''"> and product_pic = #{productPic}</if>
+            <if test="minPrice != null "> and min_price = #{minPrice}</if>
+            <if test="sales != null "> and sales = #{sales}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+
+    <select id="selectSmsFlashPromotionProductById" parameterType="Long" resultMap="SmsFlashPromotionProductResult">
+        <include refid="selectSmsFlashPromotionProductVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSmsFlashPromotionProduct" parameterType="SmsFlashPromotionProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_flash_promotion_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="flashPromotionId != null ">flash_promotion_id,</if>
+            <if test="flashPromotionSessionId != null ">flash_promotion_session_id,</if>
+            <if test="productId != null ">product_id,</if>
+            <if test="productSn != null  and productSn != ''">product_sn,</if>
+            <if test="productName != null  and productName != ''">product_name,</if>
+            <if test="productPic != null  and productPic != ''">product_pic,</if>
+            <if test="minPrice != null ">min_price,</if>
+            <if test="sales != null ">sales,</if>
+            <if test="sort != null ">sort,</if>
+            <if test="status != null  and status != ''">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="flashPromotionId != null ">#{flashPromotionId},</if>
+            <if test="flashPromotionSessionId != null ">#{flashPromotionSessionId},</if>
+            <if test="productId != null ">#{productId},</if>
+            <if test="productSn != null  and productSn != ''">#{productSn},</if>
+            <if test="productName != null  and productName != ''">#{productName},</if>
+            <if test="productPic != null  and productPic != ''">#{productPic},</if>
+            <if test="minPrice != null ">#{minPrice},</if>
+            <if test="sales != null ">#{sales},</if>
+            <if test="sort != null ">#{sort},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSmsFlashPromotionProduct" parameterType="SmsFlashPromotionProduct">
+        update sms_flash_promotion_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="flashPromotionId != null ">flash_promotion_id = #{flashPromotionId},</if>
+            <if test="flashPromotionSessionId != null ">flash_promotion_session_id = #{flashPromotionSessionId},</if>
+            <if test="productId != null ">product_id = #{productId},</if>
+            <if test="productSn != null  and productSn != ''">product_sn = #{productSn},</if>
+            <if test="productName != null  and productName != ''">product_name = #{productName},</if>
+            <if test="productPic != null  and productPic != ''">product_pic = #{productPic},</if>
+            <if test="minPrice != null ">min_price = #{minPrice},</if>
+            <if test="sales != null ">sales = #{sales},</if>
+            <if test="sort != null ">sort = #{sort},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsFlashPromotionProductById" parameterType="Long">
+        delete from sms_flash_promotion_product where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsFlashPromotionProductByIds" parameterType="String">
+        delete from sms_flash_promotion_product where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

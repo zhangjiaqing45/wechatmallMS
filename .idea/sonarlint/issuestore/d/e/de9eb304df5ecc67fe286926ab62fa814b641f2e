@@ -1,0 +1,30 @@
+
+h
+java:S3252b"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(¸çÅ8óó¿å.
+f	java:S117["QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ô”Ş
+I
+java:S1874("3Remove this use of "description"; it is deprecated.(Èµœê
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Öüÿèüÿÿÿÿ
+E
+java:S1128"*Remove this unused import 'java.util.Map'.(¼è½Òşÿÿÿÿ
+\
+java:S2259K"AA "NullPointerException" could be thrown; "rsp" is nullable here.(¹ÑŸüÿÿÿÿ
+\
+java:S2259]"AA "NullPointerException" could be thrown; "rsp" is nullable here.(¹ÑŸüÿÿÿÿ
+m
+java:S3252c"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(æ¿Ë½úÿÿÿÿ8óó¿å.
+f	java:S117I"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ô”Ş
+a
+java:S1192R"KDefine a constant instead of duplicating this literal "couponList" 3 times.(Å¸îí
+7
+java:S1170:"!Make this final field static too.(Ø›
+J
+java:S3740`"/Provide the parametrized type for this generic.(»¨×áÿÿÿÿÿ
+h
+java:S3252O"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(¸çÅ8óó¿å.
+K
+java:S3740"/Provide the parametrized type for this generic.(»¨×áÿÿÿÿÿ
+k
+java:S1128"PRemove this unused import 'com.fante.project.business.txmap.domain.GeocoderRsp'.(˜»Óûÿÿÿÿ
+m
+java:S3252P"KUse static access with "org.apache.commons.lang3.StringUtils" for "equals".(æ¿Ë½úÿÿÿÿ8óó¿å.

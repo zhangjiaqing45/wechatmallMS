@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsIntegralLog.mapper.PmsIntegralLogMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="PmsIntegralLogResultExt" type="扩展类全包名" extends="PmsIntegralLogResult">
+
+    </resultMap>
+     -->
+    <!--查询积分兑换记录-->
+    <select id="getList" parameterType="PmsIntegralLog" resultMap="PmsIntegralLogResult">
+        <include refid="selectPmsIntegralLogVo"/>
+        <where>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="integral != null "> and integral = #{integral}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    <!--(app) 获取会员积分记录-->
+    <select id="getMemberList"  parameterType="PmsIntegralLog" resultMap="PmsIntegralLogResult">
+        <include refid="selectPmsIntegralLogVo"/>
+        <where>
+            member_id = #{memberId}
+            and del_flag = '0'
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+
+    <sql id="selectJoinVo">
+        select
+               log.id, log.member_id, log.integral, log.`name`, log.type,
+               log.create_by, log.create_time, log.update_by, log.update_time, log.remark, log.del_flag,
+               u.phone, u.nickname, u.headimgurl, u.openid, u.role_type, u.shop_id
+        from pms_integral_log log
+                 inner join ums_member u on u.id = log.member_id
+    </sql>
+
+
+    <!--查询积分兑换记录-->
+    <select id="selectJoinList"
+            parameterType="com.fante.project.business.pmsIntegralLog.domain.PmsIntegralLogDTO"
+            resultType="com.fante.project.business.pmsIntegralLog.domain.PmsIntegralLogDTO">
+        <include refid="selectJoinVo"/>
+        <where>
+            log.del_flag = '0'
+            <if test="memberId != null "> and log.member_id = #{memberId}</if>
+            <if test="integral != null "> and log.integral = #{integral}</if>
+            <if test="name != null  and name != ''"> and log.name like concat('%', #{name}, '%')</if>
+            <if test="type != null  and type != ''"> and log.type = #{type}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(log.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(log.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+            <if test="nickname != null  and nickname != ''"> and u.nickname like concat('%', #{nickname}, '%')</if>
+            <if test="openid != null  and openid != ''"> and u.openid = #{openid}</if>
+            <if test="roleType != null  and roleType != ''"> and u.role_type = #{roleType}</if>
+            <if test="shopId != null "> and u.shop_id = #{shopId}</if>
+        </where>
+    </select>
+
+
+</mapper>

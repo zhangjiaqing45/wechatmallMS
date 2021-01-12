@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改积分商品')" />
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: jquery-setSetp-css"/>
+    <th:block th:include="include :: summernote-css"/>
+    <style type="text/css">
+        input.error, select.error, textarea.error {
+            background-color: #fff;
+            border-color: #e5e6e7;
+            color: #c00;
+        }
+        textarea {
+            resize: none;
+        }
+    </style>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-pmsIntegralProduct-edit" th:object="${pmsIntegralProduct}">
+        <!--<input name="shopId" class="form-control" type="hidden">-->
+        <!--<input name="productSn" class="form-control" type="hidden">-->
+        <!--<input name="brandId" class="form-control" type="hidden">-->
+        <!--<input name="productAttributeCategoryId" class="form-control" type="hidden">-->
+        <!--<input name="brandName" class="form-control" type="hidden">-->
+        <!--<input name="sale" class="form-control" type="hidden">-->
+        <!--<input name="paramData" class="form-control" type="hidden">-->
+        <!--<input name="productCategoryName" class="form-control" type="hidden">-->
+        <!--<input name="keywords" class="form-control" type="hidden">-->
+        <input name="id" th:field="*{id}" type="hidden">
+        <input name="publishStatus" th:field="*{id}" type="hidden">
+        <!-- 菜单及分页容器-->
+        <div class="stepCont ">
+            <!-- 菜单导航显示-->
+            <div class="ystep-container ystep-lg ystep-blue"></div>
+            <!--分页容器-->
+            <div class="pageCont">
+                <div id="page1" class="stepPage row">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">商品分类：</label>
+                        <div class="col-sm-4">
+                            <select name="productCategoryId" th:field="*{productCategoryId}" class="form-control" th:with="type=${@custom.pmsIntegralProductCategories()}" required>
+                                <option value="">请选择</option>
+                                <option th:each="dict : ${type}" th:text="${dict.name}" th:value="${dict.id}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">商品名称：</label>
+                        <div class="col-sm-7">
+                            <input name="name" th:field="*{name}" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">副标题：</label>
+                        <div class="col-sm-7">
+                            <input name="subTitle" th:field="*{subTitle}" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">商品备注：</label>
+                        <div class="col-sm-7">
+                            <textarea name="description" class="form-control" rows="2" >[[*{description}]]</textarea>
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 100字以内</span>
+                        </div>
+                    </div>
+                    <!--<div class="form-group">-->
+                        <!--<label class="col-sm-3 control-label is-required">上架状态：</label>-->
+                        <!--<div class="col-sm-4">-->
+                            <!--<select name="publishStatus" th:field="*{publishStatus}" class="form-control m-b" th:with="type=${@custom.allPublicStatus()}">-->
+                                <!--<option value="">请选择</option>-->
+                                <!--<option th:each="dict : ${type}" th:text="${dict.value}" th:value="${dict.key}"></option>-->
+                            <!--</select>-->
+                            <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 上架后用户方可查看</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="form-group">-->
+                        <!--<label class="col-sm-3 control-label is-required">市场价：</label>-->
+                        <!--<div class="col-sm-7">-->
+                            <!--<div class="input-group" >-->
+                                <!--<input name="originalPrice" th:field="*{originalPrice}" class="form-control" type="text" autocomplete="off">-->
+                                <!--<span class="input-group-addon">元</span>-->
+                            <!--</div>-->
+                            <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 商品展示价格</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">兑换积分：</label>
+                        <div class="col-sm-7">
+                            <div class="input-group" >
+                                <input name="price" th:field="*{price}" class="form-control" type="text"  autocomplete="off">
+                                <span class="input-group-addon">积分</span>
+                            </div>
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 兑换商品所需要的积分数量</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">商品库存：</label>
+                        <div class="col-sm-7">
+                            <input name="stock" th:field="*{stock}" class="form-control" type="text" autocomplete="off">
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 商品实际可用于售卖的数量</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">库存预警值：</label>
+                        <div class="col-sm-7">
+                            <input name="lowStock" th:field="*{lowStock}" class="form-control" type="text" value="0" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">排序：</label>
+                        <div class="col-sm-7">
+                            <input name="sort" th:field="*{sort}" class="form-control" type="text" value="99999" autocomplete="off">
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 数字越小排序越靠前</span>
+                        </div>
+                    </div>
+                    <!--<div class="form-group">-->
+                        <!--<label class="col-sm-3 control-label is-required">商品运费：</label>-->
+                        <!--<div class="col-sm-7">-->
+                            <!--<div class="input-group" >-->
+                                <!--<input name="feightFee" th:field="*{feightFee}"  class="form-control" type="text"  value="0" autocomplete="off">-->
+                                <!--<span class="input-group-addon">元</span>-->
+                            <!--</div>-->
+                            <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 买家承担的运费</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </div>
+                <div id="page2" class="stepPage row">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">详情页标题：</label>
+                        <div class="col-sm-7">
+                            <input name="detailTitle" th:field="*{detailTitle}" class="form-control" type="text">
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 50字以内</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">详情页描述：</label>
+                        <div class="col-sm-7">
+                            <textarea name="detailDesc" th:field="*{detailDesc}"  class="form-control" rows="2" ></textarea>
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 300字以内</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">商品主图：</label>
+                        <div class="col-sm-7">
+                            <input name="pic" th:field="*{pic}" class="form-control" type="hidden">
+                            <ul class="ft-uploader__files" id="picImg" style="margin-top: 10px;" >
+                                <!-- 图片展示 -->
+                            </ul>
+                            <div class="ft-uploader__input-box" id="picBox">
+                                <button id="picBtn" type="button" class="ft-uploader__input" ></button>
+                            </div>
+                            <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> 商品列表中显示 </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">商品相册：</label>
+                        <div class="col-sm-7">
+                            <input name="albumPics" th:field="*{albumPics}" class="form-control" type="hidden">
+                            <ul class="ft-uploader__files" id="albumPicsImg" style="margin-top: 10px;" >
+                                <!-- 图片展示 -->
+                            </ul>
+                            <div class="ft-uploader__input-box" id="albumPicsBox">
+                                <button id="albumPicsBtn" type="button" class="ft-uploader__input" ></button>
+                            </div>
+                            <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> 商品详情中轮播图 </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">详情网页内容：</label>
+                        <div class="col-sm-7">
+                            <input name="detailHtml" th:field="*{detailHtml}" class="form-control" type="hidden">
+                            <div class="summernote"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="page3" class="stepPage row">
+                    <div class="article-title">
+                        <div class="ibox text-center col-sm-6 col-md-offset-3">
+                            <h1 class="ibox-title">积分商品修改完成！</h1>
+                            <div class="ibox-content">
+                                <span style="color: #257fd8;font-size: 160px;" class="glyphicon glyphicon-ok" aria-hidden="true"></span><br>
+                                <button type="button" class="btn-primary btn m-t-lg" onclick="backToPmsIpList()">返回商品列表</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--上一步,下一步按钮-->
+                <div class="step-button" style="text-align: center;">
+                    <button type="button" class="btn btn-success prevBtn" id="prevBtn">上一步<span></span></button>
+                    <button type="button" class="btn btn-success nextBtn" id="nextBtn">下一步<span></span></button>
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: select2-js"/>
+<th:block th:include="include :: jquery-setSetp-js"/>
+<th:block th:include="include :: layui-all-js"/>
+<th:block th:include="include :: summernote-js"/>
+<script th:inline="javascript" type="text/javascript">
+    var prefix = ctx + "business/pmsIntegralProduct";
+    var picLimit = 1, albumPicsLimit = [[${productAlbumLimit}]];
+    $.ajaxSettings.async = false;
+    $(function () {
+        var _steps = ['填写商品信息', '填写商品属性', '完成提交商品'], subIndex = 2;
+        var step = new SetStep({
+            content: '.stepCont',
+            fontWidth: 120,
+            clickAble: false,
+            steps: _steps,
+            stepCounts: _steps.length,
+            curStep: 1,
+            nextBtn: '#nextBtn',
+            prevBtn: '#prevBtn',
+            btnText: buildBtnText(_steps, "，"),
+            onChangeBefore: function (index, btuFlag) {
+                $("body,html").animate({ scrollTop: 0 }, 500);
+                // btuFlag：-1 上一步 1下一步
+                if (btuFlag === -1) {
+                    // 返回上一页不需要验证
+                    return true;
+                }
+                if ($.validate.form()) {
+                    if (index == subIndex) {
+                        $.modal.confirm("确认提交商品", function() {
+                            if (submitHandler()) {
+                                step.goToNext(step);
+                                $(".step-button").addClass("hidden");
+                            }
+                        });
+                        return false;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            onChangeAfter: function (index) {
+            }
+        });
+        function buildBtnText (steps, prefix) {
+            var btnText = [];
+            for (var i in steps) {
+                btnText.push(prefix + steps[i]);
+            }
+            return btnText;
+        }
+
+
+        var picVal = $("input[name='pic']").val(),
+            albumPicsVal = $("input[name='albumPics']").val(),
+            detailHtmlVal = $("input[name='detailHtml']").val();
+
+        $('.summernote').summernote('code', detailHtmlVal);
+        initPic(picVal);
+        initAlbumPics(albumPicsVal);
+    });
+
+    function initPic(picVal) {
+        if (picVal) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + picVal + ")\" data-src=\"" + picVal + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+            $("#picImg").append(tpl);
+        }
+        picCtrl();
+    }
+
+    function initAlbumPics(albumPicsVal) {
+        if (albumPicsVal && albumPicsVal.split(",").length > 0) {
+            var pics = albumPicsVal.split(","), tpl = "";
+            for (var i in pics) {
+                tpl += "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + pics[i] + ")\" data-src=\"" + pics[i] + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+            }
+            $("#albumPicsImg").html(tpl);
+        }
+        albumPicsCtrl();
+    }
+
+    function submitHandler() {
+        var flag = false;
+        if ($.validate.form()) {
+            if (!$("input[name='pic']").val()) {
+                $.modal.msgWarning("请上传商品主图");
+                return false;
+            }
+            if (!$("input[name='albumPics']").val()) {
+                $.modal.msgWarning("请上传至少1张商品相册图片");
+                return false;
+            }
+            $("input[name='detailHtml']").val($('.summernote').summernote('code'));
+            $.operate.post(prefix + "/edit", $('#form-pmsIntegralProduct-edit').serialize(), function(result) {
+                if (result.code === web_status.SUCCESS) {
+                    flag = true;
+                } else {
+                    $.modal.alertWarning(result.msg);
+                }
+            });
+        }
+        return flag;
+    }
+
+    function backToPmsIpList(){
+        var topWindow = $(window.parent.document);
+        var currentId = $('.page-tabs-content', topWindow).find('.active').attr('data-panel');
+        var tp = $('.RuoYi_iframe[data-id="' + currentId + '"]', topWindow)[0];
+        if (tp) {
+            var $contentWindow = tp.contentWindow;
+            $.modal.close();
+            $contentWindow.$(".layui-layer-padding").removeAttr("style");
+            if ($contentWindow.table.options.type == table_type.bootstrapTable) {
+                $contentWindow.$.table.refresh();
+            } else if ($contentWindow.table.options.type == table_type.bootstrapTreeTable) {
+                $contentWindow.$.treeTable.refresh();
+            }
+            $.modal.closeTab();
+        } else {
+            $.modal.parentTab('积分商品', prefix + "/");
+        }
+    }
+
+    /**
+     * 图片预览--通用
+     */
+    $(".ft-uploader__files").on("click", ".ft-uploader__file", function(e) {
+        if ($(this).attr("data-src")) {
+            $.modal.preview(respath + $(this).attr("data-src"));
+        }
+    });
+
+    /**
+     * 收集图片--通用
+     * @param ulSelector 显示图片的ul
+     * @param inputSelector input隐藏域
+     */
+    function collectPic(ulSelector) {
+        var arr = [];
+        $(ulSelector + " li").each(function(index, elem){
+            arr.push($(elem).attr("data-src"));
+        });
+        return arr.join();
+    }
+
+    // 上传商品主图
+    $.operate.layuiUpload("#picBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function(r) {
+        var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+        $("#picImg").append(tpl);
+        $("input[name='pic']").val(collectPic("#picImg"));
+        picCtrl();
+    });
+
+    // 商品主图上传控制
+    function picCtrl() {
+        $("#picImg li").length >= picLimit ? $("#picBox").hide() : $("#picBox").show();
+    }
+
+    // 商品主图上传图片删除
+    $("#picImg").on("click", ".del-img", function(e) {
+        var self = this;
+        $.modal.confirm("确认删除商品主图图片？", function() {
+            $(self).parent().remove();
+            $("input[name='pic']").val(collectPic("#picImg"));
+            picCtrl();
+        });
+        stopPropagation(e);
+    });
+
+    // 上传商品相册
+    $.operate.layuiUpload("#albumPicsBtn", ftConsts.upload.url.pc, 5000, ftConsts.upload.accept.images, function(r) {
+        var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + r.fileName + ")\" data-src=\"" + r.fileName + "\" ><img class=\"del-img\" src=\"../../../img/close.png\" /></li>";
+        $("#albumPicsImg").append(tpl);
+        $("input[name='albumPics']").val(collectPic("#albumPicsImg"));
+        albumPicsCtrl();
+    });
+
+    // 商品相册上传控制
+    function albumPicsCtrl() {
+        $("#albumPicsImg li").length >= albumPicsLimit ? $("#albumPicsBox").hide() : $("#albumPicsBox").show();
+    }
+
+    // 商品相册上传图片删除
+    $("#albumPicsImg").on("click", ".del-img", function(e) {
+        var self = this;
+        $.modal.confirm("确认删除该图片？", function() {
+            $(self).parent().remove();
+            $("input[name='albumPics']").val(collectPic("#albumPicsImg"));
+            albumPicsCtrl();
+        });
+        stopPropagation(e);
+    });
+
+    $(".summernote").summernote({
+        placeholder: '请填写图文内容',
+        height: 256,
+        lang: 'zh-CN',
+        followingToolbar: false,
+        dialogsInBody: true,
+        callbacks: {
+            onImageUpload: function (files) {
+                var len = files.length;
+                for (var i = 0; i < len; i++) {
+                    $.operate.summernoteImageUpload(files[i], this);
+                }
+            }
+        }
+    });
+
+    $("#form-pmsIntegralProduct-edit").validate({
+        focusCleanup: true,
+        rules: {
+            productCategoryId: {
+                required: true,
+            },
+            name: {
+                required: true,
+                rangelength: [2, 100],
+                remote: {
+                    url: prefix + "/checkUnique",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "id": function () {
+                            return $.common.trim($("input[name='id']").val());
+                        },
+                        "name": function () {
+                            return $.common.trim($("input[name='name']").val());
+                        }
+                    },
+                    dataFilter: function (data, type) {
+                        return $.validate.unique(data);
+                    }
+                }
+            },
+            subTitle: {
+                required: true,
+                rangelength: [2, 200],
+            },
+            publishStatus: {
+                required: true,
+            },
+            price: {
+                required: true,
+                positiveIntegerZero: true,
+                maxlength: 9,
+            },
+            stock: {
+                required: true,
+                positiveIntegerZero: true,
+                maxlength: 5,
+            },
+            lowStock: {
+                required: true,
+                positiveIntegerZero: true,
+                maxlength: 5,
+            },
+            sort: {
+                required: true,
+                positiveIntegerZero: true,
+                maxlength: 5,
+            },
+            feightFee: {
+                required: true,
+                isPrice: true,
+            },
+            detailTitle: {
+                required: true,
+                rangelength: [2, 50],
+            },
+            detailDesc: {
+                rangelength: [2, 300],
+            },
+            description: {
+                rangelength: [2, 100],
+            },
+        },
+        messages: {
+            productCategoryId: {
+                required: "请选择商品分类",
+            },
+            name: {
+                required: "请填写商品名称",
+                rangelength: $.validator.format("商品名称在 {0} 到 {1} 字之间"),
+                remote: "商品名称已经存在",
+            },
+            subTitle: {
+                required: "请填写副标题",
+                rangelength: $.validator.format("副标题在 {0} 到 {1} 字之间"),
+            },
+            publishStatus: {
+                required: "请选择上架状态",
+            },
+            price: {
+                required: "请填写兑换积分",
+                maxlength: $.validator.format( "兑换积分数字最长 {0} 位" ),
+            },
+            stock: {
+                required: "请填写商品库存",
+                maxlength: $.validator.format( "商品库存数字最长 {0} 位" ),
+            },
+            lowStock: {
+                required: "请填写库存预警值",
+                maxlength: $.validator.format( "库存预警值数字最长 {0} 位" ),
+            },
+            sort: {
+                required: "请填写排序",
+                maxlength: $.validator.format( "排序数字最长 {0} 位" ),
+            },
+            feightFee: {
+                required: "请填写商品运费",
+            },
+            detailTitle: {
+                required: "请填写详情页标题",
+                rangelength: $.validator.format("详情页标题在 {0} 到 {1} 字之间"),
+            },
+            detailDesc: {
+                rangelength: $.validator.format("详情页描述在 {0} 到 {1} 字之间"),
+            },
+            description: {
+                rangelength: $.validator.format("商品备注在 {0} 到 {1} 字之间"),
+            },
+        },
+    });
+</script>
+</body>
+</html>

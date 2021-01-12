@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增用户余额记录')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-accBalanceRecord-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">用户id：</label>
+                <div class="col-sm-8">
+                    <input name="memberId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">金额(可以是负数)：</label>
+                <div class="col-sm-8">
+                    <input name="money" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">0佣金转入：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control m-b">
+                        <option value="">所有</option>
+                    </select>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">0:佣金转入 1:提现转出：</label>
+                <div class="col-sm-8">
+                    <input name="operation" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">描述:佣金转入余额/提现申请成功，余额转出：</label>
+                <div class="col-sm-8">
+                    <input name="description" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">提现申请表id：</label>
+                <div class="col-sm-8">
+                    <input name="cashApplyId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">删除标记：</label>
+                <div class="col-sm-8">
+                    <input name="delFlag" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/accBalanceRecord";
+        $("#form-accBalanceRecord-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-accBalanceRecord-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

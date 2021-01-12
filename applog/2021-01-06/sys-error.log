@@ -1,0 +1,9 @@
+09:53:15.365 [http-nio-8099-exec-26] ERROR c.f.f.w.e.GlobalExceptionHandler - [businessException,75] - 登录用户非店铺用户
+com.fante.common.exception.BusinessException: 登录用户非店铺用户
+14:22:22.039 [RuoyiScheduler_QuartzSchedulerThread] ERROR c.a.d.f.s.StatFilter - [internalAfterStatementExecute,478] - slow sql 1197 millis. SELECT TRIGGER_NAME, TRIGGER_GROUP, NEXT_FIRE_TIME, PRIORITY FROM QRTZ_TRIGGERS WHERE SCHED_NAME = 'RuoyiScheduler' AND TRIGGER_STATE = ? AND NEXT_FIRE_TIME <= ? AND (MISFIRE_INSTR = -1 OR (MISFIRE_INSTR != -1 AND NEXT_FIRE_TIME >= ?)) ORDER BY NEXT_FIRE_TIME ASC, PRIORITY DESC["WAITING",1609914170025,1609914128032]
+14:22:26.113 [http-nio-8099-exec-14] ERROR c.f.f.w.e.GlobalExceptionHandler - [businessException,75] - 商品已下架
+com.fante.common.exception.BusinessException: 商品已下架
+14:48:46.621 [SimpleAsyncTaskExecutor-1] ERROR c.f.p.a.m.r.CancelOrderReceiver - [receive,49] - 处理订单: 1346703487219535872时,队列: 延时取消订单,异常：500[根据支付订单号:1346703487219535872,找不到订单！]
+14:50:02.633 [SimpleAsyncTaskExecutor-1] ERROR c.f.p.a.m.r.CancelOrderReceiver - [receive,49] - 处理订单: 1346703806146023424时,队列: 延时取消订单,异常：500[根据支付订单号:1346703806146023424,找不到订单！]
+16:44:59.404 [SimpleAsyncTaskExecutor-1] ERROR c.f.p.a.m.r.CancelOrderReceiver - [receive,49] - 处理订单: 1346732733128249344时,队列: 延时取消订单,异常：500[根据支付订单号:1346732733128249344,找不到订单！]
+16:59:44.166 [http-nio-8099-exec-25] ERROR c.f.p.b.p.s.i.PmsProductLogServiceImpl - [insertPmsProductLog,161] - 日志操作类型异常

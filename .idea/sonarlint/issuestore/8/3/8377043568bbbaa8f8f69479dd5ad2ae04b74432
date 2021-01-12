@@ -1,0 +1,20 @@
+
+x
+java:S1128	"bRemove this unused import 'com.fante.project.business.pmsFeightTemplate.domain.PmsFeightTemplate'.(­ƒ‡õ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ãÆè×ÿÿÿÿÿ
+=
+java:S1068"'Remove this unused "log" private field.(ÔãÁ“
+m
+java:S3252F"RUse static access with "org.apache.commons.lang3.StringUtils" for "defaultString".(˜¸ ûÿÿÿÿ
+_
+java:S1128"IRemove this unused import 'com.fante.common.exception.BusinessException'.(€îƒ¡
+X	java:S125E"<This block of commented-out lines of code should be removed.(¡­®ÿ8‹¹äâ.
+G
+java:S1128"1Remove this unused import 'java.math.BigDecimal'.(êêŠ
+Q	java:S125W"<This block of commented-out lines of code should be removed.(¶•Í•
+W
+java:S1126H"AReplace this if-then-else statement by a single return statement.(ìïƒÌ
+b
+java:S32525"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(ò‘™‘
+a
+java:S1128"FRemove this unused import 'com.fante.framework.web.domain.AjaxResult'.(ã¥îïşÿÿÿÿ

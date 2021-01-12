@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改订单')" />
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+
+        <div class="col-sm-12 search-collapse" id="top_div">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>物流公司：</p>
+                            <select class="deliveryCompany" id="deliveryCompany"></select>
+                        </li>
+                        <li>
+                            <p>物流单号：</p>
+                            <input id="deliverySn" class="form-control" type="text" >
+                        </li>
+                        <li>
+                            <a class="btn btn-success btn-rounded btn-sm" onclick="copySendMsg()"><i class="fa fa-copy"></i>&nbsp;一键复制</a>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="submitHandler()"><i class="fa fa-truck"></i>&nbsp;确定发货</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.modal.close()"><i class="fa fa-close"></i>&nbsp;取消发货</a>
+                        </li>
+                    </ul>
+                </div>
+        </div>
+    <div class="col-sm-12 search-collapse">
+        <div class="col-sm-12 select-table table-striped">
+            <form id="form-omsOrder-batchSend">
+                <table id="bootstrap-table"></table>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: select2-js"/>
+    <script th:inline="javascript" type="text/javascript">
+        var prefix = ctx + "business/omsOrder";
+        var sendCompanys = [[${sendCompanys}]];
+        var detailList = [[${detailList}]];
+        var remarkFlagDatas = [[${@custom.getRemarkFlagPlus()}]];
+       /* console.log(detailList);
+        console.log(sendCompanys);*/
+        var sendData=[];
+        sendCompanys.forEach(function (value) {
+            sendData.push({id:value.name,text:value.name})
+        })
+
+        /**
+         * 初始化物流公司
+         * @param cls
+         * @param initVal
+         */
+        function initSelect2(cls,initVal){
+            $("."+cls).select2({
+                placeholder: initVal?initVal:'',
+                // allowClear: true,
+                data: sendData
+            });
+        }
+
+        //initTable
+        $(function () {
+            //如果未添加物流公司提示
+            console.log(sendCompanys);
+            if(sendCompanys.length===0){
+                $.modal.alert("至少添加一条可用物流公司信息", modal_status.WARNING,function(){$.modal.close()});
+            }
+            initSelect2("deliveryCompany");
+            tableInit();
+            $('input[name="deliverySn"]').on("blur",function () {
+                if($.common.isEmpty($(this).val())){
+                    $(this).addClass('error')
+                }else{
+                    $(this).removeClass('error')
+                }
+            })
+        })
+
+        /**
+         * 初始化表格
+         */
+        function tableInit() {
+            //表格高度 = 总高度 - 顶部div高度 - margin/padding等固定高度95;
+            var h = $(window).height()-$("#top_div").height()-95;
+            var options = {
+                id:"bootstrap-table",
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                pagination: false,
+                uniqueId: "id",
+                height: h,
+                columns: [
+                    {
+                        field : 'id',
+                        title : '编号',
+                        visible: false,
+                        align: 'center'
+
+                    },
+                    {
+                        field : 'orderSn',
+                        title : '订单号',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var split = row.remark ? row.remark.split('@'):"";
+                            if(split.length==2){
+                                value = $.common.sprintf('<label class="text-%s">%s <i class="fa fa-flag"></i></label>',remarkFlagDatas[split[0]].style,value);
+                            }else{
+                                value = $.common.sprintf('<label>%s<i class="fa fa-flag-o"></i></label>',value);
+                            }
+                            return value;
+                        }
+                    },
+             /*       {
+                        field : 'billType',
+                        title : '发票类型',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            return $.common.sprintf('<label style="color: #2c7b3c">%s</label>',billTypeDatas[value]);
+                        }
+                    },*/
+                    {
+                        field : 'receiverName',
+                        title : '收货人信息',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            return  value+"<br>"+row.receiverPhone;
+                        }
+                    },
+                    {
+                        field : 'receiverPostCode',
+                        title : '收货人邮编',
+                        align: 'center',
+                    },
+                    {
+                        field : 'receiverProvince',
+                        title : '收货地区',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            return $.table.tooltip($.common.sprintf('%s / %s / %s',value,row.receiverCity,row.receiverRegion),15,'open')
+                        }
+                    },
+                    {
+                        field : 'receiverDetailAddress',
+                        title : '详细地址',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            return  $.table.tooltip(value,10,'open')
+                        }
+                    },
+                    {
+                        field : 'note',
+                        title : '客户留言',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            return  $.table.tooltip(value,10,'open')
+                        }
+                    },
+                    /*{
+                        field : 'remark',
+                        title : '订单备注',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var split = row.remark.split('@');
+                            if(split.length==2){
+                                value =split[1];
+                            }
+                            return  $.table.tooltip(value,5,'open')
+                        }
+                    },*/
+                    {
+                        field : 'deliveryCompany',
+                        title : '物流公司',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            return '<input type="hidden"   name="id" value="' +row.id+'"/>'+
+                                '<select class="table-deliveryCompany" name="deliveryCompany"></select>'
+                        }
+                    },
+                    {
+                        field : 'deliverySn',
+                        title : '物流单号',
+                        align: 'center',
+                        width: 200,
+                        formatter: function(value, row, index) {
+                            return '<input data-id="'+row.id+'" type="text" class="form-control table-deliverySn"  name="deliverySn"/>';
+                        }
+                    },
+                    {
+                        title: '操作',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            return '<a class="btn btn-danger btn-xs " href="javascript:void(0)" onclick="removeRowByUniqueId(\''+row.id+'\')"><i class="fa fa-remove"></i> 移除</a>'
+                        }
+                    },
+                ],
+                onLoadError: function () {
+                    $.modal.alert("数据加载失败！");
+                },
+            };
+            $.table.init(options);
+            $("#bootstrap-table").bootstrapTable('append', detailList);
+            initSelect2("table-deliveryCompany");
+        }
+
+
+        /** 删除行ID值为1的数据 */
+        function removeRowByUniqueId(id) {
+            $("tr[data-uniqueid='"+id+"']").remove()
+        }
+        /**
+         * 一键复制 顶部 物流信息到所有订单
+         */
+        function copySendMsg(){
+            var cp = $('#deliveryCompany').val();
+            $('.table-deliveryCompany').each(function (index, val) {
+                $(val).select2("val", [cp]);
+            })
+            $('.table-deliverySn').val($('#deliverySn').val())
+        }
+
+        /**
+         * 批量发货
+         * @returns {boolean}
+         */
+        function submitHandler() {
+            var dataArr = $('#form-omsOrder-batchSend').serializeArray();
+            if(dataArr.length===0){
+                $.modal.msg("至少选择一条订单.！");
+                return false;
+            }
+            var errmsg = [];
+            var sendList = [];
+            var item = {};
+            //填装数据
+            dataArr.forEach(function (val,i) {
+                if($.common.isEmpty(val.value)){
+                    errmsg.push(item.id)
+                }
+                item[val.name]=val.value;
+                if(i%3===2){
+                    sendList.push(item);
+                    item = {};
+                }
+            });
+            //如果错误信息不为空则提示
+            if(errmsg.length>0){
+                $.modal.msg("请完善物流信息！");
+                errmsg.forEach(function (value) {
+                    $('input[data-id="'+value+'"]').addClass('error')
+                })
+            }else{
+                var config = {
+                    url: prefix + "/sendProduct",
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(sendList),
+                    beforeSend: function () {
+                        console.log(JSON.stringify(sendList))
+                        $.modal.loading("正在处理中，请稍后...");
+                    },
+                    success: function (result) {
+                        $.modal.closeLoading();
+                        if (result.code == web_status.SUCCESS) {
+                            $.modal.msgSuccess(result.msg);
+                            $.modal.close();
+                            (parent.sendCallback && typeof (parent.sendCallback) === "function") && parent.sendCallback(result.msg);
+                        }else{
+                            $.modal.msgError(result.msg);
+                        }
+
+                    }
+                };
+                $.ajax(config);
+            }
+        }
+    </script>
+</body>
+</html>

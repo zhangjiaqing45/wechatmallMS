@@ -1,0 +1,6 @@
+
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(®†Ÿþ
+Y
+java:S1128"DRemove this unused import 'io.swagger.annotations.ApiModelProperty'.(í˜í
+h
+java:S32528"RUse static access with "org.springframework.beans.BeanUtils" for "copyProperties".(…ëË 

@@ -1,0 +1,62 @@
+
+V	java:S106"9Replace this use of System.out or System.err by a logger.(èÓÈè8ƒå¯ƒå.
+k	java:S100—"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ç—ê8ƒå¯ƒå.
+R
+java:S1874q"0Remove this use of "setScale"; it is deprecated.(¸³Æ¶ùÿÿÿÿ8É‰×Úí.
+o
+java:S2095¬"LUse try-with-resources or close this "BufferedWriter" in a "finally" clause.(ºÊ†Ğùÿÿÿÿ8ƒå¯ƒå.
+\
+java:S4719¬"9Replace charset name argument with StandardCharsets.UTF_8(ºÊ†Ğùÿÿÿÿ8ƒå¯ƒå.
+\
+java:S4719"9Replace charset name argument with StandardCharsets.UTF_8(¼ŠÜµüÿÿÿÿ8ƒå¯ƒå.
+J
+java:S1481Ÿ"'Remove this unused "sb" local variable.(€ê±Õúÿÿÿÿ8ƒå¯ƒå.
+K
+java:S1144è"-Remove this unused private "getParam" method.(ÊÇ†ğ8ƒå¯ƒå.
+[	java:S106“"9Replace this use of System.out or System.err by a logger.(Ò¢ şÿÿÿÿ8Ñ¾àçâ.
+a
+java:S1155ß">Use isEmpty() to check whether the collection is empty or not.(É€°Îøÿÿÿÿ8ƒå¯ƒå.
+[	java:S106’"9Replace this use of System.out or System.err by a logger.(ç¬ÿÿÿÿÿ8ƒå¯ƒå.
+O	java:S106ƒ"9Replace this use of System.out or System.err by a logger.(öÅÛÔ
+I
+java:S1481Å"+Remove this unused "xmlMsg" local variable.(¹¡¢Ñ8ƒå¯ƒå.
+h	java:S112ˆ"FDefine and throw a dedicated exception instead of using a generic one.(®Ç‹øûÿÿÿÿ8ƒå¯ƒå.
+f
+java:S2095ˆ"IUse try-with-resources or close this "PrintStream" in a "finally" clause.(İß³G8ƒå¯ƒå.
+T	java:S106]"9Replace this use of System.out or System.err by a logger.(€ë_8Ñ¾àçâ.
+a
+java:S1155µ">Use isEmpty() to check whether the collection is empty or not.(É€°Îøÿÿÿÿ8ƒå¯ƒå.
+V	java:S106"9Replace this use of System.out or System.err by a logger.(¶’ª÷8ƒå¯ƒå.
+T
+java:S1874q"2Remove this use of "ROUND_DOWN"; it is deprecated.(¸³Æ¶ùÿÿÿÿ8É‰×Úí.
+X
+java:S1854Å":Remove this useless assignment to local variable "xmlMsg".(¹¡¢Ñ8ƒå¯ƒå.
+T	java:S106…"9Replace this use of System.out or System.err by a logger.(ŞªìÈÿÿÿÿÿ
+Z
+java:S2589–"7Remove this expression which always evaluates to "true"(Ò•ìÍıÿÿÿÿ8ƒå¯ƒå.
+T
+java:S2629|"7Use the built-in formatting to construct this argument.(şâÆ•8†ìßÛí.
+[	java:S106‚"9Replace this use of System.out or System.err by a logger.(İÙ–Äúÿÿÿÿ8ƒå¯ƒå.
+Y
+java:S2589^"7Remove this expression which always evaluates to "true"(“Øßôşÿÿÿÿ8Ñ¾àçâ.
+Y
+java:S1854Ÿ"6Remove this useless assignment to local variable "sb".(€ê±Õúÿÿÿÿ8ƒå¯ƒå.
+r
+java:S3252”"OUse static access with "org.apache.commons.lang3.StringUtils" for "isNotBlank".(ÁÅÿˆøÿÿÿÿ8ƒå¯ƒå.
+`
+java:S1155b">Use isEmpty() to check whether the collection is empty or not.(Ú—áÂøÿÿÿÿ8ŠÊÙ‚å.
+^
+java:S3457|"AFormat specifiers should be used instead of string concatenation.(şâÆ•8†ìßÛí.
+M
+java:S5411†"*Use the primitive boolean expression here.(øœ›ÿÿÿÿÿ8ƒå¯ƒå.
+W
+java:S4719î"9Replace charset name argument with StandardCharsets.UTF_8(ÉËˆŒ8ƒå¯ƒå.
+I
+java:S1075ş"&Remove this hard-coded path-delimiter.(Âß¶Íüÿÿÿÿ8ƒå¯ƒå.
+‚
+java:S1149™"_Replace the synchronized class "StringBuffer" by an unsynchronized one such as "StringBuilder".(¨âàøÿÿÿÿ8ƒå¯ƒå.
+D
+java:S1075€"&Remove this hard-coded path-delimiter.(¥ÈêÀ8ƒå¯ƒå.
+T	java:S106„"9Replace this use of System.out or System.err by a logger.(³¸ï úÿÿÿÿ
+F	java:S108¦")Either remove or fill this block of code.(”ı¾8ƒå¯ƒå.
+^	java:S125À"<This block of commented-out lines of code should be removed.(ÇÎîÔûÿÿÿÿ8ƒå¯ƒå.

@@ -1,0 +1,10 @@
+
+b
+java:S3252s"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(ÜÔ
+g
+java:S3252d"LUse static access with "org.apache.commons.lang3.StringUtils" for "isBlank".(áßÊ—ÿÿÿÿÿ
+=
+java:S1068!"'Remove this unused "log" private field.(œƒğ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¦È…¬
+u
+java:S1128"ZRemove this unused import 'com.fante.common.business.enums.ProductAttributeCategoryConst'.(ÔÒ–Çşÿÿÿÿ

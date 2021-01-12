@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.omsCartItem.mapper.OmsCartItemMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="OmsCartItemResultExt" type="扩展类全包名" extends="OmsCartItemResult">
+
+    </resultMap>
+     -->
+    <resultMap id="cartDetailMap" type="com.fante.project.api.omsOrderProcess.domain.CartDetail" extends="com.fante.project.business.omsCartItem.mapper.OmsCartItemMapper.OmsCartItemResult">
+        <result column="real_stock" jdbcType="VARCHAR" property="realStock" />
+    </resultMap>
+    <resultMap id="cartResultMap" type="com.fante.project.business.omsCartItem.domain.OmsCartItemResult">
+        <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
+        <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
+        <collection property="cartList" resultMap="cartDetailMap" columnPrefix="cart_"/>
+    </resultMap>
+    <select id="selectOmsCartItemListOfMember" parameterType="com.fante.project.business.omsCartItem.domain.OmsCartItem" resultMap="cartResultMap">
+        SELECT
+            shop.id AS shop_id,
+            shop.company_name AS shop_name,
+            cart.id AS cart_id,
+            cart.cart_type AS cart_cart_type,
+            cart.shop_id AS cart_shop_id,
+            cart.product_id AS cart_product_id,
+            cart.product_sku_id AS cart_product_sku_id,
+            cart.member_id AS cart_member_id,
+            cart.quantity AS cart_quantity,
+            cart.price AS cart_price,
+            cart.product_pic AS cart_product_pic,
+            cart.product_name AS cart_product_name,
+            cart.product_brand AS cart_product_brand,
+            cart.product_sn AS cart_product_sn,
+            cart.product_sub_title AS cart_product_sub_title,
+            cart.product_sku_code AS cart_product_sku_code,
+            cart.member_nickname AS cart_member_nickname,
+            cart.product_category_id AS cart_product_category_id,
+            cart.sp_data AS cart_sp_data,
+            p.publish_status AS cart_STATUS,
+            cart.create_by AS cart_create_by,
+            cart.create_time AS cart_create_time,
+            cart.update_by AS cart_update_by,
+            cart.update_time AS cart_update_time,
+            cart.remark AS cart_remark,
+            sku.stock-sku.lock_stock AS cart_real_stock,
+            cart.del_flag AS cart_del_flag
+        FROM
+            oms_cart_item cart
+            LEFT JOIN biz_shop_info shop ON cart.shop_id = shop.id
+            LEFT JOIN pms_sku_stock sku ON sku.id = cart.product_sku_id
+            LEFT JOIN pms_product p ON p.id = cart.product_id
+        WHERE
+            cart.member_id = #{memberId}
+            AND cart.cart_type = #{cartType}
+    </select>
+    <select id="selectOmsCartItemListForOrder" parameterType="com.fante.project.business.omsCartItem.domain.OmsCartItem" resultMap="cartResultMap">
+        SELECT
+        shop.id AS shop_id,
+        shop.company_name AS shop_name,
+        cart.id AS cart_id,
+        cart.cart_type AS cart_cart_type,
+        cart.shop_id AS cart_shop_id,
+        cart.product_id AS cart_product_id,
+        cart.product_sku_id AS cart_product_sku_id,
+        cart.member_id AS cart_member_id,
+        cart.quantity AS cart_quantity,
+        cart.price AS cart_price,
+        cart.product_pic AS cart_product_pic,
+        cart.product_name AS cart_product_name,
+        cart.product_brand AS cart_product_brand,
+        cart.product_sn AS cart_product_sn,
+        cart.product_sub_title AS cart_product_sub_title,
+        cart.product_sku_code AS cart_product_sku_code,
+        cart.member_nickname AS cart_member_nickname,
+        cart.product_category_id AS cart_product_category_id,
+        cart.sp_data AS cart_sp_data,
+        cart.STATUS AS cart_STATUS,
+        cart.create_by AS cart_create_by,
+        cart.create_time AS cart_create_time,
+        cart.update_by AS cart_update_by,
+        cart.update_time AS cart_update_time,
+        cart.remark AS cart_remark,
+        cart.del_flag AS cart_del_flag
+        FROM
+        oms_cart_item cart
+        LEFT JOIN biz_shop_info shop ON cart.shop_id = shop.id
+        LEFT JOIN pms_sku_stock sku ON sku.id = cart.product_sku_id
+        LEFT JOIN pms_product p ON p.id = cart.product_id
+        WHERE
+        <!-- 商品上架 -->
+        p.publish_status = '1'
+        <!-- 商品库存 >= 商品锁定库存 + 购买数量 -->
+        AND sku.stock &gt;= sku.lock_stock+cart.quantity
+        AND cart.member_id = #{memberId}
+        AND cart.cart_type = #{cartType}
+        AND cart.id in
+        <foreach item="id" collection="params.ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectCartMsgBySkuId" resultType="com.fante.project.business.omsCartItem.domain.OmsCartItem">
+        SELECT
+            shop.id AS shop_id,
+            shop.company_name as shop_name,
+            p.id AS product_id,
+            sku.id as product_sku_id,
+            sku.price,
+            p.pic AS product_pic,
+            p.NAME AS product_name,
+            p.brand_name AS product_brand,
+            p.product_sn,
+            p.sub_title AS product_sub_title,
+            sku.sku_code AS product_sku_code,
+            p.product_category_id,
+            sku.sp_data
+        FROM
+            pms_sku_stock sku
+            LEFT JOIN pms_product p ON P.id = sku.product_id
+            LEFT JOIN biz_shop_info shop ON shop.id = p.shop_id
+        WHERE
+            sku.id = #{productSkuId}
+            and p.del_flag = '0'
+            and p.publish_status = '1'
+    </select>
+    <delete id="deleteMemberCartByIds" parameterType="String">
+        delete from oms_cart_item where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and member_id = #{memberId}
+    </delete>
+    <update id="changeQuantity" parameterType="com.fante.project.business.omsCartItem.domain.OmsCartItem">
+         update oms_cart_item set quantity = #{quantity}
+         where
+            id = #{id}
+         and
+            member_id = #{memberId}
+    </update>
+    <!--根据购物车获取相应到店铺对应商品的数据-->
+    <select id="getShopOfProudctsData" resultType="com.fante.project.api.appView.domain.ShopOfProductDatas">
+        SELECT
+            shop_id,
+            GROUP_CONCAT( DISTINCT product_id ) AS pids
+        FROM
+            oms_cart_item
+        WHERE
+            id IN
+            <foreach item="id" collection="ids" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+            and member_id = #{memberId}
+        GROUP BY
+            shop_id
+    </select>
+</mapper>

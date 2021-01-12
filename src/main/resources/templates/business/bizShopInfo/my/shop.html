@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('我的店铺')" />
+    <style type="text/css">
+        .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+            background-color: #FFF;
+            opacity: 1;
+        }
+        .inv-btn {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <!--<span class="label label-primary pull-right">设置</span>-->
+                    <h5>我的店铺</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m" th:object="${bizShopInfo}">
+                        <input name="id" th:field="*{id}" type="hidden">
+                        <h4 class="form-header h4">基本信息
+                            <span class="help-block m-b-none">
+                                <i class="fa fa-thumb-tack"></i> 店铺编号：
+                                <span th:text="*{code}"></span>
+                                <!--<button id="inviteQrcode" type="button" class="btn btn-primary btn-xs">店铺邀请二维码</button>-->
+                                <button type="button"
+                                        th:each="inv : ${inviteList}"
+                                        th:text="邀请 +  ${inv.desc}"
+                                        th:class="'inv-btn btn btn-xs btn-' + ${inv.style}"
+                                        th:attr="data-type=${inv.type}" ></button>
+                            </span>
+                        </h4>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">店铺名称：</label>
+                                    <div class="col-sm-8">
+                                        <input name="companyName" class="form-control" type="text" th:field="*{companyName}" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">主营类目：</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group" onclick="selectMainCategory()">
+                                            <input id="categoryId" name="categoryId" th:field="*{categoryId}" class="form-control" type="hidden" >
+                                            <input id="categoryName" class="form-control" th:value="${mainCategory?.category}" type="text" placeholder="请选择店铺主营类目" readonly>
+                                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">店铺法人：</label>
+                                    <div class="col-sm-8">
+                                        <input name="legalPerson" class="form-control" th:field="*{legalPerson}" type="text" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">法人电话：</label>
+                                    <div class="col-sm-8">
+                                        <input name="tel" class="form-control" th:field="*{tel}" type="text" autocomplete="off" readonly >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">店铺地区：</label>
+                                    <div class="col-sm-8" id="distpicker" th:attr="data-province=*{province}, data-city=*{city}, data-district=*{district}">
+                                        <select name="province" class="form-control-inline col-sm-4" disabled="disabled"></select>
+                                        <select name="city" class="form-control-inline col-sm-4" disabled="disabled"></select>
+                                        <select name="district" class="form-control-inline col-sm-4" disabled="disabled"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">详细地址：</label>
+                                    <div class="col-sm-8">
+                                        <input id="longitude" name="longitude" th:field="*{longitude}" type="hidden" >
+                                        <input id="latitude" name="latitude" th:field="*{latitude}" type="hidden" >
+                                        <input name="address" class="form-control" th:field="*{address}" type="text" placeholder="请点击选择详细地址" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">客服电话：</label>
+                                    <div class="col-sm-8">
+                                        <input name="serviceTel" class="form-control" th:field="*{serviceTel}" type="text" autocomplete="off" readonly >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">结算账户类型：</label>
+                                    <div class="col-sm-8">
+                                        <select name="accountType" class="form-control" th:with="type=${@dict.getType('biz_account_type')}" disabled="disabled" >
+                                            <option value="">请选择</option>
+                                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{accountType}" ></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">账户绑定实名：</label>
+                                    <div class="col-sm-8">
+                                        <input name="bindName" class="form-control" th:field="*{bindName}" type="text" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">结算账户账号：</label>
+                                    <div class="col-sm-8">
+                                        <input name="account" class="form-control" th:field="*{account}" type="text" autocomplete="off" placeholder="根据选择的结算账户类型填写" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label is-required">店铺标签：</label>
+                                    <div class="col-sm-10">
+                                        <input name="tag" class="form-control" th:field="*{tag}" type="text" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="form-header h4">账户信息</h4>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">现金账户：</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group m-b">
+                                            <span class="input-group-addon"><i class="fa fa-jpy"></i></span>
+                                            <input name="cash" class="form-control" th:field="*{cash}" type="text" autocomplete="off" readonly>
+                                            <span class="input-group-btn"> <button id="cashDetail" type="button" class="btn btn-success">现金明细 </button> </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label is-required">佣金账户：</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group m-b">
+                                            <span class="input-group-addon"><i class="fa fa-jpy"></i></span>
+                                            <input name="brokerage" class="form-control" th:field="*{brokerage}" type="text" autocomplete="off" readonly>
+                                            <span class="input-group-btn"> <button id="brokerageDetail" type="button" class="btn btn-success">佣金明细 </button> </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="form-header h4">相关资料</h4>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label class="col-sm-6 control-label is-required">店铺主图：</label>
+                                    <div class="col-sm-6">
+                                        <input name="pic" th:field="*{pic}" class="form-control" type="hidden">
+                                        <ul class="ft-uploader__files" id="picImg" style="margin-top: 10px;" >
+                                            <!-- 图片展示 -->
+                                        </ul>
+                                        <div class="ft-uploader__input-box" id="picBox" style="display: none;">
+                                            <button id="picBtn" type="button" class="ft-uploader__input" ></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label class="col-sm-6 control-label is-required">营业执照：</label>
+                                    <div class="col-sm-6">
+                                        <input name="license" th:field="*{license}" class="form-control" type="hidden">
+                                        <ul class="ft-uploader__files" id="licenseImg" style="margin-top: 10px;" >
+                                            <!-- 图片展示 -->
+                                        </ul>
+                                        <div class="ft-uploader__input-box" id="licenseBox" style="display: none;">
+                                            <button id="licenseBtn" type="button" class="ft-uploader__input" ></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label class="col-sm-6 control-label is-required">法人身份证正面：</label>
+                                    <div class="col-sm-6">
+                                        <input name="sfzFront" th:field="*{sfzFront}" class="form-control" type="hidden">
+                                        <ul class="ft-uploader__files" id="sfzFrontImg" style="margin-top: 10px;" >
+                                            <!-- 图片展示 -->
+                                        </ul>
+                                        <div class="ft-uploader__input-box" id="sfzFrontBox" style="display: none;">
+                                            <button id="sfzFrontBtn" type="button" class="ft-uploader__input" ></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label class="col-sm-6 control-label is-required">法人身份证反面：</label>
+                                    <div class="col-sm-6">
+                                        <input name="sfzBack" th:field="*{sfzBack}" class="form-control" type="hidden">
+                                        <ul class="ft-uploader__files" id="sfzBackImg" style="margin-top: 10px;" >
+                                            <!-- 图片展示 -->
+                                        </ul>
+                                        <div class="ft-uploader__input-box" id="sfzBackBox" style="display: none;">
+                                            <button id="sfzBackBtn" type="button" class="ft-uploader__input" ></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="form-header h4">其他资料</h4>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="col-sm-1 control-label">资料图片：</label>
+                                    <div class="col-sm-11">
+                                        <input name="submitInfo" th:field="*{submitInfo}" class="form-control" type="hidden">
+                                        <ul class="ft-uploader__files" id="submitInfoImg" style="margin-top: 10px;" >
+                                            <!-- 图片展示 -->
+                                        </ul>
+                                        <div class="ft-uploader__input-box" id="submitInfoBox" style="display: none;" >
+                                            <button id="submitInfoBtn" type="button" class="ft-uploader__input" ></button>
+                                        </div>
+                                        <span class="help-block m-b-none" style="clear: both;"><i class="fa fa-info-circle"></i> <span id="submitInfoHelp"> </span> </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: distpicker-js"/>
+<th:block th:include="include :: layui-all-js"/>
+<script th:inline="javascript" type="text/javascript">
+    var prefixShopInfo = ctx + "business/bizShopInfo";
+    var picLimit = 1,licenseLimit = 1, sfzFrontLimit = 1, sfzBackLimit = 1, submitInfoLimit = 0;
+    var mainCategory = [[${mainCategory}]];
+
+    $(function () {
+        // 初始化主营类目信息
+        if (mainCategory && mainCategory.id) {
+            $("#submitInfoHelp").text(mainCategory.submitInfo ? "已提供：" + mainCategory.submitInfo : "无需其他资料");
+            submitInfoLimit = mainCategory.submitNum ? parseInt(mainCategory.submitNum) : 0;
+        }
+        // 展示图片信息
+        var picVal = $("input[name='pic']").val(),
+            licenseVal = $("input[name='license']").val(),
+            sfzFrontVal = $("input[name='sfzFront']").val(),
+            sfzBackVal = $("input[name='sfzBack']").val(),
+            submitInfoVal = $("input[name='submitInfo']").val();
+
+        initPic(picVal);
+        initLicensePic(licenseVal);
+        initSfzFrontPic(sfzFrontVal);
+        initSfzBackPic(sfzBackVal);
+        initSubmitInfoPic(submitInfoVal);
+
+        // $("#inviteQrcode").on("click", inviteQrcode);
+        $(".inv-btn").on("click", inviteQrcode);
+        $("#brokerageDetail").on("click", brokerageDetail);
+        $("#cashDetail").on("click", cashDetail);
+
+    });
+
+    /**
+     * 店铺邀请二维码
+     */
+    function inviteQrcode(){
+        var type = $(this).attr("data-type"),
+            title = $(this).text(),
+            url = prefixShopInfo + "/invite/" + type;
+
+        var options = {
+            title: title,
+            width: "500",
+            height: "500",
+            url: url,
+            btn: false,
+        };
+        $.modal.openOptions(options);
+    }
+
+    /**
+     * 现金账户明细
+     */
+    function cashDetail() {
+        var id = $("input[name='id']").val(),
+            name = $("input[name='companyName']").val();
+        $.modal.confirm("查看店铺[ " + name + " ]<b> 现金账户 </b>明细", function () {
+            var options = {
+                title: "店铺[ " + name + " ]<b> 现金账户 </b>明细",
+                url: prefixShopInfo + "/account/base/" + id,
+                btn: false
+            };
+            $.modal.openOptions(options);
+        });
+    }
+    /**
+     * 佣金账户明细
+     */
+    function brokerageDetail() {
+        var id = $("input[name='id']").val(),
+            name = $("input[name='companyName']").val();
+        $.modal.confirm("查看店铺[ " + name + " ]<b> 佣金账户 </b>明细", function () {
+            var options = {
+                title: "店铺[ " + name + " ]<b> 佣金账户 </b>明细",
+                url: prefixShopInfo + "/account/commission/" + id,
+                btn: false
+            };
+            $.modal.openOptions(options);
+        });
+    }
+
+    function initPic(picVal) {
+        if (picVal) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + picVal + ")\" data-src=\"" + picVal + "\" ></li>";
+            $("#picImg").append(tpl);
+        }
+        picCtrl();
+    }
+
+    function initLicensePic(licenseVal) {
+        if (licenseVal) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + licenseVal + ")\" data-src=\"" + licenseVal + "\" ></li>";
+            $("#licenseImg").append(tpl);
+        }
+        licenseCtrl();
+    }
+
+    function initSfzFrontPic(sfzFrontVal) {
+        if (sfzFrontVal) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + sfzFrontVal + ")\" data-src=\"" + sfzFrontVal + "\" ></li>";
+            $("#sfzFrontImg").append(tpl);
+        }
+        sfzFrontCtrl();
+    }
+
+    function initSfzBackPic(sfzBackVal) {
+        if (sfzBackVal) {
+            var tpl = "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + sfzBackVal + ")\" data-src=\"" + sfzBackVal + "\" ></li>";
+            $("#sfzBackImg").append(tpl);
+        }
+        sfzBackCtrl();
+    }
+
+    function initSubmitInfoPic(submitInfoVal) {
+        if (submitInfoVal && submitInfoVal.split(",").length > 0) {
+            var pics = submitInfoVal.split(","), tpl = "";
+            for (var i in pics) {
+                tpl += "<li class=\"ft-uploader__file\" style=\"background-image:url(" + respath + pics[i] + ")\" data-src=\"" + pics[i] + "\" ></li>";
+            }
+            $("#submitInfoImg").html(tpl);
+        }
+        submitInfoCtrl();
+    }
+
+    // 地区选择
+    $("#distpicker").distpicker();
+
+
+    /**
+     * 图片预览--通用
+     */
+    $(".ft-uploader__files").on("click", ".ft-uploader__file", function(e) {
+        if ($(this).attr("data-src")) {
+            $.modal.preview(respath + $(this).attr("data-src"));
+        }
+    });
+
+
+    // 营业执照上传控制
+    function picCtrl() {
+        $("#picImg li").length >= picLimit ? $("#picBox").hide() : $("#picBox").show();
+    }
+
+    // 营业执照上传控制
+    function licenseCtrl() {
+        $("#licenseImg li").length >= licenseLimit ? $("#licenseBox").hide() : $("#licenseBox").show();
+    }
+
+    // 法人身份证正面上传控制
+    function sfzFrontCtrl() {
+        $("#sfzFrontImg li").length >= sfzFrontLimit ? $("#sfzFrontBox").hide() : $("#sfzFrontBox").show();
+    }
+
+
+    // 法人身份证反面上传控制
+    function sfzBackCtrl() {
+        $("#sfzBackImg li").length >= sfzBackLimit ? $("#sfzBackBox").hide() : $("#sfzBackBox").show();
+    }
+
+
+    // 其他资料上传控制
+    function submitInfoCtrl() {
+        $("#submitInfoImg li").length >= submitInfoLimit ? $("#submitInfoBox").hide() : $("#submitInfoBox").show();
+    }
+
+</script>
+</body>
+</html>

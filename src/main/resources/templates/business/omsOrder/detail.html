@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改订单')"/>
+    <th:block th:include="include :: jquery-setSetp-css"/>
+    <style>
+        thead {
+            background-color: #f5f5f5;
+        }
+        .img-circle {
+            border-radius: 0;
+        }
+        .static-table th, .static-table td {
+            text-align: center;
+        }
+        .step-bar-context{
+            position: relative;
+            right:18px;
+        }
+        .step-bar-time{
+            position: relative;
+            line-height: 1;
+            top: 50px;
+            right:18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="white-bg">
+<div class="container-div">
+
+    <div class="top-step">
+        <!-- 菜单导航显示-->
+        <div class="ystep-container ystep-lg ystep-blue" style="margin-bottom: 40px;"></div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="text-danger inline h4"><i class="fa fa-warning"></i>
+                当前订单状态: <label th:text="${@custom.getOrderStatus()[detail.status]}"></label>
+            </div>
+            <div class="pull-right m-r-md" id="btns">
+                <!--按钮组-->
+            </div>
+        </div>
+        <div class="panel-body p-md" th:object="${detail}">
+
+            <div class="h4"><i class="fa fa-bookmark"></i> 基本信息</div>
+            <div class="static-table">
+                <table class="table table-bordered">
+                    <tr class="active">
+                        <th>订单ID</th>
+                        <th>发货编号</th>
+                        <th>用户昵称</th>
+                        <th>订单备注</th>
+                    </tr>
+                    <tr>
+                        <td th:text="*{id}"></td>
+                        <td th:text="*{orderSn}"></td>
+                        <td th:text="*{createBy}"></td>
+                        <td id="remark" th:text="*{#strings.substringAfter(remark,'@')}"></td>
+                    </tr>
+                    <tr class="active">
+                        <th>订单类型</th>
+                        <th>自动确认收货时间</th>
+                        <th>活动信息</th>
+                        <th>用户留言</th>
+                    </tr>
+                    <tr>
+                        <td th:text="${@custom.getOrderType()[detail.orderType]}"></td>
+                        <td th:text="*{autoConfirmDay+'天'}"></td>
+                        <td th:text="*{gameInfo}" class="long-text">
+                        </td>
+                        </td>
+                        <td th:text="*{note}" class="long-text"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="h4"><i class="fa fa-bookmark"></i> 收货人信息</div>
+            <div class="static-table edit">
+                <table class="table table-bordered">
+                    <tr class="active">
+                        <th>收货人</th>
+                        <th>手机号码</th>
+                        <!--<th>邮政编码</th>-->
+                        <th>收货地址</th>
+                        <th>详细地址</th>
+                    </tr>
+                    <tr>
+                        <td name="receiverName" th:text="*{receiverName}"></td>
+                        <td name="receiverPhone" th:text="*{receiverPhone}"></td>
+                        <!--<td name="receiverPostCode" th:text="*{receiverPostCode}"></td>-->
+                        <td name="addr" th:text="*{receiverProvince+' '+receiverCity+' '+receiverRegion}" class="long-text" max-len="20"></td>
+                        <td name="receiverDetailAddress" th:text="*{receiverDetailAddress}" class="long-text" max-len="20"></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="bill" th:class="*{billType?'':'hidden'}">
+                <div class="h4"><i class="fa fa-bookmark"></i> 发票信息</div>
+                <div class="static-table edit">
+                <table class="table table-bordered">
+                    <tr class="active">
+                        <th>发票类型</th>
+                        <th>发票抬头</th>
+                        <th>发票内容</th>
+                        <th>收票人电话</th>
+                        <th>收票人邮箱</th>
+                    </tr>
+                    <tr>
+                        <td name="billType" th:text="${@custom.getBillType()[detail.billType]}"></td>
+                        <td name="billHeader" th:text="*{billHeader}"  class="long-text" max-len="20"></td>
+                        <td name="billContent" th:text="*{billContent}"  class="long-text" max-len="20"></td>
+                        <td name="billReceiverPhone" th:text="*{billReceiverPhone}"></td>
+                        <td name="billReceiverEmail" th:text="*{billReceiverEmail}"></td>
+                    </tr>
+                </table>
+            </div>
+            </div>
+            <div class="h4"><i class="fa fa-bookmark"></i> 商品信息</div>
+            <div class="">
+                <table id="skuTable" class="table table-bordered">
+                    <!--skuList列表信息-->
+                </table>
+            </div>
+            <div class="h4">
+                <div class="m-r-lg " style="font-weight: 600;text-align: right">合计：<label class="text-danger" id="skuPriceTotal"></label>
+                </div>
+            </div>
+            <div class="h4"><i class="fa fa-bookmark"></i> 费用信息</div>
+            <div class="static-table">
+                <table class="table table-bordered">
+                    <tr class="active">
+                        <th>商品合计</th>
+                        <th>运费</th>
+                        <th>优惠券</th>
+                        <th>实际支付</th>
+                    </tr>
+                    <tr>
+                        <td th:text="*{'￥'+productTotalAmount}"></td>
+                        <td th:text="*{'￥'+freightAmount}"></td>
+                        <td th:text="*{'- ￥'+couponAmount}"></td>
+                        <td th:text="*{'￥'+payAmount}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="h4"><i class="fa fa-bookmark"></i> 操作信息</div>
+            <div class="">
+                <table id="oprerateTable" class="table table-bordered">
+                    <!--操作信息-->
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--批量备注弹窗-->
+<div id="batchRemark" class="wrapper wrapper-content ibox-content" style="display: none;" >
+    <form id="form-remark-add" class="form-horizontal m" >
+        <input type="hidden" name="ids" th:value="${detail.id}">
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">提示标记：</label>
+            <div class="col-sm-8">
+                <div class="radio-box" th:each="dict : ${@custom.getRemarkFlagPlus()}">
+                    <input type="radio" name="flag"
+                           th:id="${'flag_' + dict.key}"
+                           th:value="${dict.key}"
+                           th:checked="${#strings.substringBefore(detail.remark,'@')==dict.key}">
+                    <label th:for="${'flag_' + dict.key}" th:class="'text-'+${dict.value.style}">
+                        <i class="fa fa-flag"></i>
+                    </label>
+                </div>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 根据重要性给出标记方便查看.</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">商家备注：</label>
+            <div class="col-sm-8">
+                <input th:value="${#strings.substringAfter(detail.remark,'@')}"  name="remark" class="form-control" type="text" required maxlength="20">
+                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 此备注限20字以内,仅限查看不做任何操作记录.</span>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--修改收货人或者发票信息-->
+<div id="editOrderMsg" class="wrapper wrapper-content ibox-content" style="display: none;" >
+    <form id="form-msg-edit" class="form-horizontal m" th:object="${detail}">
+        <input type="hidden" name="id" th:field="*{id}">
+        <div>
+        <h4 class="form-header h4">收货人信息</h4>
+        <div class="form-group">
+            <label class="col-sm-3 control-label  is-required ">收货人姓名：</label>
+            <div class="col-sm-8">
+                <input th:field="*{receiverName}" name="receiverName" class="form-control" type="text"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label  is-required ">收货人电话：</label>
+            <div class="col-sm-8">
+                <input th:field="*{receiverPhone}" name="receiverPhone" class="form-control" type="text"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label  is-required ">收货人邮编：</label>
+            <div class="col-sm-8">
+                <input th:field="*{receiverPostCode}" name="receiverPostCode" class="form-control" type="text"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">收货地址：</label>
+            <div class="col-sm-8" id="distpicker" th:attr="data-province=*{receiverProvince}, data-city=*{receiverCity}, data-district=*{receiverRegion}">
+                <select name="receiverProvince" class="form-control-inline col-sm-4" required></select>
+                <select name="receiverCity" class="form-control-inline col-sm-4" required></select>
+                <select name="receiverRegion" class="form-control-inline col-sm-4" required></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label  is-required ">详细地址：</label>
+            <div class="col-sm-8">
+                <input name="receiverDetailAddress" th:field="*{receiverDetailAddress}" class="form-control" type="text"  >
+            </div>
+        </div>
+        </div>
+        <h4 class="form-header h4">发票信息
+            <a th:class="*{billType?'btn-link':'btn-link hidden'}" id="addBill"  href="javascript:void(0)" onclick="addBill()">添加</a>
+            <a th:class="*{billType?'btn-link':'btn-link hidden'}" id="removeBill"  href="javascript:void(0)" onclick="removeBill()">移除</a>
+        </h4>
+        <div id="billMsg" th:class="*{billType?'':'hidden'}">
+            <div class="form-group">
+                <input th:field="*{billType}" name="billType" class="form-control" type="hidden"  >
+                <label class="col-sm-3 control-label is-required">发票类型：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@custom.getBillTypeToCheck()}">
+                        <input  type="radio" th:id="${'billType_' + dict.key}" name="billTypeRadio" th:value="${dict.key}">
+                        <label th:for="${'billType_' + dict.key}" th:text="${dict.value}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label  is-required ">发票抬头：</label>
+                <div class="col-sm-8">
+                    <input th:field="*{billHeader}" name="billHeader" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label  is-required ">发票内容：</label>
+                <div class="col-sm-8">
+                    <input th:field="*{billContent}" name="billContent" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label  is-required ">收票人电话：</label>
+                <div class="col-sm-8">
+                    <input th:field="*{billReceiverPhone}" name="billReceiverPhone" class="form-control" type="text"  >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label  is-required ">收票人邮箱：</label>
+                <div class="col-sm-8">
+                    <input th:field="*{billReceiverEmail}" name="billReceiverEmail" class="form-control" type="text"  >
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: distpicker-js"/>
+<th:block th:include="include :: jquery-setSetp-js"/>
+<script th:inline="javascript" type="text/javascript">
+    var detail = [[${detail}]];
+    var payStatusData = [[${@custom.getPayStatus()}]];
+    var sendStatusData = [[${@custom.getSendStatus()}]];
+    var orderStatusData = [[${@custom.getOrderStatus()}]];
+    var billTypeDatas = [[${@custom.getBillType()}]];
+    // 地区选择
+    $("#distpicker").distpicker();
+    console.log(detail)
+    var btnsData={
+        'edit':'<button type="button" class="btn btn-info btn-sm " onclick="editReceiveMsg()">修改收货人信息</button> ',
+        'del':'<button type="button" class="btn btn-danger btn-sm " onclick="delOrder()">删除订单</button> ',
+        'cancle':'<button type="button" class="btn btn-warning btn-sm " onclick="cancleOrder()">取消订单</button> ',
+        'detail':'<button type="button" class="btn btn-success btn-sm " onclick="remarkOrder()">备注订单</button> ',
+        'progress':'<button type="button" class="btn btn-warning btn-sm " onclick="showProgress()">物流跟踪</button> ',
+    }
+    var prefix = ctx + "business/omsOrder";
+    $(function () {
+        initStep();
+        initBtns();
+        initSkuList();
+        initOrderHistoryList();
+        initLongText();
+       /* if(detail.billType==0){
+            $("#billTypeRadio_1").parent().addClass('checked')
+            $("#billTypeRadio_1").prop("checked",true);
+        }*/
+    })
+    /**************************document init end *****************************************/
+    /***********************初始化顶部step导航栏 start*******************************************/
+    function initStep(){
+        var curStep = $.common.isEmpty(detail.commentTime)?Number(detail.status)+1:5;
+        detail.createTime=detail.createTime?detail.createTime:"";
+        detail.paymentTime=detail.paymentTime?detail.paymentTime:"";
+        detail.deliveryTime=detail.deliveryTime?detail.deliveryTime:"";
+        detail.receiveTime=detail.receiveTime?detail.receiveTime:"";
+        detail.commentTime=detail.commentTime?detail.commentTime:"";
+        var step = new SetStep({
+            content: '.top-step',
+            fontWidth: 120,
+            clickAble: false,
+            steps: ['<label class="step-bar-context">提交订单<label class="step-bar-time">'+detail.createTime+'</label></label>',
+                '<label class="step-bar-context">支付订单<label class="step-bar-time">'+detail.paymentTime+'</label></label>',
+                '<label class="step-bar-context">平台发货<label class="step-bar-time">'+detail.deliveryTime+'</label></label>',
+                '<label class="step-bar-context">确认收货<label class="step-bar-time">'+detail.receiveTime+'</label></label>',
+                '<label class="step-bar-context">完成评价<label class="step-bar-time">'+detail.commentTime+'</label></label>'],
+            curStep: curStep,
+        })
+    }
+    /***********************初始化顶部step导航栏 end*******************************************/
+    /**初始化修改收货人的表格**/
+    function initEditOrderMsg(){
+        $('#form-msg-edit input[type="text"]').each(function (index, el) {
+            var name = $(el).attr("name")
+            $(el).val( detail[name]);
+        })
+        //更新发票类型 隐藏 和 显示 相关输入信息
+        var billTypeVal = detail.billType;
+        if (billTypeVal==0){
+            console.log(billTypeVal)
+            $('#addBill').removeClass("hidden");
+            $('#removeBill').addClass("hidden");
+            $('#billMsg').addClass("hidden");
+        }else{
+            $('#removeBill').removeClass("hidden");
+            $('#addBill').addClass("hidden");
+            $('#billMsg').removeClass("hidden");
+            $('#form-msg-edit input[type="radio"]').each(function () {
+                if($(this).val()==billTypeVal){
+                    $(this).iCheck('check');
+                }
+            })
+        }
+        //地址同步 receiverProvince receiverCity receiverRegion'
+        $('#distpicker').distpicker({
+            province: detail.receiverProvince,
+            city: detail.receiverCity,
+            district: detail.receiverRegion,
+        });
+    }
+    /**************************修改订单信息 start*****************************************/
+    /**
+     * 监听radio的check事件,并给billType赋值
+     */
+
+    $('#form-msg-edit input[type="radio"]').on('ifChecked', function(event){
+        if($(this).is(':checked')) {
+           $('#billType').val($(event.target).val());
+        }
+    })
+    function addBill() {
+        $('#billMsg').removeClass("hidden");
+        $('#addBill').addClass("hidden");
+        $('#removeBill').removeClass("hidden");
+        $('#form-msg-edit input[type="radio"]').each(function (index) {
+            if(index==0){
+                $(this).iCheck('check');
+            }
+        })
+    }
+    function removeBill() {
+        $('#billMsg').addClass("hidden");
+        $('#addBill').removeClass("hidden");
+        $('#removeBill').addClass("hidden");
+        $('#billType').val('0')
+    }
+    var orderMsgIndex,remarkIndex;
+    /**
+     * 修改订单信息
+     */
+    function editReceiveMsg(){
+        orderMsgIndex = layerOpen("editOrderMsg","form-msg-edit","修改信息",970,500,saveReceiveMsg,'50px');
+    }
+    /**
+     * 修改订单信息
+     */
+    function saveReceiveMsg(index){
+        //验证并提交信息
+        if ($("#form-msg-edit").validate().form()) {
+            $.operate.post(prefix + "/edit", $('#form-msg-edit').serialize(), function (res) {
+                if (res.code == web_status.SUCCESS) {
+                    //重新修改 页面的信息
+                    updatePageData();
+                    $.modal.msgSuccess(res.msg)
+                    layer.close(index)
+                } else {
+                    $.modal.msgError(res.msg)
+                }
+            });
+        }
+    }
+    /**
+     * 更新页面的信息
+     */
+    function updatePageData() {
+        //更新所有input[type="text"]的信息
+        $('#form-msg-edit input[type="text"]').each(function (index, el) {
+            var val = $(el).val();
+            var name = $(el).attr("name")
+            $('.edit td[name="'+name+'"]').html(val);
+            detail[name]=val;
+        })
+        //更新发票类型 隐藏 和 显示 相关输入信息
+        var billTypeVal = $('#form-msg-edit input[name="billType"]').val();
+        detail.billType = billTypeVal;
+
+        if(billTypeVal==0){
+            $('#bill').addClass('hidden')
+        }else{
+            $(".edit td[name='billType']").html(billTypeDatas[billTypeVal]);
+            $('#bill').removeClass('hidden')
+            $('#form-msg-edit input[type="radio"]').each(function () {
+                if($(this).is(':checked')){
+                    detail.billType=$(this).val();
+                    if($(this).val()=='0'){
+                        $('#bill').addClass('hidden')
+                        $('#addBill').removeClass('hidden')
+                        $('#billMsg').addClass('hidden')
+                    }else{
+                        $(".edit td[name='billType']").html(billTypeDatas[$(this).val()]);
+                        $('#bill').removeClass('hidden')
+                        $('#addBill').addClass('hidden')
+                        $('#billMsg').addClass('hidden')
+                    }
+                }
+            })
+        }
+
+
+        //地址同步
+        var addr = 'receiverProvince receiverCity receiverRegion';
+        $('#form-msg-edit select').each(function (index, el) {
+            var val = $(el).val();
+            var name = $(el).attr("name")
+            detail[name]=val;
+            addr = addr.replace(name,val)
+        })
+        $(".edit td[name='addr']").html(addr);
+    }
+    /**************************修改订单信息 end*****************************************/
+    /**************************删除 取消订单 start*****************************************/
+    /**
+     * 删除订单
+     */
+    function delOrder(){
+        $.modal.confirm("确认要删除这个订单吗？", function () {
+            $.operate.post(prefix + "/remove", {"id": detail.id},function (res) {
+                callParentMethod(res);
+            });
+        })
+    }
+    /**
+     * 取消订单
+     */
+    function cancleOrder(){
+        $.modal.confirm("确认要取消个订单吗？", function () {
+            $.operate.post(prefix + "/cancle", {"id": detail.id},function (res) {
+                callParentMethod(res);
+            });
+        })
+    }
+    /**************************删除 取消订单 end*****************************************/
+    /**************************备注订单 start*****************************************/
+    /**
+     * 备注订单
+     */
+    function remarkOrder(){
+        remarkIndex = layerOpen("batchRemark","form-remark-add","批量备注",700,300,saveRemarks);
+    }
+    /**
+     * 保存修改的备注
+     */
+    function saveRemarks(index){
+        $.operate.post(prefix+"/batchRemarks", $('#form-remark-add').serialize(),function (res) {
+            if(res.code==web_status.SUCCESS){
+                $('#remark').html($('input[name="remark"]').val())
+                $.modal.msgSuccess(res.msg)
+                layer.close(index)
+            }else{
+                $.modal.msgError(res.msg)
+            }
+        });
+    }
+    /**************************备注订单 end*****************************************/
+    /**************************物流跟踪 start*****************************************/
+    /**
+     * 物流跟踪
+     */
+    function showProgress(){
+        var options = {
+            title: '订单跟踪',
+            url: prefix+"/progress/"+detail.deliverySn,
+            width: $(window).width()*0.5,
+            height: $(window).height()-100,
+            btn: false,
+        };
+        $.modal.openOptions(options);
+    }
+    /**************************物流跟踪 end*****************************************/
+    /**************************公用方法 start*****************************************/
+    /**
+     * 打开模态窗口
+     */
+    function layerOpen(id,formId,title,width,height,callback,offset) {
+
+        return layer.open({
+            type: 1,
+            shade: [0.4, '#000000'],
+            offset: offset?offset:'auto',
+            area: [width+'px', height+'px'],
+            title: title,
+            content: $("#"+id),
+            btn: ['提交', '取消'],
+            success: function() {
+                //初始化值
+                initEditOrderMsg();
+                //清除上次的校验状态
+                $("#form-msg-edit").validate().resetForm();
+            },
+            yes: function(index){
+                callback(index)
+            }
+        });
+    }
+    /**
+     *  调用父页面的方法显示操作结果
+     */
+    function callParentMethod(result) {
+        if (result.code == web_status.SUCCESS) {
+            $.modal.msgSuccess(result.msg);
+            $.modal.close();
+            (parent.sendCallback && typeof (parent.sendCallback) === "function") && parent.sendCallback(result.msg);
+        }else{
+            $.modal.msgError(result.msg);
+        }
+    }
+
+    /**
+     * 初始化静态表格中 long-text 超出隐藏
+     */
+    function initLongText(){
+        $('.long-text').each(function (index,val) {
+            var length = $(val).attr('max-len');
+            if($.common.isEmpty(length)){
+                length=15;
+            }
+            $(val).html($.table.tooltip($(val).html(),length,'open'))
+        })
+        // 单击tooltip事件
+        $(document).on("click", '.tooltip-show', function () {
+            var target = $(this).data('target');
+            var input = $(this).prev();
+            if ($.common.equals("copy", target)) {
+                input.select();
+                document.execCommand("copy");
+            } else if ($.common.equals("open", target)) {
+                parent.layer.alert(input.val(), {
+                    title: "信息内容",
+                    shadeClose: true,
+                    btn: ['确认'],
+                    btnclass: ['btn btn-primary'],
+                });
+            }
+        });
+    }
+    /**************************公用方法 end*****************************************/
+    /**************************初始化操作按钮 start*****************************************/
+    /**
+     * 初始化操作按钮
+     */
+    function initBtns(){
+        var action=[];
+        detail.btns.forEach(function (val) {
+            //积分订单才有可能显示取消按钮
+            if( val ==='cancle'){
+                if(detail.orderType=='4'){
+                    action.push(btnsData[val])
+                }
+            }else{
+                action.push(btnsData[val])
+            }
+        })
+        $('#btns').append(action);
+    }
+    /**************************初始化操作按钮 end*****************************************/
+    /**************************初始化表格 start*****************************************/
+    /**
+     * 初始化 skuList
+     */
+    function initSkuList() {
+        var options = {
+            id: "skuTable",
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            pagination: false,
+            columns: [
+                {
+                    field: 'productPic',
+                    title: '商品主图',
+                    align: 'center',
+                    width: 80,
+                    formatter: function (value, row, index) {
+                        value = respath + value;
+                        return $.common.sprintf("<img class='img-circle img-md' data-height='%s' data-width='%s' data-target='%s' src='%s'/>", 'auto', 'auto', 'self', value);
+                    }
+                },
+                {
+                    field: 'productName',
+                    title: '商品名称',
+                    align: 'center',
+                },
+                {
+                    field: 'productSpData',
+                    title: '规格属性',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var obj = jQuery.parseJSON(value);
+                        return $.table.tooltip(Object.values(obj), 10, 'open')
+                    }
+                },
+                {
+                    field: 'productBrand',
+                    title: '商品品牌',
+                    align: 'center',
+                },
+                {
+                    field: 'productSn',
+                    title: '商品货号',
+                    align: 'center',
+                },
+                {
+                    field: 'productSkuCode',
+                    title: '商品sku条码',
+                    align: 'center',
+                },
+                {
+                    field: 'productPrice',
+                    title: '销售价格',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return '￥' + value;
+                    }
+                },
+                {
+                    field: 'productQuantity',
+                    title: '购买数量',
+                    align: 'center',
+                },
+                {
+                    field: 'status',
+                    title: '评论状态',
+                    visible: false,
+                },
+            ],
+            onLoadError: function () {
+                $.modal.alert("数据加载失败！");
+            },
+
+        }
+        $.table.init(options);
+        $("#skuTable").bootstrapTable('append', detail.orderItemList);
+        $('#skuPriceTotal').html($.common.sprintf('￥%s', detail.productTotalAmount))
+    }
+
+    /**
+     * 初始化 orderHistoryList
+     */
+    function initOrderHistoryList() {
+        var options = {
+            id: "oprerateTable",
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            pagination: false,
+            columns: [
+
+                {
+                    field: 'createBy',
+                    title: '操作者',
+                    align: 'center',
+                    width: 201,
+                },
+                {
+                    field: 'createTime',
+                    title: '操作时间',
+                    align: 'center',
+                    width: 300,
+                },
+                {
+                    field: 'orderStatus',
+                    title: '订单状态',
+                    align: 'center',
+                    width: 201,
+                    formatter: function (value, row, index) {
+                        return orderStatusData[value];
+                    }
+                },
+                {
+                    field: 'payStatus',
+                    title: '付款状态',
+                    align: 'center',
+                    width: 201,
+                    formatter: function (value, row, index) {
+                        return payStatusData[value];
+                    }
+                },
+                {
+                    field: 'sendStatus',
+                    title: '发货状态',
+                    align: 'center',
+                    width: 201,
+                    formatter: function (value, row, index) {
+                        return sendStatusData[value];
+                    }
+                },
+                {
+                    field: 'remark',
+                    title: '备注',
+                    align: 'center',
+                },
+            ],
+            onLoadError: function () {
+                $.modal.alert("数据加载失败！");
+            },
+        }
+        $.table.init(options);
+        $("#oprerateTable").bootstrapTable('append', detail.orderHistoryList);
+    }
+    /**************************初始化表格 end*****************************************/
+
+    //验证form-msg-edit
+    $("#form-msg-edit").validate({
+        ignore:':hidden',
+        rules: {
+            billHeader:{
+                required:true,
+                maxlength: 50,
+            },
+            billContent:{
+                required:true,
+                maxlength: 200,
+            },
+            billReceiverPhone:{
+                isPhone:true,
+                required:true,
+            },
+            billReceiverEmail:{
+                email:true,
+                required:true,
+            },
+            receiverName:{
+                required:true,
+                maxlength: 100,
+            },
+            receiverPhone:{
+                required:true,
+                isPhone:true,
+            },
+            receiverPostCode:{
+                required:true,
+                positiveIntegerZero:true,
+                rangelength:[6,6],
+            },
+            receiverProvince:{
+                required:true,
+            },
+            receiverCity:{
+                required:true,
+            },
+            receiverRegion:{
+                required:true,
+            },
+            receiverDetailAddress:{
+                required:true,
+                maxlength:50,
+            },
+        },
+        messages: {
+            billHeader:{
+                required:"必填信息",
+                maxlength:"长度不能超过50",
+            },
+            billContent:{
+                required:"必填信息",
+                maxlength:"长度不能超过200",
+            },
+            billReceiverPhone:{
+                 required:"必填信息",
+            },
+            billReceiverEmail:{
+                 required:"必填信息",
+            },
+            receiverName:{
+                required:"必填信息",
+                maxlength:"长度不能超过100",
+            },
+            receiverPhone:{
+                 required:"必填信息",
+            },
+            receiverPostCode:{
+                required:"必填信息",
+                positiveIntegerZero:"请输入正确6位邮政编码",
+                rangelength:"请输入正确6位邮政编码",
+            },
+            receiverProvince:{
+                 required:"",
+            },
+            receiverCity:{
+                 required:"",
+            },
+            receiverRegion:{
+                 required:"",
+            },
+            receiverDetailAddress:{
+                required:"必填信息",
+                maxlength:"长度不能超过50",
+            },
+        },
+        focusCleanup: true
+    });
+</script>
+</body>
+</html>

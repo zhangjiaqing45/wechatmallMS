@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.pmsProductComment.mapper.PmsProductCommentMapper">
+
+    <delete id="deleteCommentByIds" parameterType="String">
+        delete from pms_product_comment  where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="pass" parameterType="String">
+        update pms_product_comment set show_status = '0' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="refuse" parameterType="String">
+        update pms_product_comment set show_status = '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="getPmsProductCommentList" parameterType="PmsProductComment" resultMap="PmsProductCommentResult">
+        <include refid="selectPmsProductCommentVo"/>
+        <where>
+            del_flag = '0'
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="memberNickName != null  and memberNickName != ''"> and member_nick_name like concat('%', #{memberNickName}, '%')</if>
+            <if test="star != null "> and star = #{star}</if>
+            <if test="showStatus != null "> and show_status = #{showStatus}</if>
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>        </where>
+    </select>
+    <!--app手机端查询接口-->
+    <select id="getCommentListForApp" parameterType="PmsProductComment" resultMap="PmsProductCommentResult">
+        <include refid="selectPmsProductCommentVo"/>
+        <where>
+        del_flag = '0'
+        <if test="productId != null "> and product_id = #{productId}</if>
+        <if test="memberId != null "> and member_id #{memberId}</if>
+        <if test="star != null "> and star = #{star}</if>
+        <if test="showStatus != null "> and show_status = #{showStatus}</if>
+        </where>
+    </select>
+    <!--获取商品评论信息通过 订单详情-->
+    <select id="getCommentInfoByOrder" resultType="com.fante.project.business.pmsProductComment.domain.PmsProductComment">
+        SELECT
+            p.shop_id,
+            p.id AS product_id,
+            order_item.product_sku_id AS product_sku_id,
+            p.`name` AS product_name,
+            order_item.product_pic AS product_pic,
+            order_item.product_sp_data AS product_attribute
+        FROM
+            oms_order_item order_item
+            LEFT JOIN pms_product p ON p.id = order_item.product_id
+        WHERE
+            order_item.id = #{orderItemId}
+    </select>
+</mapper>

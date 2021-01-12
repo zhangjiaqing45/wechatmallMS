@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('团购记录列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li th:if="${isAdmin}">
+                            <p>店铺:</p>
+                            <input type="hidden" name="shopId"/>
+                            <input type="text" name="shop" readonly placeholder="请选择店铺" onclick="selectShop();" />
+                        </li>
+                        <li>
+                            <p>商品名称:</p>
+                            <input type="text" name="productName"/>
+                        </li>
+                        <li>
+                            <p>团购状态:</p>
+                            <select class="form-control " name="status" th:with="type=${@custom.groupRecordStatus()}">
+                                <option value="" >所有</option>
+                                <option  th:each="dict : ${type}" th:text="${dict.value}" th:value="${dict.key}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>团长:</p>
+                            <input type="text" name="createBy"/>
+                        </li>
+                        <li class="select-time">
+                            <p>创建时间:</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCreateTime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCreateTime]"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <!--<div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="business:smsGroupGameRecord:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="business:smsGroupGameRecord:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="business:smsGroupGameRecord:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="business:smsGroupGameRecord:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>-->
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('business:smsGroupGameRecord:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('business:smsGroupGameRecord:remove')}]];
+    var statusArr = [[${@custom.groupRecordStatusPlus()}]];
+    var prefix = ctx + "business/smsGroupGameRecord";
+    var prefixShop = ctx + "business/bizShopInfo";
+
+
+    /**
+     * 选择店铺
+     */
+    function selectShop(){
+        $.modal.open("选择店铺", prefixShop + "/select");
+    }
+
+    /**
+     * 选择店铺回调
+     * @param shop
+     */
+    function shopSelectCallback(shop) {
+        if (shop && shop.id) {
+            $("input[name='shopId']").val(shop.id);
+            $("input[name='shop']").val(shop.companyName + "(" + shop.city + ")");
+        } else {
+            $.modal.msgWarning("未选择店铺");
+        }
+    }
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            showSearch: false,
+            showRefresh: false,
+            showColumns: false,
+            showToggle: false,
+            modalName: "团购记录",
+            columns: [
+            //     {
+            //     checkbox: true
+            // },
+            {
+                field : 'productName',
+                title : '商品名称',
+                align: 'center',
+            },
+            {
+                field : 'productSn',
+                title : '商品货号',
+                align: 'center',
+            },
+            {
+                field : 'productPic',
+                title : '商品图片',
+                align: 'center',
+                formatter : function(value, row, index) {
+                    return $.table.imageView(respath+value);
+                }
+            },
+            {
+                field : 'targetMemberCount',
+                title : '目标人数',
+                align: 'center',
+            },
+            {
+                field : 'groupMemberCount',
+                title : '参团人数',
+                align: 'center',
+                formatter : function(value, row, index) {
+                    return value+row.lockMemberCount;
+                }
+            },
+            {
+                field : 'status',
+                title : '状态',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    if (statusArr[value]) {
+                        return $.common.sprintf("<span class='badge badge-%s'>%s</span>", statusArr[value].style, statusArr[value].desc);
+                    }
+                }
+            },
+            {
+                field : 'createBy',
+                title : '团长',
+                align: 'center',
+            },
+            {
+                field : 'createTime',
+                title : '创建时间',
+                align: 'center',
+            },
+            {
+                field : 'remark',
+                title : '备注',
+                align: 'center',
+            },
+            {
+                title: '操作',
+                align: 'center',
+                formatter: function(value, row, index) {
+                    var actions = [];
+                    actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="showDetail(\'' + row.id + '\',\'' + row.status + '\')"><i class="fa fa-edit"></i>团购详情</a> ');
+                    return actions.join('');
+                }
+            }]
+        };
+        $.table.init(options);
+    });
+
+    /**
+     * 展示组员
+     * @param id
+     */
+    function showDetail(id, status) {
+        var options = {
+            url: prefix+"/detail/"+id,
+            title: "团购详情("+statusArr[status].desc+")",
+            btn: false,
+        }
+        $.modal.openOptions(options);
+    }
+</script>
+</body>
+</html>

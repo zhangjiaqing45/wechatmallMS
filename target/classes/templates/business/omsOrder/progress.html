@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改订单')" />
+
+</head>
+<body class="gray-bg">
+        <div id="ibox-content">
+            <div id="vertical-timeline" class="vertical-container light-timeline">
+
+                <!--
+                <div class="vertical-timeline-block" id="end">
+                    <div class="vertical-timeline-icon lazur-bg">
+                        <i class="fa fa-user-md"></i>
+                    </div>
+                    <div class="vertical-timeline-content">
+                        <h3>完成订单</h3>
+                        <span class="vertical-date">
+                            <small>2012-08-28 16:33:19</small>
+                        </span>
+                    </div>
+                </div>
+                -->
+            </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript" type="text/javascript">
+        var progress = [[${progress}]];
+        var endHtml = '<div class="vertical-timeline-block" id="end" style="margin-bottom: 20px">\n' +
+            '                    <div class="vertical-timeline-icon lazur-bg">\n' +
+            '                        <i class="fa %s"></i>\n' +
+            '                    </div>\n' +
+            '                    <div class="vertical-timeline-content">\n' +
+            '                        <h3>%s</h3>\n' +
+            '                        <span class="vertical-date">\n' +
+            '                            <small>%s</small>\n' +
+            '                        </span>\n' +
+            '                    </div>\n' +
+            '                </div>';
+        var html = ' <div class="vertical-timeline-block">\n' +
+            '                    <div class="vertical-timeline-icon navy-bg">\n' +
+            '                        <i class="fa %s"></i>\n' +
+            '                    </div>\n' +
+            '                    <div class="vertical-timeline-content text-navy">\n' +
+            '                        <span class="vertical-date">\n' +
+            '                            <h3>%s</h3>\n' +
+            '                            <small>%s</small>\n' +
+            '                        </span> \n' +
+            '                    </div>\n' +
+            '                </div>';
+        var resuleList = jQuery.parseJSON(progress.resuleList);
+        //console.log(progress)
+        //console.log(resuleList)
+        var prefix = ctx + "business/omsOrder";
+        $(function () {
+            //判断如果
+            //deliverystatus-> 快件状态（0：快递收件(揽件)1.在途中fa-truck 2.正在派件fa-motorcycle 3.已签收 fa-user  4.派送失败 5.疑难件 6.退件签收 ）
+            var status = parseInt(progress.deliverystatus);
+            for (var i = 0; i <resuleList.length-1 ; i++) {
+                $('#vertical-timeline').append($.common.sprintf(html,'fa-check', resuleList[i].status, resuleList[i].time))
+            }
+            if(status == -1){
+                //提示订单异常
+                $.modal.alert("暂未查到与您单号相关的物流信息，请稍后再尝试。物流单号: " +progress.number, modal_status.FAIL,function () {
+                    $.modal.close()
+                });
+            }else if(status == 1 || status == 0){
+                $('#vertical-timeline').append($.common.sprintf(endHtml,'fa-truck', resuleList[resuleList.length-1].status, resuleList[resuleList.length-1].time))
+            }else if(status == 2){
+                $('#vertical-timeline').append($.common.sprintf(endHtml,'fa-motorcycle', resuleList[resuleList.length-1].status, resuleList[resuleList.length-1].time))
+            }else if(status == 3){
+                $('#vertical-timeline').append($.common.sprintf(endHtml,'fa-user', resuleList[resuleList.length-1].status, resuleList[resuleList.length-1].time))
+            }else{
+                //提示订单异常
+                $.modal.alert("物流状态异常，请复制物流单号到物流官网查询具体原因。单号："+progress.number, modal_status.FAIL,function () {
+                    $.modal.close()
+                });
+            }
+
+            var height = $('#vertical-timeline')[0].clientHeight - $('.vertical-timeline-block')[0].clientHeight + $('.vertical-timeline-icon')[0].clientHeight;
+            $('#vertical-timeline').height(height-20)
+        })
+    </script>
+</body>
+</html>

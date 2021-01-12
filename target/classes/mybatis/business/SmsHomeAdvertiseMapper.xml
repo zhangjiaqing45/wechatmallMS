@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsHomeAdvertise.mapper.SmsHomeAdvertiseMapper">
+    <!--
+    例子一：扩展返回值有集合的：因为这个mapper和baseMapper的命名空间一致所以 格式：命名空间.ResultMapId可以简写成ResultMapId
+    <resultMap id="orderDetailResultMap" type="com.macro.chilledStore.dto.OmsOrderDetail" extends="baseOrderResultMap">
+        <collection property="orderItemList" resultMap="命名空间.BaseResultMapId" columnPrefix="item_"/>
+        <collection property="historyList" resultMap="命名空间.BaseResultMapId" columnPrefix="history_"/>
+    </resultMap>
+    例子二：扩展返回值有自定义的新增值的（就是返回的dto中有这个字段，但是数据库中没有这个字段，但需要查询返回到dto中。）
+    <resultMap id="OmsOrderSaleResultMap" type="com.macro.chilledStore.dto.OmsOrderSale" extends="baseOrderResultMap">
+        <result column="data" jdbcType="VARCHAR" property="data" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+    </resultMap>
+    -->
+    <!--模板
+    <resultMap id="SmsHomeAdvertiseResultExt" type="扩展类全包名" extends="SmsHomeAdvertiseResult">
+
+    </resultMap>
+     -->
+
+    <resultMap id="PositionResult" type="com.fante.project.business.smsHomeAdvertise.domain.SmsHomeAdvertisePositionDTO">
+        <result property="position"    column="position"    />
+        <collection property="advertises" javaType="java.util.List" resultMap="AdvertisesResult"/>
+    </resultMap>
+
+    <resultMap id="AdvertisesResult" type="com.fante.project.business.smsHomeAdvertise.domain.SmsHomeAdvertise">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="pic"    column="pic"    />
+        <result property="urlType"    column="url_type"    />
+        <result property="urlTarget"    column="url_target"    />
+        <result property="urlDesp"    column="url_desp"    />
+        <result property="url"    column="url"    />
+        <result property="sort"    column="sort"    />
+    </resultMap>
+
+    <select id="selectAdvertiseWithPosition" resultMap="PositionResult">
+        select
+               b.position ,a.id, a.title, a.pic, a.url_type, a.url_target, a.url_desp, a.url, a.sort
+        from sms_home_advertise a,
+             (
+             select position, group_concat(id) as ids
+             from sms_home_advertise
+             where `status` = #{status}
+               and del_flag = '0'
+             group by position
+             ) b
+        where find_in_set(a.id, b.ids)
+              <if test="showNum != null and showNum > 0">
+                  between 1 and #{showNum}
+              </if>
+        order by a.position, a.sort
+    </select>
+
+
+
+    <select id="advertiseProductSelect"
+            parameterType="com.fante.project.business.smsHomeAdvertise.domain.SmsHomeAdvertiseProductSelectDTO"
+            resultType="com.fante.project.business.smsHomeAdvertise.domain.SmsHomeAdvertiseProductSelectDTO">
+        select p.id, p.product_sn, p.shop_id, p.brand_id, p.product_category_id,
+        p.product_category_name, p.brand_name, p.publish_status, p.verify_status, p.name
+        from pms_product p
+        <where>
+            p.del_flag = '0'
+            <if test="productSn != null  and productSn != ''"> and p.product_sn like concat('%', #{productSn}, '%') </if>
+            <if test="shopId != null "> and p.shop_id = #{shopId}</if>
+            <if test="name != null and name != ''"> and p.name like concat('%', #{name}, '%')</if>
+            <if test="publishStatus != null and publishStatus!=''"> and p.publish_status = #{publishStatus}</if>
+        </where>
+    </select>
+
+</mapper>

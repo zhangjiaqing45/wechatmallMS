@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.accCommissionRecord.mapper.AccCommissionRecordMapper">
+    <!--待入佣金转可提现佣金-->
+    <update id="exchangeCommissionRecordStatus"
+            parameterType="com.fante.project.business.accCommissionRecord.domain.AccCommissionRecord">
+        UPDATE
+            acc_commission_record
+         SET
+            status = #{status}
+         WHERE
+            order_id = #{orderId}
+    </update>
+
+    <!--核算用户待入/可提现 佣金-->
+    <select id="sumBrokerage" resultType="java.math.BigDecimal">
+        select sum(money) from acc_commission_record where member_id = #{memberId} and status = #{status}
+    </select>
+
+    <!--查询佣金记录 通过订单和  操作类型-->
+    <select id="getCommissionRecordByMemberIdAndOperation" resultMap="AccCommissionRecordResult">
+        <include refid="selectAccCommissionRecordVo"/>
+        where
+            order_id = #{orderId}
+            and operation = #{operation}
+        limit 1
+    </select>
+    <!--批量处理佣金 待入佣金改为可提现佣金-->
+    <update id="batchUpdateCommissionStatus">
+        update acc_commission_record set `status` = CASE id
+        <foreach collection="orderList" item="item">
+            WHEN #{item.id} THEN '1'
+        </foreach>
+        END
+        WHERE
+        id IN
+        <foreach collection="orderList" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </update>
+    <!--处理佣金 待入佣金改为可提现佣金-->
+    <update id="updateCommissionStatus">
+        update acc_commission_record set `status` =  '1'
+        WHERE
+        id = #{id}
+    </update>
+    <!--根据订单查询佣金记录-->
+    <select id="selectAccCommissionRecordListByOrderIds" resultMap="AccCommissionRecordResult">
+        <include refid="selectAccCommissionRecordVo"/>
+        where order_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+          #{id}
+        </foreach>
+        and status = "0"
+    </select>
+
+
+    <sql id="selectJoinVo">
+        select cr.id, cr.member_id, cr.money, cr.`status`, cr.operation, cr.description, cr.apply_id, cr.order_id,
+               cr.create_by, cr.create_time, cr.update_by, cr.update_time, cr.remark, cr.del_flag,
+               u.phone, u.nickname, u.headimgurl, u.openid, u.role_type, u.shop_id
+        from acc_commission_record cr
+                 inner join ums_member u on u.id = cr.member_id
+    </sql>
+
+    <select id="selectJoinList"
+            parameterType="com.fante.project.business.accCommissionRecord.domain.AccCommissionRecordDTO"
+            resultType="com.fante.project.business.accCommissionRecord.domain.AccCommissionRecordDTO">
+        <include refid="selectJoinVo"/>
+        <where>
+            cr.del_flag = '0'
+            <if test="memberId != null "> and cr.member_id = #{memberId}</if>
+            <if test="status != null  and status != ''"> and cr.status = #{status}</if>
+            <if test="operation != null  and operation != ''"> and cr.operation = #{operation}</if>
+            <if test="description != null  and description != ''"> and cr.description like concat('%', #{description}, '%') </if>
+            <if test="applyId != null "> and cr.apply_id = #{applyId}</if>
+            <if test="orderId != null "> and cr.order_id = #{orderId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format(cr.create_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format(cr.create_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+            <if test="nickname != null  and nickname != ''"> and u.nickname like concat('%', #{nickname}, '%')</if>
+            <if test="openid != null  and openid != ''"> and u.openid = #{openid}</if>
+            <if test="roleType != null  and roleType != ''"> and u.role_type = #{roleType}</if>
+            <if test="shopId != null "> and u.shop_id = #{shopId}</if>
+            <if test="phone != null  and phone != ''"> and u.phone = #{phone}</if>
+        </where>
+    </select>
+    <!--付款未发货取消订单-->
+    <update id="delRecourdByOrderId">
+        update acc_commission_record set del_flag = '1' where order_id = #{orderId}
+    </update>
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fante.project.business.smsCouponHistory.mapper.SmsCouponHistoryMapper">
+    <sql id="selectSmsCouponHistoryDTO">
+        select sch.id, sch.coupon_id, sch.user_id,wu.nickname as userName,wu.headimgurl as userImg, sch.order_id, sch.coupon_code,
+        sch.get_type, sch.create_time, sch.use_status, sch.use_time, sch.order_sn,opera.nickname as update_by
+        from sms_coupon_history sch
+            left join ums_member wu on sch.user_id = wu.id
+            left join ums_member opera on opera.id = sch.update_by
+    </sql>
+
+    <select id="selectSmsCouponHistoryListDTO" parameterType="SmsCouponHistoryDTO"
+            resultType="com.fante.project.business.smsCouponHistory.domain.SmsCouponHistoryDTO">
+        <include refid="selectSmsCouponHistoryDTO"/>
+        <where>
+            <if test="couponId != null "> and sch.coupon_id = #{couponId}</if>
+            <if test="userId != null "> and sch.user_id = #{userId}</if>
+            <if test="orderId != null "> and sch.order_id = #{orderId}</if>
+            <if test="getType != null "> and sch.get_type = #{getType}</if>
+            <if test="userName != null and userName!='' "> and wu.nickname like concat('%', #{userName}, '%')</if>
+            <if test="updateBy != null and updateBy!='' "> and opera.nickname like concat('%', #{updateBy}, '%')</if>
+            <if test="useStatus != null "> and sch.use_status = #{useStatus}</if>
+            <if test="orderSn != null  and orderSn != ''"> and sch.order_sn = #{orderSn}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and date_format( sch.use_time,'%y%m%d') &gt;= date_format(#{params.beginCreateTime},'%y%m%d')
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and date_format( sch.use_time,'%y%m%d') &lt;= date_format(#{params.endCreateTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    <resultMap id="couponHistoryDetailMap" type="com.fante.project.api.omsOrderProcess.domain.SmsCouponHistoryDetail"
+               extends="SmsCouponHistoryResult">
+        <association property="coupon"
+                     resultMap="com.fante.project.business.smsCoupon.mapper.SmsCouponMapper.SmsCouponResult"
+                     columnPrefix="c_">
+        </association>
+        <association property="productRelationList"
+                    columnPrefix="cpr_"
+                    resultMap="com.fante.project.business.smsCouponProductRelation.mapper.SmsCouponProductRelationMapper.SmsCouponProductRelationResult">
+        </association>
+        <association property="categoryRelationList"
+                    columnPrefix="cpcr_"
+                    resultMap="com.fante.project.business.smsCouponProductCateRelation.mapper.SmsCouponProductCateRelationMapper.SmsCouponProductCateRelationResult">
+        </association>
+    </resultMap>
+    <!--获取用户 可用 优惠券-->
+    <select id="getMemberCouponUsable" resultMap="couponHistoryDetailMap">
+        SELECT
+            ch.*,
+            c.id c_id,
+            c.NAME c_name,
+            c.amount c_amount,
+            c.min_point c_min_point,
+            c.start_time c_start_time,
+            c.remark,
+            c.end_time c_end_time,
+            c.use_type c_use_type,
+            c.type c_type,
+            c.discount c_discount,
+            c.coupon_type c_coupon_type,
+            cpr.id cpr_id,
+            cpr.product_id cpr_product_id,
+            cpcr.id cpcr_id,
+            cpcr.product_category_id cpcr_product_category_id
+        FROM
+            sms_coupon_history ch
+            LEFT JOIN sms_coupon c ON ch.coupon_id = c.id
+            LEFT JOIN sms_coupon_product_relation cpr ON cpr.coupon_id = c.id
+            LEFT JOIN sms_coupon_product_cate_relation cpcr ON cpcr.coupon_id = c.id
+        WHERE
+            ch.user_id = #{memberId}
+            <if test="shopId !=null">AND c.shop_id = #{shopId}</if>
+            AND ch.use_status = '0'
+            AND c.`status` = '1'
+            AND c.start_time &lt;= NOW()
+            AND c.end_time &gt;= NOW()
+    </select>
+    <!--使用优惠券 修改使用状态-->
+    <update id="updateForUseCoupon">
+        UPDATE sms_coupon_history
+        SET use_status ='1',
+        use_time = NOW(),
+        update_by = #{updateBy}
+        WHERE (
+            SELECT
+                count(*)
+            FROM
+                sms_coupon c
+            WHERE
+                c.`status` = '1'
+                AND c.id = #{couponId}
+                AND c.del_flag = '0'
+                AND c.start_time &lt;= NOW() AND c.end_time &gt;= NOW()
+            ) != 0
+            AND user_id = #{userId}
+            AND coupon_id = #{couponId}
+            AND use_status = '0'
+    </update>
+    <!--商家批量发放优惠券到历史记录中-->
+    <insert id="batchInsertCouponHistory" >
+        INSERT INTO sms_coupon_history
+        (
+            user_id,
+            coupon_id,
+            coupon_code,
+            get_type,
+            create_time
+        ) VALUES
+        <foreach collection="list" separator="," item="item" index="index">
+            (
+            #{memberId},
+            #{item.id},
+            #{item.code},
+            #{item.type},
+            now()
+            )
+        </foreach>
+    </insert>
+    <!--根据code查询优惠券领取历史信息-->
+    <select id="selectSmsCouponHistoryByCode" resultType="com.fante.project.api.appView.domain.CouponHistoryDetail">
+        select
+           sc.shop_id,
+           sch.coupon_id,
+           sch.user_id as member_id,
+           sch.id
+        from sms_coupon_history sch
+        left join sms_coupon sc
+        on sc.id = sch.coupon_id
+        where sch.coupon_code = #{code}
+        and sch.use_status = '0'
+    </select>
+<!--  根据code查询优惠券使用状态  -->
+    <select id="queryCouponUseStatusByCode" resultType="string">
+        SELECT
+            a.use_status state
+        FROM sms_coupon_history a
+        WHERE 
+            a.coupon_code = #{code}
+    </select>
+</mapper>

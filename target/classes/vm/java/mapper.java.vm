@@ -1,0 +1,14 @@
+package ${packageName}.${businessName}.mapper;
+
+import com.fante.project.mapperBase.${ClassName}MapperBase;
+
+/**
+ * ${functionName}Mapper扩展接口
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+
+public interface ${ClassName}Mapper extends ${ClassName}MapperBase {
+
+}
